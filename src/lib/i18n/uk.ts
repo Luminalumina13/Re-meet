@@ -1,5 +1,10 @@
 export const uk = {
-  app: { name: "re:meet", tagline: "Зручні квитки на вихідні — і зустрічі друзів з різних міст" },
+  app: { name: "Re:meeet", tagline: "Зробіть час разом довшим" },
+  brand: {
+    slogan: "Make time together last longer.",
+    line: "Відстань не має вирішувати, як часто ви бачитесь.",
+    cta: "Спланувати зустріч",
+  },
   nav: { search: "Пошук", explore: "Куди завгодно", meetup: "Зустріч", watches: "Відстеження" },
   theme: { light: "Світла тема", dark: "Темна тема" },
   lang: { uk: "UA", en: "EN" },
@@ -112,6 +117,7 @@ export const uk = {
     tickets: "Квитки кожного",
     trackPlan: "Відстежувати цей запит",
   },
+  share: { button: "Поділитися", copied: "Посилання скопійовано" },
   flex: {
     title: "Гнучкі дати ±3 дні",
     subtitle: "Найдешевші квитки на дні навколо ваших дат. Натисніть на ціну, щоб шукати на ці дати.",

@@ -54,7 +54,7 @@ export function TelegramConnect({ watchId, connected, onChanged, prominent = fal
   return (
     <span className={prominent ? "flex flex-col items-center gap-2" : "inline-flex flex-wrap items-center gap-2"}>
       {url ? (
-        <a href={url} target="_blank" rel="noreferrer" className={prominent ? "inline-flex h-10 items-center gap-2 rounded-xl bg-accent px-4 text-sm font-semibold text-accent-ink hover:bg-accent-strong" : "inline-flex h-8 items-center gap-1.5 rounded-lg bg-accent px-3 text-[13px] font-semibold text-accent-ink hover:bg-accent-strong"}>
+        <a href={url} target="_blank" rel="noreferrer" className={prominent ? "inline-flex h-10 items-center gap-2 rounded-xl bg-accent px-4 text-sm font-semibold text-accent-ink hover:bg-accent-hover" : "inline-flex h-8 items-center gap-1.5 rounded-lg bg-accent px-3 text-[13px] font-semibold text-accent-ink hover:bg-accent-hover"}>
           <Send className="h-3.5 w-3.5" /> {t.watch.telegramOpen}
         </a>
       ) : (

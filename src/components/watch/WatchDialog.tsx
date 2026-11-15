@@ -93,7 +93,7 @@ export function WatchDialog({
             </Field>
           </div>
           <p className="flex items-start gap-2 rounded-xl bg-surface-2 px-3 py-2.5 text-sm text-ink-2">
-            <Send className="mt-0.5 h-4 w-4 shrink-0 text-accent" /> {t.watch.telegramStep}
+            <Send className="mt-0.5 h-4 w-4 shrink-0 text-accent-text" /> {t.watch.telegramStep}
           </p>
           {err && <p className="text-sm text-critical">{err}</p>}
           <div className="flex justify-end gap-2 pt-1">

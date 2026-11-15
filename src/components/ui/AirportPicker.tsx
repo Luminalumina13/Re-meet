@@ -13,12 +13,17 @@ export function AirportPicker({
   placeholder,
   className,
   exclude = [],
+  sample = false,
+  onSampleFocus,
 }: {
   value: string;
   onChange: (iata: string) => void;
   placeholder?: string;
   className?: string;
   exclude?: string[];
+  /** The value is only an example: shown light, and cleared as soon as the field gets focus. */
+  sample?: boolean;
+  onSampleFocus?: () => void;
 }) {
   const selected = value ? getAirport(value) : undefined;
   const [text, setText] = useState(selected ? `${selected.city} (${selected.iata})` : "");
@@ -63,7 +68,7 @@ export function AirportPicker({
     <div ref={ref} className={cx("relative", className)}>
       <PlaneTakeoff className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-3" />
       <input
-        className={cx(inputCls, "pl-9")}
+        className={cx(inputCls, "pl-9", sample && "text-ink-3")}
         value={text}
         placeholder={placeholder}
         role="combobox"
@@ -71,6 +76,11 @@ export function AirportPicker({
         aria-controls={listId}
         autoComplete="off"
         onFocus={() => {
+          if (sample) {
+            onSampleFocus?.();
+            update("");
+            return;
+          }
           if (!selected) update(text);
           else setOpen(false);
         }}

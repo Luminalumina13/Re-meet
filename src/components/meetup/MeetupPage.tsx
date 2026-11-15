@@ -1,10 +1,13 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Plus, SlidersHorizontal, Trash2, Users, X } from "lucide-react";
 import type { Friend, MeetupResponse } from "@/lib/meetup/types";
 import type { MeetupRequestInput } from "@/lib/api/schemas";
 import { useSearchFilters } from "@/lib/useSearchFilters";
+import { buildMeetupQuery, parseMeetupQuery } from "@/lib/share";
+import { ShareButton } from "@/components/ShareButton";
 import { nextSaturday, todayIso, weekendFromSaturday, type WeekendShape } from "@/lib/domain/dates";
 import { getAirport } from "@/lib/data/airports";
 import { useI18n } from "@/lib/i18n";
@@ -25,20 +28,39 @@ const uid = () => `f${++seq}`;
 
 export function MeetupPage() {
   const { t, locale } = useI18n();
-  const [friends, setFriends] = useState<Friend[]>([
-    { id: "f1", name: "Світлана", origins: ["WAW"] },
-    { id: "f2", name: "Андрій", origins: ["BER"] },
-    { id: "f3", name: "Олена", origins: ["LIS"] },
-  ]);
-  const [destinations, setDestinations] = useState<string[]>(["BCN"]);
-  const [includeOrigins, setIncludeOrigins] = useState(false);
-  const [saturday, setSaturday] = useState(() => nextSaturday(todayIso()));
-  const [shape, setShape] = useState<WeekendShape>("sat-sun");
-  const [mode, setMode] = useState<"weekend" | "custom">("weekend");
-  const [departDate, setDepartDate] = useState(() => nextSaturday(todayIso()));
-  const [returnDate, setReturnDate] = useState(() => weekendFromSaturday(nextSaturday(todayIso()), "sat-sun").returnDate);
-  const [valuePerHour, setValuePerHour] = useState(15);
-  const [budget, setBudget] = useState("");
+  const params = useSearchParams();
+  // A shared link pre-fills the planner (friends, places, dates) and runs it; bad values are ignored.
+  const [seed] = useState(() => parseMeetupQuery(params));
+  const [friends, setFriends] = useState<Friend[]>(
+    () =>
+      seed.friends?.map((f, i) => ({ id: `s${i + 1}`, name: f.name, origins: f.origins })) ?? [
+        { id: "f1", name: "Світлана", origins: ["WAW"] },
+        { id: "f2", name: "Андрій", origins: ["BER"] },
+        { id: "f3", name: "Олена", origins: ["LIS"] },
+      ],
+  );
+  const [destinations, setDestinations] = useState<string[]>(seed.destinations ?? ["BCN"]);
+  // The pre-filled friends and place are examples: shown light and wiped when the user clicks into them.
+  const [samples, setSamples] = useState<Set<string>>(
+    () => (seed.friends ? new Set() : new Set(["name:f1", "origin:f1:0", "name:f2", "origin:f2:0", "name:f3", "origin:f3:0", "dest:0"])),
+  );
+  const isSample = (key: string) => samples.has(key);
+  const dropSamples = (...keys: string[]) =>
+    setSamples((s) => {
+      const next = new Set(s);
+      for (const k of keys) next.delete(k);
+      return next;
+    });
+  const dropSamplesWithPrefix = (prefix: string) =>
+    setSamples((s) => new Set([...s].filter((k) => !k.startsWith(prefix))));
+  const [includeOrigins, setIncludeOrigins] = useState(seed.includeOrigins ?? false);
+  const [saturday, setSaturday] = useState(() => (seed.saturday && seed.saturday >= todayIso() ? seed.saturday : nextSaturday(todayIso())));
+  const [shape, setShape] = useState<WeekendShape>(seed.shape ?? "sat-sun");
+  const [mode, setMode] = useState<"weekend" | "custom">(seed.mode ?? "weekend");
+  const [departDate, setDepartDate] = useState(() => (seed.departDate && seed.departDate >= todayIso() ? seed.departDate : nextSaturday(todayIso())));
+  const [returnDate, setReturnDate] = useState(() => (seed.returnDate && seed.returnDate >= (seed.departDate ?? "") ? seed.returnDate : weekendFromSaturday(nextSaturday(todayIso()), "sat-sun").returnDate));
+  const [valuePerHour, setValuePerHour] = useState(seed.valuePerHour ?? 15);
+  const [budget, setBudget] = useState(seed.budget ?? "");
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -89,6 +111,23 @@ export function MeetupPage() {
     }
   }, [valid, request, t]);
 
+  const shareQuery = useMemo(
+    () => buildMeetupQuery({ friends, destinations, mode, saturday, shape, departDate, returnDate, valuePerHour, budget, includeOrigins }),
+    [friends, destinations, mode, saturday, shape, departDate, returnDate, valuePerHour, budget, includeOrigins],
+  );
+  const fromLink = Boolean(seed.friends);
+  const autoRan = useRef(false);
+  useEffect(() => {
+    if (!fromLink || autoRan.current) return;
+    // Marked done only when the timer fires: dev-mode double effects cancel the first timer.
+    const id = setTimeout(() => {
+      if (autoRan.current) return;
+      autoRan.current = true;
+      void run();
+    }, 0);
+    return () => clearTimeout(id);
+  }, [fromLink, run]);
+
   const colorIndex = useCallback((id: string) => Math.max(0, friends.findIndex((f) => f.id === id)), [friends]);
   const plans = useMemo(() => {
     if (!res) return [];
@@ -99,7 +138,7 @@ export function MeetupPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4">
-      <section className="hero-glow rounded-b-3xl pb-8 pt-10 sm:pt-14">
+      <section className="hero-glow pb-8 pt-10 sm:pt-14">
         <h1 className="max-w-2xl text-3xl font-extrabold tracking-tight sm:text-4xl">{t.meetup.title}</h1>
         <p className="mt-3 max-w-xl text-ink-2">{t.meetup.subtitle}</p>
       </section>
@@ -114,19 +153,31 @@ export function MeetupPage() {
         >
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-2 text-sm font-bold">
-              <Users className="h-4 w-4 text-accent" /> {t.meetup.friends}
+              <Users className="h-4 w-4 text-accent-text" /> {t.meetup.friends}
             </div>
             <div className="flex flex-col gap-2">
               {friends.map((f, i) => (
                 <div key={f.id} className="grid grid-cols-[10px_1fr_1.3fr_auto] items-start gap-2">
                   <span className="mt-3.5 h-2.5 w-2.5 rounded-full" style={{ background: SERIES[i % SERIES.length] }} />
-                  <Input value={f.name} placeholder={t.meetup.friendName} onChange={(e) => setFriends((fs) => fs.map((x) => (x.id === f.id ? { ...x, name: e.target.value } : x)))} />
+                  <Input
+                    value={f.name}
+                    placeholder={t.meetup.friendName}
+                    className={cx(isSample(`name:${f.id}`) && "text-ink-3")}
+                    onFocus={() => {
+                      if (!isSample(`name:${f.id}`)) return;
+                      dropSamples(`name:${f.id}`);
+                      setFriends((fs) => fs.map((x) => (x.id === f.id ? { ...x, name: "" } : x)));
+                    }}
+                    onChange={(e) => setFriends((fs) => fs.map((x) => (x.id === f.id ? { ...x, name: e.target.value } : x)))}
+                  />
                   <div className="flex flex-col gap-1.5">
                     {f.origins.map((o, k) => (
                       <div key={k} className="flex items-center gap-1">
                         <AirportPicker
                           className="flex-1"
                           value={o}
+                          sample={isSample(`origin:${f.id}:${k}`)}
+                          onSampleFocus={() => dropSamples(`origin:${f.id}:${k}`)}
                           onChange={(v) => setFriends((fs) => fs.map((x) => (x.id === f.id ? { ...x, origins: x.origins.map((y, j) => (j === k ? v : y)) } : x)))}
                           placeholder={t.common.airportPlaceholder}
                         />
@@ -135,7 +186,10 @@ export function MeetupPage() {
                             variant="ghost"
                             size="sm"
                             className="h-10 w-8 shrink-0 px-0"
-                            onClick={() => setFriends((fs) => fs.map((x) => (x.id === f.id ? { ...x, origins: x.origins.filter((_, j) => j !== k) } : x)))}
+                            onClick={() => {
+                              dropSamplesWithPrefix(`origin:${f.id}:`);
+                              setFriends((fs) => fs.map((x) => (x.id === f.id ? { ...x, origins: x.origins.filter((_, j) => j !== k) } : x)));
+                            }}
                             aria-label={t.meetup.removeAirport}
                           >
                             <X className="h-4 w-4" />
@@ -146,7 +200,7 @@ export function MeetupPage() {
                     {f.origins.length < 4 && (
                       <button
                         type="button"
-                        className="inline-flex items-center gap-1 self-start text-xs font-semibold text-ink-3 hover:text-accent"
+                        className="inline-flex items-center gap-1 self-start text-xs font-semibold text-ink-3 hover:text-accent-text"
                         onClick={() => setFriends((fs) => fs.map((x) => (x.id === f.id ? { ...x, origins: [...x.origins, ""] } : x)))}
                       >
                         <Plus className="h-3 w-3" /> {t.meetup.addAirport}
@@ -169,8 +223,17 @@ export function MeetupPage() {
               <span className="text-[12px] font-semibold uppercase tracking-wide text-ink-3">{t.meetup.destination}</span>
               {destinations.map((d, i) => (
                 <div key={i} className="grid grid-cols-[1fr_auto] gap-2">
-                  <AirportPicker value={d} onChange={(v) => setDestinations((ds) => ds.map((x, j) => (j === i ? v : x)))} placeholder={t.common.airportPlaceholder} />
-                  <Button variant="ghost" size="sm" className="h-10 w-10 px-0" disabled={destinations.length <= 1} onClick={() => setDestinations((ds) => ds.filter((_, j) => j !== i))} aria-label={t.common.delete}>
+                  <AirportPicker
+                    value={d}
+                    sample={isSample(`dest:${i}`)}
+                    onSampleFocus={() => dropSamples(`dest:${i}`)}
+                    onChange={(v) => setDestinations((ds) => ds.map((x, j) => (j === i ? v : x)))}
+                    placeholder={t.common.airportPlaceholder}
+                  />
+                  <Button variant="ghost" size="sm" className="h-10 w-10 px-0" disabled={destinations.length <= 1} onClick={() => {
+                      dropSamplesWithPrefix("dest:");
+                      setDestinations((ds) => ds.filter((_, j) => j !== i));
+                    }} aria-label={t.common.delete}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -256,7 +319,8 @@ export function MeetupPage() {
                 </p>
               )}
             </div>
-            <div className="flex justify-end">
+            <div className="flex items-start justify-end gap-3">
+              <ShareButton path="/meetup" query={shareQuery} disabled={!valid} />
               <Button type="submit" variant="primary" size="lg" loading={loading} disabled={!valid}>
                 <Users className="h-4 w-4" /> {loading ? t.meetup.planning : t.meetup.plan}
               </Button>

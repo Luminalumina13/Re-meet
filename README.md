@@ -1,4 +1,6 @@
-# re:meet
+# Re:meeet
+
+*Make time together last longer.*
 
 Flight search tuned for **weekends** — and a planner that picks tickets for **friends flying from different cities** so that the time they spend together is maximal. With **price tracking** on top.
 
@@ -9,6 +11,7 @@ Flight search tuned for **weekends** — and a planner that picks tickets for **
 ## What it does
 
 - **Weekend search** — pick a weekend (Sat–Sun, Fri–Sun, Fri–Mon, …) and a route. The default *Ideal weekend* preset keeps only flights that leave **no earlier than 08:00** (**12:00 when you depart on a Friday**, and you can change the time) and bring you home **in the evening (17:00–23:30)**. Results get a *comfort score* (time windows, directness, speed) and a composite rank mixing comfort and price. Sort by best / cheapest / fastest / most comfortable.
+- **Shareable links** — a *Share* button on search, "anywhere" and meetup copies a link (or opens the share sheet on phones) that re-creates the form and runs the same search: route, dates or weekend, travellers, cabin; for meetups also the friends with their airports, places and the money-vs-time setting. Unknown or past values in a link are ignored. Time-of-day filters are not part of the link.
 - **Flexible dates (±3 days)** — a price grid under the search form: cheapest one-way fare for each day around your departure and return, combined into a departure × return table (sums of two one-way tickets, with your time filters applied). A pair counts only if the return flight leaves at least 3 hours after the outbound lands, so cells never mix a cheap flight that arrives after the cheap return has gone. Filled in as answers arrive; press a price to search those dates. It costs about 14 provider queries per press, so it only runs on demand.
 - **Meetup planner** — add friends with their home airports and one or more candidate meeting cities (optionally the friends' own cities). The engine picks an outbound and a return per friend to **maximise time everyone is in the same place**, trading hours against money with a single knob (*what an hour together is worth*). Shows a timeline of who is there when, the shared window, and a time-vs-price frontier of alternatives. Friends who live in the destination are hosts (no flights).
   A friend can list several airports (e.g. two cities nearby); the planner picks the cheapest one that works, flying out and back from the same airport.

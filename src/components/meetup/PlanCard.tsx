@@ -47,7 +47,7 @@ export function PlanCard({
           <div className="flex items-center gap-5">
             <div className="text-right">
               <div className="flex items-center justify-end gap-1.5 text-2xl font-extrabold tabular-nums tracking-tight">
-                <Clock className="h-5 w-5 text-accent" />
+                <Clock className="h-5 w-5 text-accent-text" />
                 {fmtDurationLocalized(plan.togetherMinutes, t.meetup.hours, t.meetup.minutes)}
               </div>
               <div className="text-xs text-ink-3">{t.meetup.together}</div>
@@ -100,12 +100,12 @@ export function PlanCard({
                       <LegRow leg={f.inbound.legs[0]} compact />
                       <div className="flex gap-2 text-xs">
                         {f.outbound.deepLink && (
-                          <a className="text-accent font-semibold hover:underline" href={f.outbound.deepLink} target="_blank" rel="noreferrer">
+                          <a className="text-accent-text font-semibold hover:underline" href={f.outbound.deepLink} target="_blank" rel="noreferrer">
                             {t.common.open} → {f.outbound.providerName}
                           </a>
                         )}
                         {f.inbound.deepLink && (
-                          <a className="text-accent font-semibold hover:underline" href={f.inbound.deepLink} target="_blank" rel="noreferrer">
+                          <a className="text-accent-text font-semibold hover:underline" href={f.inbound.deepLink} target="_blank" rel="noreferrer">
                             {t.common.open} ← {f.inbound.providerName}
                           </a>
                         )}

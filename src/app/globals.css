@@ -4,54 +4,62 @@
 
 :root {
   color-scheme: light;
-  --bg: #f6f6f8;
+  /* Re:meeet palette "Violet graphite": graphite neutrals with a violet tint, one saturated violet accent. */
+  --e1: #6b46e0;
+  --e2: #a78bfa;
+  --e3: #f59e0b;
+  --bg: #f5f4f8;
   --surface: #ffffff;
-  --surface-2: #f0f0f4;
-  --border: #e3e3ea;
-  --border-strong: #c9c9d4;
-  --text: #15151c;
-  --text-2: #4e4e5c;
-  --text-3: #80808f;
-  --accent: #5b5bd6;
-  --accent-strong: #4646c8;
-  --accent-soft: #ebebfb;
+  --surface-2: #eceaf2;
+  --border: #dfdce9;
+  --border-strong: #c5c0d6;
+  --text: #1b1a24;
+  --text-2: #4a4859;
+  --text-3: #6f6c83;
+  --accent: #6b46e0;
+  --accent-hover: #5a38c9;
+  --accent-strong: #5a38c9;
+  --accent-text: #5a38c9;
+  --accent-soft: #ede7fd;
   --accent-ink: #ffffff;
-  --good: #0ca30c;
-  --warn: #c98500;
-  --critical: #d03b3b;
-  --series-1: #2a78d6;
-  --series-2: #eb6834;
-  --series-3: #1baf7a;
-  --series-4: #eda100;
-  --series-5: #e87ba4;
-  --series-6: #6250d6;
-  --shadow: 0 1px 2px rgb(20 20 40 / 0.05), 0 8px 24px -12px rgb(20 20 40 / 0.15);
+  --good: #1c7f4e;
+  --warn: #a15e0a;
+  --critical: #c23b3b;
+  --series-1: #6b46e0;
+  --series-2: #f59e0b;
+  --series-3: #14b8a6;
+  --series-4: #ec4899;
+  --series-5: #3b82f6;
+  --series-6: #84cc16;
+  --shadow: 0 1px 2px rgb(27 26 36 / 0.06), 0 8px 24px -12px rgb(27 26 36 / 0.18);
   --radius: 16px;
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0f0f14;
-  --surface: #17171f;
-  --surface-2: #1f1f29;
-  --border: #2a2a37;
-  --border-strong: #3a3a4a;
-  --text: #f1f1f5;
-  --text-2: #b9b9c6;
-  --text-3: #80808f;
-  --accent: #8b8bf0;
-  --accent-strong: #a3a3f5;
-  --accent-soft: #24244a;
-  --accent-ink: #0f0f14;
-  --good: #0ca30c;
-  --warn: #fab219;
-  --critical: #e66767;
-  --series-1: #3987e5;
-  --series-2: #d95926;
-  --series-3: #199e70;
-  --series-4: #c98500;
-  --series-5: #d55181;
-  --series-6: #9085e9;
+  --bg: #14121c;
+  --surface: #1d1a29;
+  --surface-2: #272336;
+  --border: #332e47;
+  --border-strong: #473f63;
+  --text: #f1eefa;
+  --text-2: #c4bfd9;
+  --text-3: #9089ab;
+  --accent: #9b7bff;
+  --accent-hover: #b49aff;
+  --accent-strong: #b49aff;
+  --accent-text: #b49aff;
+  --accent-soft: #2a2250;
+  --accent-ink: #14121c;
+  --good: #4cc27a;
+  --warn: #f1b94e;
+  --critical: #f28585;
+  --series-1: #9b7bff;
+  --series-2: #fbbf24;
+  --series-3: #2dd4bf;
+  --series-4: #f472b6;
+  --series-5: #60a5fa;
+  --series-6: #a3e635;
   --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
 }
 
@@ -65,7 +73,9 @@
   --color-ink-2: var(--text-2);
   --color-ink-3: var(--text-3);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-accent-strong: var(--accent-strong);
+  --color-accent-text: var(--accent-text);
   --color-accent-soft: var(--accent-soft);
   --color-accent-ink: var(--accent-ink);
   --color-good: var(--good);
@@ -78,6 +88,7 @@
 
 html,
 body {
+  overflow-x: clip; /* the full-width glow must not add a horizontal scrollbar */
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
@@ -125,8 +136,24 @@ input[type="range"] {
   animation: shimmer 1.4s linear infinite;
 }
 
+/* Soft glow under the header: full width of the screen, fading out instead of ending in a clipped box. */
 .hero-glow {
+  position: relative;
+  isolation: isolate;
+}
+.hero-glow::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  top: 0;
+  bottom: -2rem;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
   background:
-    radial-gradient(60% 50% at 20% 0%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 70%),
-    radial-gradient(40% 40% at 90% 10%, color-mix(in oklab, var(--series-3) 16%, transparent), transparent 70%);
+    radial-gradient(55% 80% at 20% 0%, color-mix(in oklab, var(--accent) 20%, transparent), transparent 72%),
+    radial-gradient(40% 70% at 88% 0%, color-mix(in oklab, var(--e2) 26%, transparent), transparent 72%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent);
+  mask-image: linear-gradient(to bottom, #000 45%, transparent);
 }

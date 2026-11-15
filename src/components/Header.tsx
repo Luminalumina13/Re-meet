@@ -8,17 +8,27 @@ import { usePref } from "@/lib/prefs";
 import { useI18n } from "@/lib/i18n";
 import { cx } from "@/lib/format";
 
+/** The three "e" of Re:meeet are the brand's extra time together: violet, lilac, amber. */
+export function Wordmark({ className }: { className?: string }) {
+  return (
+    <span className={cx("font-extrabold tracking-tight", className)} aria-label="Re:meeet">
+      Re<span style={{ color: "var(--e1)" }}>:</span>m<span style={{ color: "var(--e1)" }}>e</span>
+      <span style={{ color: "var(--e2)" }}>e</span>
+      <span style={{ color: "var(--e3)" }}>e</span>t
+    </span>
+  );
+}
+
 export function Logo({ className }: { className?: string }) {
   return (
     <span className={cx("inline-flex items-center gap-2", className)}>
-      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden>
-        <circle cx="11" cy="14" r="8" fill="var(--series-1)" fillOpacity="0.85" />
-        <circle cx="17" cy="14" r="8" fill="var(--series-2)" fillOpacity="0.85" />
-        <path d="M14 7.3a8 8 0 0 1 0 13.4a8 8 0 0 1 0-13.4z" fill="var(--text)" />
+      {/* Two routes meeting in the middle */}
+      <svg width="30" height="28" viewBox="0 0 30 28" aria-hidden>
+        <circle cx="11" cy="14" r="8" fill="var(--e1)" fillOpacity="0.92" />
+        <circle cx="19" cy="14" r="8" fill="var(--e2)" fillOpacity="0.92" />
+        <path d="M15 7.3a8 8 0 0 1 0 13.4a8 8 0 0 1 0-13.4z" fill="var(--e3)" />
       </svg>
-      <span className="text-lg font-extrabold tracking-tight">
-        re<span className="text-accent">:</span>meet
-      </span>
+      <Wordmark className="text-xl" />
     </span>
   );
 }
