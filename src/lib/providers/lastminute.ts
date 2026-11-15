@@ -213,6 +213,9 @@ export class LastminuteProvider implements FlightProvider {
       arrival: req.destination,
       start_date: req.departDate,
       adults: req.adults,
+      // The tool wants ages; the UI only knows the bracket, so use a typical age inside it.
+      ...(req.children ? { children_ages: Array(req.children).fill(8).join(",") } : {}),
+      ...(req.infants ? { infants_ages: Array(req.infants).fill(1).join(",") } : {}),
       max_results: 20,
       language: "en",
     };

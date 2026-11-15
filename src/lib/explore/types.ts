@@ -6,6 +6,8 @@ export interface ExploreRequest {
   departDate: string;
   returnDate: string;
   adults: number;
+  children?: number;
+  infants?: number;
   cabin: Cabin;
   currency: string;
   /** Door-to-door flight time limit per direction, hours (connections included). */

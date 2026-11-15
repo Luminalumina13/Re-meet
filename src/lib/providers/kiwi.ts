@@ -64,6 +64,8 @@ export class KiwiProvider implements FlightProvider {
       date_from: ddmmyyyy(req.departDate),
       date_to: ddmmyyyy(req.departDate),
       adults: String(req.adults),
+      children: String(req.children ?? 0),
+      infants: String(req.infants ?? 0),
       curr: req.currency,
       selected_cabins: CABIN[req.cabin],
       limit: "200",

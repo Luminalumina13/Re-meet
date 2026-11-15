@@ -33,10 +33,14 @@ export const searchRequestSchema = z
     departDate: isoDate,
     returnDate: isoDate.optional(),
     adults: z.number().int().min(1).max(9).default(1),
+    children: z.number().int().min(0).max(8).default(0),
+    infants: z.number().int().min(0).max(4).default(0),
     cabin: cabinSchema.default("economy"),
     currency: z.string().length(3).toUpperCase().default("EUR"),
     filters: filtersSchema.optional(),
   })
+  .refine((v) => v.infants <= v.adults, { message: "Each infant needs an adult", path: ["infants"] })
+  .refine((v) => v.adults + v.children + v.infants <= 9, { message: "At most 9 passengers", path: ["adults"] })
   .refine((v) => v.origin !== v.destination, { message: "Origin and destination must differ", path: ["destination"] })
   .refine((v) => !v.returnDate || v.returnDate >= v.departDate, { message: "Return before departure", path: ["returnDate"] });
 
@@ -68,11 +72,15 @@ export const exploreRequestSchema = z
     departDate: isoDate,
     returnDate: isoDate,
     adults: z.number().int().min(1).max(9).default(1),
+    children: z.number().int().min(0).max(8).default(0),
+    infants: z.number().int().min(0).max(4).default(0),
     cabin: cabinSchema.default("economy"),
     currency: z.string().length(3).toUpperCase().default("EUR"),
     maxFlightHours: z.number().min(1).max(16).default(4),
     filters: filtersSchema.optional(),
   })
+  .refine((v) => v.infants <= v.adults, { message: "Each infant needs an adult", path: ["infants"] })
+  .refine((v) => v.adults + v.children + v.infants <= 9, { message: "At most 9 passengers", path: ["adults"] })
   .refine((v) => v.returnDate >= v.departDate, { message: "Return before departure", path: ["returnDate"] });
 
 export const watchCreateSchema = z.object({

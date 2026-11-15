@@ -84,6 +84,8 @@ export class AmadeusProvider implements FlightProvider {
       travelClass: CABIN[req.cabin],
       max: "100",
     });
+    if (req.children) q.set("children", String(req.children));
+    if (req.infants) q.set("infants", String(req.infants));
     if (req.returnDate) q.set("returnDate", req.returnDate);
     if (req.filters?.maxStops === 0) q.set("nonStop", "true");
     const { status, body } = await httpJson<AmadeusResponse>(`${this.baseUrl}/v2/shopping/flight-offers?${q}`, {

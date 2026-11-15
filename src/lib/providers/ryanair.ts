@@ -1,3 +1,4 @@
+import { seatCount } from "@/lib/domain/types";
 import type { Itinerary, Leg, SearchRequest, Segment } from "@/lib/domain/types";
 import { airportTz } from "@/lib/data/airports";
 import { hhmmToMinutes, localToUtc, minutesToHhmm } from "@/lib/domain/time";
@@ -6,6 +7,9 @@ import { ProviderError } from "./types";
 import { TtlCache } from "./cache";
 import { createLimiter } from "./limiter";
 import { finalize, httpJson, legFromSegments } from "./util";
+
+/** Ryanair charges a flat fee per infant per flight; children pay the adult fare. Approximation, EUR. */
+const INFANT_FEE_PER_LEG = 25;
 
 /**
  * Direct airline connector for Ryanair (FR and its group carriers RK, AL, …), no API key needed.
@@ -191,8 +195,8 @@ export class RyanairProvider implements FlightProvider {
     const q = new URLSearchParams({
       adults: String(req.adults),
       teens: "0",
-      children: "0",
-      infants: "0",
+      children: String(req.children ?? 0),
+      infants: String(req.infants ?? 0),
       dateOut: out.departLocal.slice(0, 10),
       dateIn: back ? back.departLocal.slice(0, 10) : "",
       isConnectedFlight: "false",
@@ -206,7 +210,7 @@ export class RyanairProvider implements FlightProvider {
       provider: this.id,
       providerName: this.name,
       legs,
-      price: { amount: Math.round(pricePerAdult * req.adults * 100) / 100, currency },
+      price: { amount: Math.round((pricePerAdult * seatCount(req) + INFANT_FEE_PER_LEG * (req.infants ?? 0) * legs.length) * 100) / 100, currency },
       deepLink: `https://www.ryanair.com/gb/en/trip/flights/select?${q}`,
     });
   }

@@ -140,6 +140,8 @@ export class MockProvider implements FlightProvider {
           departDate: req.departDate,
           returnDate: req.returnDate,
           adults: req.adults,
+          children: req.children,
+          infants: req.infants,
           cabin: req.cabin,
           currency: req.currency,
         }),
@@ -181,7 +183,8 @@ export class MockProvider implements FlightProvider {
       total += base * carrierFactor * timeOfDayFactor(depMin) * dowFactor * stopsFactor * noise;
     }
     if (legs.length === 2) total *= 0.93;
-    total *= req.adults;
+    // Child fare ≈ 75 % of adult, infant on a lap ≈ 10 %.
+    total *= req.adults + 0.75 * (req.children ?? 0) + 0.1 * (req.infants ?? 0);
     if (req.cabin === "business") total *= 3.2;
     else if (req.cabin === "premium_economy") total *= 1.8;
     else if (req.cabin === "first") total *= 5;

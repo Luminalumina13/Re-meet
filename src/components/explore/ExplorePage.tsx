@@ -11,6 +11,7 @@ import { getAirport } from "@/lib/data/airports";
 import { useI18n } from "@/lib/i18n";
 import { postJson } from "@/lib/client";
 import { cx } from "@/lib/format";
+import { useSessionSnapshot } from "@/lib/useSessionSnapshot";
 import { AirportPicker } from "@/components/ui/AirportPicker";
 import { Button, Card, Chip, Field, Input, Segmented, Skeleton, Stepper, Switch } from "@/components/ui/primitives";
 import { Modal } from "@/components/ui/Modal";
@@ -46,6 +47,8 @@ export function ExplorePage() {
   const [directOnly, setDirectOnly] = useState(false);
   const [budget, setBudget] = useState("");
   const [adults, setAdults] = useState(1);
+  const [children, setChildren] = useState(0);
+  const [infants, setInfants] = useState(0);
   const [filters, setFilters] = useState<SearchFilters>({ ...IDEAL_WEEKEND_FILTERS });
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -56,6 +59,11 @@ export function ExplorePage() {
   const [details, setDetails] = useState<ExploreDestination | null>(null);
   const [track, setTrack] = useState(false);
 
+  const changeAdults = (n: number) => {
+    setAdults(n);
+    if (infants > n) setInfants(n);
+  };
+
   const weekend = useMemo(() => weekendFromSaturday(saturday, shape), [saturday, shape]);
   const request = useMemo<ExploreRequestInput>(
     () => ({
@@ -63,6 +71,8 @@ export function ExplorePage() {
       departDate: weekend.departDate,
       returnDate: weekend.returnDate,
       adults,
+      children,
+      infants,
       cabin: "economy",
       currency: "EUR",
       maxFlightHours: maxHours,
@@ -72,7 +82,7 @@ export function ExplorePage() {
         maxPrice: budget ? Number(budget) : filters.maxPrice,
       },
     }),
-    [origin, weekend, adults, maxHours, filters, directOnly, budget],
+    [origin, weekend, adults, children, infants, maxHours, filters, directOnly, budget],
   );
 
   const run = useCallback(async () => {
@@ -88,6 +98,25 @@ export function ExplorePage() {
       setLoading(false);
     }
   }, [origin, request, t]);
+
+  const snapshot = useMemo(
+    () => ({ origin, saturday, shape, maxHours, directOnly, budget, adults, children, infants, filters, sort, res }),
+    [origin, saturday, shape, maxHours, directOnly, budget, adults, children, infants, filters, sort, res],
+  );
+  useSessionSnapshot("remeet:explore", snapshot, (s) => {
+    if (s.origin) setOrigin(s.origin);
+    if (s.saturday && s.saturday >= todayIso()) setSaturday(s.saturday);
+    if (s.shape) setShape(s.shape);
+    if (s.maxHours) setMaxHours(s.maxHours);
+    if (s.directOnly !== undefined) setDirectOnly(s.directOnly);
+    if (s.budget !== undefined) setBudget(s.budget);
+    if (s.adults) setAdults(s.adults);
+    if (s.children !== undefined) setChildren(s.children);
+    if (s.infants !== undefined) setInfants(s.infants);
+    if (s.filters) setFilters(s.filters);
+    if (s.sort) setSort(s.sort);
+    if (s.res) setRes(s.res);
+  });
 
   const countries = useMemo(() => {
     const m = new Map<string, number>();
@@ -126,7 +155,15 @@ export function ExplorePage() {
                 <AirportPicker value={origin} onChange={setOrigin} placeholder={t.common.airportPlaceholder} />
               </Field>
               <Field label={t.common.adults}>
-                <Stepper value={adults} onChange={setAdults} />
+                <Stepper value={adults} onChange={changeAdults} max={9 - children - infants} />
+              </Field>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Field label={t.common.children}>
+                <Stepper value={children} onChange={setChildren} min={0} max={Math.min(8, 9 - adults - infants)} />
+              </Field>
+              <Field label={t.common.infants}>
+                <Stepper value={infants} onChange={setInfants} min={0} max={Math.min(4, adults)} />
               </Field>
             </div>
             <Field
@@ -252,8 +289,8 @@ export function ExplorePage() {
       {details && (
         <Modal open wide onClose={() => setDetails(null)} title={`${details.city}${details.country ? `, ${details.country}` : ""}`}>
           <div className="flex flex-col gap-3">
-            <FlightCard it={details.best} adults={adults} />
-            {details.cheapest.id !== details.best.id && <FlightCard it={details.cheapest} adults={adults} />}
+            <FlightCard it={details.best} adults={adults + children} />
+            {details.cheapest.id !== details.best.id && <FlightCard it={details.cheapest} adults={adults + children} />}
           </div>
         </Modal>
       )}

@@ -19,6 +19,7 @@ import { ProviderBar } from "./ProviderBar";
 import { AirlineFilter, filterByCarriers } from "./AirlineFilter";
 import { WatchDialog } from "@/components/watch/WatchDialog";
 import { cx } from "@/lib/format";
+import { useSessionSnapshot } from "@/lib/useSessionSnapshot";
 
 type Mode = "weekend" | "custom";
 const PAGE = 15;
@@ -43,6 +44,8 @@ export function SearchPage() {
   const [departDate, setDepartDate] = useState(() => nextSaturday(todayIso()));
   const [returnDate, setReturnDate] = useState<string>(() => weekendFromSaturday(nextSaturday(todayIso()), "sat-sun").returnDate);
   const [adults, setAdults] = useState(1);
+  const [children, setChildren] = useState(0);
+  const [infants, setInfants] = useState(0);
   const [cabin, setCabin] = useState<SearchRequestInput["cabin"]>("economy");
   const [filters, setFilters] = useState<SearchFilters>({ ...IDEAL_WEEKEND_FILTERS });
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -54,6 +57,11 @@ export function SearchPage() {
   const [airlines, setAirlines] = useState<Set<string>>(new Set());
   const [visible, setVisible] = useState(PAGE);
 
+  const changeAdults = (n: number) => {
+    setAdults(n);
+    if (infants > n) setInfants(n);
+  };
+
   const dates = useMemo(() => {
     if (mode === "weekend") {
       const w = weekendFromSaturday(saturday, shape);
@@ -63,8 +71,8 @@ export function SearchPage() {
   }, [mode, saturday, shape, departDate, returnDate]);
 
   const request = useMemo<SearchRequestInput>(
-    () => ({ origin, destination, departDate: dates.departDate, returnDate: dates.returnDate, adults, cabin, currency: "EUR", filters }),
-    [origin, destination, dates, adults, cabin, filters],
+    () => ({ origin, destination, departDate: dates.departDate, returnDate: dates.returnDate, adults, children, infants, cabin, currency: "EUR", filters }),
+    [origin, destination, dates, adults, children, infants, cabin, filters],
   );
 
   const run = useCallback(async () => {
@@ -81,6 +89,30 @@ export function SearchPage() {
       setLoading(false);
     }
   }, [origin, destination, request, t]);
+
+  const snapshot = useMemo(
+    () => ({ origin, destination, mode, saturday, shape, departDate, returnDate, adults, children, infants, cabin, filters, sort, res }),
+    [origin, destination, mode, saturday, shape, departDate, returnDate, adults, children, infants, cabin, filters, sort, res],
+  );
+  // A search arriving via the URL (destination card) wins over whatever was stored.
+  useSessionSnapshot("remeet:search", snapshot, (s) => {
+    const today = todayIso();
+    if (s.origin) setOrigin(s.origin);
+    if (s.destination) setDestination(s.destination);
+    if (s.mode) setMode(s.mode);
+    if (s.saturday && s.saturday >= today) setSaturday(s.saturday);
+    if (s.shape && SHAPES.includes(s.shape)) setShape(s.shape);
+    if (s.departDate && s.departDate >= today) setDepartDate(s.departDate);
+    if (s.returnDate && s.returnDate >= today) setReturnDate(s.returnDate);
+    if (s.adults) setAdults(s.adults);
+    if (s.children !== undefined) setChildren(s.children);
+    if (s.infants !== undefined) setInfants(s.infants);
+    if (s.cabin) setCabin(s.cabin);
+    if (s.filters) setFilters(s.filters);
+    if (s.sort) setSort(s.sort);
+    // Prices go stale, but the list is what the user was reading; they can re-run the search.
+    if (s.res) setRes(s.res);
+  }, Boolean(params.get("to")));
 
   // Arriving from a destination card: run the search right away (once).
   const autoRan = useRef(false);
@@ -128,7 +160,13 @@ export function SearchPage() {
               <AirportPicker value={destination} onChange={setDestination} placeholder={t.common.airportPlaceholder} exclude={[origin]} />
             </Field>
             <Field label={t.common.adults}>
-              <Stepper value={adults} onChange={setAdults} />
+              <Stepper value={adults} onChange={changeAdults} max={9 - children - infants} />
+            </Field>
+            <Field label={t.common.children}>
+              <Stepper value={children} onChange={setChildren} min={0} max={Math.min(8, 9 - adults - infants)} />
+            </Field>
+            <Field label={t.common.infants}>
+              <Stepper value={infants} onChange={setInfants} min={0} max={Math.min(4, adults)} />
             </Field>
             <Field label={t.common.cabin}>
               <Select value={cabin} onChange={(e) => setCabin(e.target.value as SearchRequestInput["cabin"])} className="w-44">
@@ -218,7 +256,7 @@ export function SearchPage() {
             ) : (
               <div className="flex flex-col gap-3">
                 {sorted.slice(0, visible).map((it) => (
-                  <FlightCard key={it.id} it={it} adults={adults} onTrack={setTrackIt} />
+                  <FlightCard key={it.id} it={it} adults={adults + children} onTrack={setTrackIt} />
                 ))}
                 {sorted.length > visible && (
                   <Button variant="secondary" className="self-center" onClick={() => setVisible((v) => v + PAGE)}>

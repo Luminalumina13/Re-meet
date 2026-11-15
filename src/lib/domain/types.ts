@@ -102,10 +102,20 @@ export interface SearchRequest {
   destination: IATA;
   departDate: string; // YYYY-MM-DD
   returnDate?: string; // YYYY-MM-DD, absent = one-way
+  /** Travellers aged 12+. */
   adults: number;
+  /** Children aged 2–11 (own seat, usually discounted). Absent = 0. */
+  children?: number;
+  /** Infants under 2 (on an adult's lap, a fraction of the fare). Absent = 0. */
+  infants?: number;
   cabin: Cabin;
   currency: string;
   filters?: SearchFilters;
+}
+
+/** Number of seats that pay a full or child fare (infants fly on a lap). */
+export function seatCount(req: { adults: number; children?: number }): number {
+  return req.adults + (req.children ?? 0);
 }
 
 export type ProviderKind = "airline" | "aggregator" | "demo";

@@ -1,4 +1,5 @@
 import type { Airport } from "@/lib/domain/types";
+import { CITY_UK, COUNTRY_UK, normalizeQuery } from "./airportsUk";
 
 type Row = [iata: string, name: string, city: string, country: string, tz: string, lat: number, lon: number];
 
@@ -160,16 +161,20 @@ export function airportTz(iata: string): string {
 }
 
 export function searchAirports(query: string, limit = 8): Airport[] {
-  const q = query.trim().toLowerCase();
+  const q = normalizeQuery(query);
   if (!q) return [];
   const scored = AIRPORTS.map((a) => {
+    const iata = a.iata.toLowerCase();
+    const cities = [normalizeQuery(a.city), normalizeQuery(CITY_UK[a.city] ?? "")].filter(Boolean);
+    const name = normalizeQuery(a.name);
+    const countries = [a.country.toLowerCase(), normalizeQuery(COUNTRY_UK[a.country] ?? "")];
     let s = 0;
-    if (a.iata.toLowerCase() === q) s = 100;
-    else if (a.iata.toLowerCase().startsWith(q)) s = 80;
-    else if (a.city.toLowerCase().startsWith(q)) s = 70;
-    else if (a.city.toLowerCase().includes(q)) s = 50;
-    else if (a.name.toLowerCase().includes(q)) s = 40;
-    else if (a.country.toLowerCase() === q) s = 20;
+    if (iata === q) s = 100;
+    else if (iata.startsWith(q)) s = 80;
+    else if (cities.some((c) => c.startsWith(q))) s = 70;
+    else if (cities.some((c) => c.includes(q))) s = 50;
+    else if (name.includes(q)) s = 40;
+    else if (countries.some((c) => c === q || (q.length >= 3 && c.startsWith(q)))) s = 20;
     return { a, s };
   })
     .filter((x) => x.s > 0)

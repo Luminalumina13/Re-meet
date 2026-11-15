@@ -150,7 +150,7 @@ export class KiwiMcpProvider implements FlightProvider {
   }
 
   private baseArgs(
-    q: { origin: string; destination: string; departDate: string; returnDate?: string; adults: number; cabin: SearchRequest["cabin"]; currency: string },
+    q: { origin: string; destination: string; departDate: string; returnDate?: string; adults: number; children?: number; infants?: number; cabin: SearchRequest["cabin"]; currency: string },
     f: SearchFilters,
   ): Record<string, unknown> {
     const base: Record<string, unknown> = {
@@ -158,6 +158,8 @@ export class KiwiMcpProvider implements FlightProvider {
       flyTo: q.destination,
       departureDate: ddmmyyyy(q.departDate),
       adults: q.adults,
+      children: q.children ?? 0,
+      infants: q.infants ?? 0,
       cabinClass: CABIN[q.cabin],
       currency: q.currency,
       sort: "price",

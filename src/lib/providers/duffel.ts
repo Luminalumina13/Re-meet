@@ -60,7 +60,11 @@ export class DuffelProvider implements FlightProvider {
       body: JSON.stringify({
         data: {
           slices,
-          passengers: Array.from({ length: req.adults }, () => ({ type: "adult" })),
+          passengers: [
+            ...Array.from({ length: req.adults }, () => ({ type: "adult" })),
+            ...Array.from({ length: req.children ?? 0 }, () => ({ type: "child" })),
+            ...Array.from({ length: req.infants ?? 0 }, () => ({ type: "infant_without_seat" })),
+          ],
           cabin_class: req.cabin,
           max_connections: req.filters?.maxStops ?? 1,
         },
