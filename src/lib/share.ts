@@ -90,8 +90,12 @@ export function parseSearchQuery(q: URLSearchParams): SharedSearch & { mode?: "w
 
 export interface ExploreShareState extends Party {
   origin?: string;
+  /** Weekend mode (default): the Saturday and the shape. Custom mode: exact dates, both required. */
+  mode?: "weekend" | "custom";
   saturday?: string;
   shape?: WeekendShape;
+  departDate?: string;
+  returnDate?: string;
   maxHours?: number;
   directOnly?: boolean;
   budget?: string;
@@ -100,8 +104,13 @@ export interface ExploreShareState extends Party {
 export function buildExploreQuery(s: ExploreShareState): string {
   const q = new URLSearchParams();
   if (s.origin) q.set("from", s.origin);
-  if (s.saturday) q.set("sat", s.saturday);
-  if (s.shape && s.shape !== "sat-sun") q.set("shape", s.shape);
+  if (s.mode === "custom") {
+    if (s.departDate) q.set("dep", s.departDate);
+    if (s.returnDate) q.set("ret", s.returnDate);
+  } else {
+    if (s.saturday) q.set("sat", s.saturday);
+    if (s.shape && s.shape !== "sat-sun") q.set("shape", s.shape);
+  }
   if (s.maxHours && s.maxHours !== 4) q.set("h", String(s.maxHours));
   if (s.directOnly) q.set("direct", "1");
   if (s.budget && /^\d+$/.test(s.budget)) q.set("budget", s.budget);
@@ -112,8 +121,15 @@ export function buildExploreQuery(s: ExploreShareState): string {
 export function parseExploreQuery(q: URLSearchParams): ExploreShareState {
   const shape = q.get("shape") as WeekendShape | null;
   const budget = q.get("budget");
+  const dep = date(q.get("dep"));
+  const ret = date(q.get("ret"));
+  // "Anywhere" needs a return date; a link with only a departure falls back to the weekend form.
+  const custom = Boolean(dep && ret && ret >= dep);
   return {
     origin: iata(q.get("from")),
+    mode: custom ? "custom" : undefined,
+    departDate: custom ? dep : undefined,
+    returnDate: custom ? ret : undefined,
     saturday: date(q.get("sat")),
     shape: shape && SHAPES.includes(shape) ? shape : undefined,
     maxHours: int(q.get("h"), 1, 12),

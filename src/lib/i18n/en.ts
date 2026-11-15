@@ -171,8 +171,8 @@ export const en: Dict = {
     scheduleHint: "We check the price regularly and will message you when it changes.",
   },
   explore: {
-    title: "Weekend anywhere",
-    subtitle: "Tell us where you fly from and how many hours you are happy to travel. We show the cities you can reach for the weekend at civilised hours.",
+    title: "Anywhere",
+    subtitle: "Tell us where you fly from, when, and how many hours you are happy to travel. We show the cities you can reach: for a weekend or for any dates you choose.",
     maxHours: "Max travel time each way",
     upTo: "up to",
     directOnly: "Direct flights only",

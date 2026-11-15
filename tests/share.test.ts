@@ -37,6 +37,15 @@ describe("search links", () => {
 });
 
 describe("explore links", () => {
+  it("round-trips custom dates and needs both of them", () => {
+    const state = { origin: "WAW", mode: "custom" as const, departDate: "2026-12-02", returnDate: "2026-12-09", maxHours: 5 };
+    expect(parseExploreQuery(q(buildExploreQuery(state)))).toMatchObject(state);
+    // a link with only a departure, or a return before it, falls back to the weekend form
+    expect(parseExploreQuery(q("from=WAW&dep=2026-12-02")).mode).toBeUndefined();
+    expect(parseExploreQuery(q("from=WAW&dep=2026-12-09&ret=2026-12-02")).mode).toBeUndefined();
+    expect(buildExploreQuery({ origin: "WAW", mode: "weekend", saturday: "2026-12-05", departDate: "2026-12-02", returnDate: "2026-12-09" })).toBe("from=WAW&sat=2026-12-05");
+  });
+
   it("round-trips and validates", () => {
     const state = { origin: "KRK", saturday: "2026-12-05", shape: "fri-mon" as const, maxHours: 6, directOnly: true, budget: "250", adults: 2 };
     expect(parseExploreQuery(q(buildExploreQuery(state)))).toMatchObject(state);

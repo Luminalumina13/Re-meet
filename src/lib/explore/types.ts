@@ -1,6 +1,6 @@
 import type { Cabin, IATA, ProviderStatus, ScoredItinerary, SearchFilters } from "@/lib/domain/types";
 
-/** "Anywhere" weekend search: where can I fly from `origin` within `maxFlightHours` each way? */
+/** "Anywhere" search (a weekend or any round-trip dates): where can I fly from `origin` within `maxFlightHours` each way? */
 export interface ExploreRequest {
   origin: IATA;
   departDate: string;
