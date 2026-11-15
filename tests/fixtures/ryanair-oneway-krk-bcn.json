@@ -1,0 +1,58 @@
+{
+  "arrivalAirportCategories": null,
+  "fares": [
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Poland",
+          "iataCode": "KRK",
+          "name": "Krakow",
+          "seoName": "krakow",
+          "city": {
+            "code": "KRAKOW",
+            "countryCode": "pl",
+            "name": "Krakow"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Spain",
+          "iataCode": "BCN",
+          "name": "Barcelona",
+          "seoName": "barcelona-el-prat",
+          "city": {
+            "code": "BARCELONA",
+            "countryCode": "es",
+            "macCode": "BAR",
+            "name": "Barcelona"
+          }
+        },
+        "departureDate": "2026-11-21T09:15:00",
+        "arrivalDate": "2026-11-21T12:05:00",
+        "price": {
+          "value": 151.99,
+          "valueMainUnit": "151",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "\u20ac"
+        },
+        "flightKey": "FR~3050~ ~~KRK~11/21/2026 09:15~BCN~11/21/2026 12:05~~",
+        "flightNumber": "FR3050",
+        "previousPrice": null,
+        "priceUpdated": 1794735434000
+      },
+      "summary": {
+        "price": {
+          "value": 151.99,
+          "valueMainUnit": "151",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "\u20ac"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    }
+  ],
+  "nextPage": null,
+  "size": 1
+}

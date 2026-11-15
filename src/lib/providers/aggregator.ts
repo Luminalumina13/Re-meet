@@ -3,6 +3,7 @@ import { applyFilters, scoreAll } from "@/lib/domain/filters";
 import type { FlightProvider } from "./types";
 import { TtlCache } from "./cache";
 import { providers as defaultProviders } from "./registry";
+import { detailScore, tripKey } from "./util";
 
 const cache = new TtlCache<{ raw: Itinerary[]; providers: ProviderStatus[] }>(5 * 60_000);
 
@@ -36,17 +37,18 @@ export async function fetchRaw(
     list.map(async (p) => {
       const t0 = Date.now();
       if (!p.isConfigured()) {
-        statuses.push({ id: p.id, name: p.name, status: "skipped", count: 0, ms: 0, demo: p.demo });
+        statuses.push({ id: p.id, name: p.name, kind: p.kind, status: "skipped", count: 0, ms: 0, demo: p.demo });
         return [] as Itinerary[];
       }
       try {
         const its = await p.search(req, opts.signal);
-        statuses.push({ id: p.id, name: p.name, status: "ok", count: its.length, ms: Date.now() - t0, demo: p.demo });
+        statuses.push({ id: p.id, name: p.name, kind: p.kind, status: "ok", count: its.length, ms: Date.now() - t0, demo: p.demo });
         return its;
       } catch (e) {
         statuses.push({
           id: p.id,
           name: p.name,
+          kind: p.kind,
           status: "error",
           count: 0,
           ms: Date.now() - t0,
@@ -63,14 +65,37 @@ export async function fetchRaw(
   return { ...value, cached: false };
 }
 
-/** Same flights sold by several vendors: keep the cheapest. */
+/**
+ * Same flights sold by several sources: one entry with the cheapest price and booking link,
+ * the most detailed flight description, and the other sources' prices for comparison.
+ */
 export function dedupe(list: Itinerary[]): Itinerary[] {
-  const best = new Map<string, Itinerary>();
+  const groups = new Map<string, Itinerary[]>();
   for (const it of list) {
-    const prev = best.get(it.signature);
-    if (!prev || it.price.amount < prev.price.amount) best.set(it.signature, it);
+    const k = tripKey(it.legs);
+    const g = groups.get(k);
+    if (g) g.push(it);
+    else groups.set(k, [it]);
   }
-  return [...best.values()];
+  const out: Itinerary[] = [];
+  for (const g of groups.values()) {
+    if (g.length === 1) {
+      out.push(g[0]);
+      continue;
+    }
+    const byPrice = [...g].sort((a, b) => a.price.amount - b.price.amount);
+    const cheapest = byPrice[0];
+    const richest = [...g].sort((a, b) => detailScore(b) - detailScore(a))[0];
+    const seen = new Set([cheapest.provider]);
+    const otherOffers = byPrice.slice(1).filter((o) => !seen.has(o.provider) && seen.add(o.provider)).map((o) => ({
+      provider: o.provider,
+      providerName: o.providerName,
+      price: o.price,
+      deepLink: o.deepLink,
+    }));
+    out.push({ ...cheapest, legs: richest.legs, signature: richest.signature, otherOffers });
+  }
+  return out;
 }
 
 export async function search(req: SearchRequest, opts: AggregateOptions = {}): Promise<SearchResponse> {

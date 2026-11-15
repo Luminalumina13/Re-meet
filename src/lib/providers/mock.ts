@@ -86,6 +86,7 @@ interface Params {
 export class MockProvider implements FlightProvider {
   readonly id = "mock";
   readonly name = "Demo data";
+  readonly kind = "demo" as const;
   readonly demo = true;
   private readonly volatility: number;
   private readonly density: number;

@@ -1,4 +1,4 @@
-import type { Itinerary, SearchRequest } from "@/lib/domain/types";
+import type { Itinerary, ProviderKind, SearchRequest } from "@/lib/domain/types";
 
 /**
  * A flight data connector. Implementations map a vendor API onto the domain model.
@@ -10,6 +10,8 @@ export interface FlightProvider {
   readonly name: string;
   /** True when demo/synthetic data is returned. */
   readonly demo?: boolean;
+  /** "airline" = a carrier's own channel, "aggregator" = multi-airline API, "demo" = synthetic. */
+  readonly kind: ProviderKind;
   /** Whether credentials/config are present. Unconfigured providers are skipped. */
   isConfigured(): boolean;
   search(req: SearchRequest, signal?: AbortSignal): Promise<Itinerary[]>;

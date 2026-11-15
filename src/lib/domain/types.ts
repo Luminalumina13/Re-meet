@@ -60,6 +60,15 @@ export interface Itinerary {
   seatsLeft?: number;
   /** Deterministic fingerprint of the flights (carrier+number+departUtc per segment). */
   signature: string;
+  /** The same flights offered by other sources, cheapest first (filled in by the aggregator). */
+  otherOffers?: Offer[];
+}
+
+export interface Offer {
+  provider: string;
+  providerName: string;
+  price: Money;
+  deepLink?: string;
 }
 
 export type Cabin = "economy" | "premium_economy" | "business" | "first";
@@ -92,9 +101,12 @@ export interface SearchRequest {
   filters?: SearchFilters;
 }
 
+export type ProviderKind = "airline" | "aggregator" | "demo";
+
 export interface ProviderStatus {
   id: string;
   name: string;
+  kind: ProviderKind;
   status: "ok" | "error" | "skipped";
   count: number;
   ms: number;

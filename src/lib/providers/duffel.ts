@@ -36,6 +36,7 @@ interface DuffelResponse {
 export class DuffelProvider implements FlightProvider {
   readonly id = "duffel";
   readonly name = "Duffel";
+  readonly kind = "aggregator" as const;
   private readonly token = process.env.DUFFEL_ACCESS_TOKEN ?? "";
   private readonly baseUrl = "https://api.duffel.com";
 

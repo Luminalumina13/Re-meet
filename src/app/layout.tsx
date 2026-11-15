@@ -30,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <I18nProvider>
           <Header />
           <main className="flex-1">{children}</main>
-          <footer className="mx-auto w-full max-w-6xl px-4 py-8 text-xs text-ink-3">re:meet · flight connectors: Kiwi.com, Amadeus, Duffel</footer>
+          <footer className="mx-auto w-full max-w-6xl px-4 py-8 text-xs text-ink-3">re:meet · Kiwi.com · lastminute.com · Ryanair · Duffel</footer>
         </I18nProvider>
       </body>
     </html>

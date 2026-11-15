@@ -191,6 +191,7 @@ export function MeetupPage() {
         {error && <div className="rounded-xl border border-critical/40 bg-critical/10 px-4 py-3 text-sm text-critical">{error}</div>}
         {loading && (
           <div className="flex flex-col gap-3">
+            <p className="text-sm text-ink-3">{t.common.polling}</p>
             <Skeleton className="h-64" />
             <Skeleton className="h-40" />
           </div>

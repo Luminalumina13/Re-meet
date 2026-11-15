@@ -1,0 +1,953 @@
+{
+ "query": "WAW \u2192 BCN on 21/11/2026, 1 adult",
+ "currency": "EUR",
+ "passengers": {
+  "adults": 1,
+  "children": 0,
+  "infants": 0
+ },
+ "resultsCount": 15,
+ "itineraries": [
+  {
+   "id": "23b01e03512a00002547a933_0|1e0301af512a0000514ac369_0",
+   "tripType": "oneway",
+   "price": 72.0,
+   "priceFormatted": "72 EUR",
+   "totalDurationSeconds": 45300,
+   "bookingUrl": "https://kiwi.com/u/dhj63fb",
+   "imageId": "barcelona_es",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 0,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WMI",
+    "to": "BCN",
+    "departureTime": "2026-11-21T09:05:00",
+    "arrivalTime": "2026-11-21T21:40:00",
+    "durationSeconds": 45300,
+    "stops": 1,
+    "route": [
+     "WMI",
+     "BTS",
+     "BCN"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WMI",
+      "to": "BTS",
+      "fromCity": "Warsaw",
+      "toCity": "Bratislava",
+      "fromName": "Warsaw Modlin",
+      "toName": "Bratislava Airport",
+      "fromCountry": "Poland",
+      "toCountry": "Slovakia",
+      "departureTime": "2026-11-21T09:05:00",
+      "arrivalTime": "2026-11-21T10:30:00",
+      "durationSeconds": 5100,
+      "carrier": "FR",
+      "carrierName": "Ryanair",
+      "flightNumber": "FR1623",
+      "cabinClass": "Economy"
+     },
+     {
+      "from": "BTS",
+      "to": "BCN",
+      "fromCity": "Bratislava",
+      "toCity": "Barcelona",
+      "fromName": "Bratislava Airport",
+      "toName": "Barcelona\u2013El Prat",
+      "fromCountry": "Slovakia",
+      "toCountry": "Spain",
+      "departureTime": "2026-11-21T19:10:00",
+      "arrivalTime": "2026-11-21T21:40:00",
+      "durationSeconds": 9000,
+      "carrier": "W6",
+      "carrierName": "Wizz Air",
+      "flightNumber": "W67021",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": null
+  },
+  {
+   "id": "20ef07df512a00003a6b1cdf_0|07df01af512a0000c289c476_0",
+   "tripType": "oneway",
+   "price": 81.0,
+   "priceFormatted": "81 EUR",
+   "totalDurationSeconds": 21900,
+   "bookingUrl": "https://kiwi.com/u/2s8k8w2",
+   "imageId": "barcelona_es",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 0,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "BCN",
+    "departureTime": "2026-11-21T08:55:00",
+    "arrivalTime": "2026-11-21T15:00:00",
+    "durationSeconds": 21900,
+    "stops": 1,
+    "route": [
+     "WAW",
+     "TRN",
+     "BCN"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "TRN",
+      "fromCity": "Warsaw",
+      "toCity": "Turin",
+      "fromName": "Warsaw Chopin",
+      "toName": "Turin",
+      "fromCountry": "Poland",
+      "toCountry": "Italy",
+      "departureTime": "2026-11-21T08:55:00",
+      "arrivalTime": "2026-11-21T11:10:00",
+      "durationSeconds": 8100,
+      "carrier": "FR",
+      "carrierName": "Ryanair",
+      "flightNumber": "FR1595",
+      "cabinClass": "Economy"
+     },
+     {
+      "from": "TRN",
+      "to": "BCN",
+      "fromCity": "Turin",
+      "toCity": "Barcelona",
+      "fromName": "Turin",
+      "toName": "Barcelona\u2013El Prat",
+      "fromCountry": "Italy",
+      "toCountry": "Spain",
+      "departureTime": "2026-11-21T13:30:00",
+      "arrivalTime": "2026-11-21T15:00:00",
+      "durationSeconds": 5400,
+      "carrier": "VY",
+      "carrierName": "Vueling",
+      "flightNumber": "VY2715",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": null
+  },
+  {
+   "id": "23b01e03512a0000401d9784_0|1e0301af512a0000514ac369_0",
+   "tripType": "oneway",
+   "price": 86.0,
+   "priceFormatted": "86 EUR",
+   "totalDurationSeconds": 26700,
+   "bookingUrl": "https://kiwi.com/u/bu9bxk",
+   "imageId": "barcelona_es",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 0,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WMI",
+    "to": "BCN",
+    "departureTime": "2026-11-21T14:15:00",
+    "arrivalTime": "2026-11-21T21:40:00",
+    "durationSeconds": 26700,
+    "stops": 1,
+    "route": [
+     "WMI",
+     "BTS",
+     "BCN"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WMI",
+      "to": "BTS",
+      "fromCity": "Warsaw",
+      "toCity": "Bratislava",
+      "fromName": "Warsaw Modlin",
+      "toName": "Bratislava Airport",
+      "fromCountry": "Poland",
+      "toCountry": "Slovakia",
+      "departureTime": "2026-11-21T14:15:00",
+      "arrivalTime": "2026-11-21T15:40:00",
+      "durationSeconds": 5100,
+      "carrier": "FR",
+      "carrierName": "Ryanair",
+      "flightNumber": "FR3640",
+      "cabinClass": "Economy"
+     },
+     {
+      "from": "BTS",
+      "to": "BCN",
+      "fromCity": "Bratislava",
+      "toCity": "Barcelona",
+      "fromName": "Bratislava Airport",
+      "toName": "Barcelona\u2013El Prat",
+      "fromCountry": "Slovakia",
+      "toCountry": "Spain",
+      "departureTime": "2026-11-21T19:10:00",
+      "arrivalTime": "2026-11-21T21:40:00",
+      "durationSeconds": 9000,
+      "carrier": "W6",
+      "carrierName": "Wizz Air",
+      "flightNumber": "W67021",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": null
+  },
+  {
+   "id": "20ef093e512a000096c72189_0|093e01af512a0000b32783e9_0",
+   "tripType": "oneway",
+   "price": 88.0,
+   "priceFormatted": "88 EUR",
+   "totalDurationSeconds": 36900,
+   "bookingUrl": "https://kiwi.com/u/q5jhcxj",
+   "imageId": "barcelona_es",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 0,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "BCN",
+    "departureTime": "2026-11-21T14:35:00",
+    "arrivalTime": "2026-11-22T00:50:00",
+    "durationSeconds": 36900,
+    "stops": 1,
+    "route": [
+     "WAW",
+     "OPO",
+     "BCN"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "OPO",
+      "fromCity": "Warsaw",
+      "toCity": "Porto",
+      "fromName": "Warsaw Chopin",
+      "toName": "Porto",
+      "fromCountry": "Poland",
+      "toCountry": "Portugal",
+      "departureTime": "2026-11-21T14:35:00",
+      "arrivalTime": "2026-11-21T17:40:00",
+      "durationSeconds": 14700,
+      "carrier": "W6",
+      "carrierName": "Wizz Air",
+      "flightNumber": "W61595",
+      "cabinClass": "Economy"
+     },
+     {
+      "from": "OPO",
+      "to": "BCN",
+      "fromCity": "Porto",
+      "toCity": "Barcelona",
+      "fromName": "Porto",
+      "toName": "Barcelona\u2013El Prat",
+      "fromCountry": "Portugal",
+      "toCountry": "Spain",
+      "departureTime": "2026-11-21T22:05:00",
+      "arrivalTime": "2026-11-22T00:50:00",
+      "durationSeconds": 6300,
+      "carrier": "FR",
+      "carrierName": "Ryanair",
+      "flightNumber": "FR4546",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": null
+  },
+  {
+   "id": "20ef093e512a000096c72189_0|093e01af512a00009e00b14f_0",
+   "tripType": "oneway",
+   "price": 89.0,
+   "priceFormatted": "89 EUR",
+   "totalDurationSeconds": 36000,
+   "bookingUrl": "https://kiwi.com/u/4kut3s",
+   "imageId": "barcelona_es",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 0,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "BCN",
+    "departureTime": "2026-11-21T14:35:00",
+    "arrivalTime": "2026-11-22T00:35:00",
+    "durationSeconds": 36000,
+    "stops": 1,
+    "route": [
+     "WAW",
+     "OPO",
+     "BCN"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "OPO",
+      "fromCity": "Warsaw",
+      "toCity": "Porto",
+      "fromName": "Warsaw Chopin",
+      "toName": "Porto",
+      "fromCountry": "Poland",
+      "toCountry": "Portugal",
+      "departureTime": "2026-11-21T14:35:00",
+      "arrivalTime": "2026-11-21T17:40:00",
+      "durationSeconds": 14700,
+      "carrier": "W6",
+      "carrierName": "Wizz Air",
+      "flightNumber": "W61595",
+      "cabinClass": "Economy"
+     },
+     {
+      "from": "OPO",
+      "to": "BCN",
+      "fromCity": "Porto",
+      "toCity": "Barcelona",
+      "fromName": "Porto",
+      "toName": "Barcelona\u2013El Prat",
+      "fromCountry": "Portugal",
+      "toCountry": "Spain",
+      "departureTime": "2026-11-21T21:55:00",
+      "arrivalTime": "2026-11-22T00:35:00",
+      "durationSeconds": 6000,
+      "carrier": "VY",
+      "carrierName": "Vueling",
+      "flightNumber": "VY1183",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": null
+  },
+  {
+   "id": "23b02558512a0000eebb8809_0|07f001af512b0000803e7785_0",
+   "tripType": "oneway",
+   "price": 89.0,
+   "priceFormatted": "89 EUR",
+   "totalDurationSeconds": 45900,
+   "bookingUrl": "https://kiwi.com/u/n7bmb2t",
+   "imageId": "barcelona_es",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 0,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WMI",
+    "to": "BCN",
+    "departureTime": "2026-11-21T19:20:00",
+    "arrivalTime": "2026-11-22T08:05:00",
+    "durationSeconds": 45900,
+    "stops": 1,
+    "route": [
+     "WMI",
+     "BGY",
+     "BCN"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WMI",
+      "to": "BGY",
+      "fromCity": "Warsaw",
+      "toCity": "Milan",
+      "fromName": "Warsaw Modlin",
+      "toName": "Milan Bergamo International Airport",
+      "fromCountry": "Poland",
+      "toCountry": "Italy",
+      "departureTime": "2026-11-21T19:20:00",
+      "arrivalTime": "2026-11-21T21:25:00",
+      "durationSeconds": 7500,
+      "carrier": "FR",
+      "carrierName": "Ryanair",
+      "flightNumber": "FR3340",
+      "cabinClass": "Economy"
+     },
+     {
+      "from": "MXP",
+      "to": "BCN",
+      "fromCity": "Milan",
+      "toCity": "Barcelona",
+      "fromName": "Milan\u2013Malpensa",
+      "toName": "Barcelona\u2013El Prat",
+      "fromCountry": "Italy",
+      "toCountry": "Spain",
+      "departureTime": "2026-11-22T06:30:00",
+      "arrivalTime": "2026-11-22T08:05:00",
+      "durationSeconds": 5700,
+      "carrier": "FR",
+      "carrierName": "Ryanair",
+      "flightNumber": "FR7538",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": null
+  },
+  {
+   "id": "20ef093e512a000096c72189_0|093e01af512a00000689fda4_0",
+   "tripType": "oneway",
+   "price": 115.0,
+   "priceFormatted": "115 EUR",
+   "totalDurationSeconds": 27600,
+   "bookingUrl": "https://kiwi.com/u/3kw8fh",
+   "imageId": "barcelona_es",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 0,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "BCN",
+    "departureTime": "2026-11-21T14:35:00",
+    "arrivalTime": "2026-11-21T22:15:00",
+    "durationSeconds": 27600,
+    "stops": 1,
+    "route": [
+     "WAW",
+     "OPO",
+     "BCN"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "OPO",
+      "fromCity": "Warsaw",
+      "toCity": "Porto",
+      "fromName": "Warsaw Chopin",
+      "toName": "Porto",
+      "fromCountry": "Poland",
+      "toCountry": "Portugal",
+      "departureTime": "2026-11-21T14:35:00",
+      "arrivalTime": "2026-11-21T17:40:00",
+      "durationSeconds": 14700,
+      "carrier": "W6",
+      "carrierName": "Wizz Air",
+      "flightNumber": "W61595",
+      "cabinClass": "Economy"
+     },
+     {
+      "from": "OPO",
+      "to": "BCN",
+      "fromCity": "Porto",
+      "toCity": "Barcelona",
+      "fromName": "Porto",
+      "toName": "Barcelona\u2013El Prat",
+      "fromCountry": "Portugal",
+      "toCountry": "Spain",
+      "departureTime": "2026-11-21T19:30:00",
+      "arrivalTime": "2026-11-21T22:15:00",
+      "durationSeconds": 6300,
+      "carrier": "FR",
+      "carrierName": "Ryanair",
+      "flightNumber": "FR4596",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": null
+  },
+  {
+   "id": "20ef01af512a000022fc5791_0",
+   "tripType": "oneway",
+   "price": 116.0,
+   "priceFormatted": "116 EUR",
+   "totalDurationSeconds": 11400,
+   "bookingUrl": "https://kiwi.com/u/gc9w36h",
+   "imageId": "barcelona_es",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 0,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "BCN",
+    "departureTime": "2026-11-21T15:05:00",
+    "arrivalTime": "2026-11-21T18:15:00",
+    "durationSeconds": 11400,
+    "stops": 0,
+    "route": [
+     "WAW",
+     "BCN"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "BCN",
+      "fromCity": "Warsaw",
+      "toCity": "Barcelona",
+      "fromName": "Warsaw Chopin",
+      "toName": "Barcelona\u2013El Prat",
+      "fromCountry": "Poland",
+      "toCountry": "Spain",
+      "departureTime": "2026-11-21T15:05:00",
+      "arrivalTime": "2026-11-21T18:15:00",
+      "durationSeconds": 11400,
+      "carrier": "W6",
+      "carrierName": "Wizz Air",
+      "flightNumber": "W61477",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": null
+  },
+  {
+   "id": "20ef24a0512a00008996e256_0|24a001af512a0000746b8e53_0",
+   "tripType": "oneway",
+   "price": 122.0,
+   "priceFormatted": "122 EUR",
+   "totalDurationSeconds": 36300,
+   "bookingUrl": "https://kiwi.com/u/5c86843",
+   "imageId": "barcelona_es",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 0,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "BCN",
+    "departureTime": "2026-11-21T05:35:00",
+    "arrivalTime": "2026-11-21T15:40:00",
+    "durationSeconds": 36300,
+    "stops": 1,
+    "route": [
+     "WAW",
+     "ALC",
+     "BCN"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "ALC",
+      "fromCity": "Warsaw",
+      "toCity": "Alicante",
+      "fromName": "Warsaw Chopin",
+      "toName": "Alicante\u2013Elche",
+      "fromCountry": "Poland",
+      "toCountry": "Spain",
+      "departureTime": "2026-11-21T05:35:00",
+      "arrivalTime": "2026-11-21T09:05:00",
+      "durationSeconds": 12600,
+      "carrier": "W6",
+      "carrierName": "Wizz Air",
+      "flightNumber": "W61487",
+      "cabinClass": "Economy"
+     },
+     {
+      "from": "ALC",
+      "to": "BCN",
+      "fromCity": "Alicante",
+      "toCity": "Barcelona",
+      "fromName": "Alicante\u2013Elche",
+      "toName": "Barcelona\u2013El Prat",
+      "fromCountry": "Spain",
+      "toCountry": "Spain",
+      "departureTime": "2026-11-21T14:30:00",
+      "arrivalTime": "2026-11-21T15:40:00",
+      "durationSeconds": 4200,
+      "carrier": "VY",
+      "carrierName": "Vueling",
+      "flightNumber": "VY1307",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": null
+  },
+  {
+   "id": "20ef01af512a0000ccf236bd_0",
+   "tripType": "oneway",
+   "price": 137.0,
+   "priceFormatted": "137 EUR",
+   "totalDurationSeconds": 11400,
+   "bookingUrl": "https://kiwi.com/u/xk3djf",
+   "imageId": "barcelona_es",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 0,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "BCN",
+    "departureTime": "2026-11-21T06:20:00",
+    "arrivalTime": "2026-11-21T09:30:00",
+    "durationSeconds": 11400,
+    "stops": 0,
+    "route": [
+     "WAW",
+     "BCN"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "BCN",
+      "fromCity": "Warsaw",
+      "toCity": "Barcelona",
+      "fromName": "Warsaw Chopin",
+      "toName": "Barcelona\u2013El Prat",
+      "fromCountry": "Poland",
+      "toCountry": "Spain",
+      "departureTime": "2026-11-21T06:20:00",
+      "arrivalTime": "2026-11-21T09:30:00",
+      "durationSeconds": 11400,
+      "carrier": "W6",
+      "carrierName": "Wizz Air",
+      "flightNumber": "W61475",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": null
+  },
+  {
+   "id": "23b01cb2512a000015ec9f29_0|25c301af512a00001e724919_0",
+   "tripType": "oneway",
+   "price": 144.0,
+   "priceFormatted": "144 EUR",
+   "totalDurationSeconds": 32100,
+   "bookingUrl": "https://kiwi.com/u/27nq3y",
+   "imageId": "barcelona_es",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 0,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WMI",
+    "to": "BCN",
+    "departureTime": "2026-11-21T11:15:00",
+    "arrivalTime": "2026-11-21T20:10:00",
+    "durationSeconds": 32100,
+    "stops": 1,
+    "route": [
+     "WMI",
+     "BVA",
+     "BCN"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WMI",
+      "to": "BVA",
+      "fromCity": "Warsaw",
+      "toCity": "Paris",
+      "fromName": "Warsaw Modlin",
+      "toName": "Beauvais\u2013Till\u00e9",
+      "fromCountry": "Poland",
+      "toCountry": "France",
+      "departureTime": "2026-11-21T11:15:00",
+      "arrivalTime": "2026-11-21T13:40:00",
+      "durationSeconds": 8700,
+      "carrier": "FR",
+      "carrierName": "Ryanair",
+      "flightNumber": "FR1888",
+      "cabinClass": "Economy"
+     },
+     {
+      "from": "CDG",
+      "to": "BCN",
+      "fromCity": "Paris",
+      "toCity": "Barcelona",
+      "fromName": "Charles de Gaulle Airport",
+      "toName": "Barcelona\u2013El Prat",
+      "fromCountry": "France",
+      "toCountry": "Spain",
+      "departureTime": "2026-11-21T18:20:00",
+      "arrivalTime": "2026-11-21T20:10:00",
+      "durationSeconds": 6600,
+      "carrier": "VY",
+      "carrierName": "Vueling",
+      "flightNumber": "VY8063",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": null
+  },
+  {
+   "id": "20ef01af512a000095443590_0|20ef01af512a000095443590_1",
+   "tripType": "oneway",
+   "price": 151.0,
+   "priceFormatted": "151 EUR",
+   "totalDurationSeconds": 29100,
+   "bookingUrl": "https://kiwi.com/u/7qrs7x",
+   "imageId": "barcelona_es",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 0,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "BCN",
+    "departureTime": "2026-11-21T10:15:00",
+    "arrivalTime": "2026-11-21T18:20:00",
+    "durationSeconds": 29100,
+    "stops": 1,
+    "route": [
+     "WAW",
+     "CPH",
+     "BCN"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "CPH",
+      "fromCity": "Warsaw",
+      "toCity": "Copenhagen",
+      "fromName": "Warsaw Chopin",
+      "toName": "Airport Copenhagen",
+      "fromCountry": "Poland",
+      "toCountry": "Denmark",
+      "departureTime": "2026-11-21T10:15:00",
+      "arrivalTime": "2026-11-21T11:40:00",
+      "durationSeconds": 5100,
+      "carrier": "SK",
+      "carrierName": "SAS",
+      "flightNumber": "SK752",
+      "cabinClass": "Economy"
+     },
+     {
+      "from": "CPH",
+      "to": "BCN",
+      "fromCity": "Copenhagen",
+      "toCity": "Barcelona",
+      "fromName": "Airport Copenhagen",
+      "toName": "Barcelona\u2013El Prat",
+      "fromCountry": "Denmark",
+      "toCountry": "Spain",
+      "departureTime": "2026-11-21T15:30:00",
+      "arrivalTime": "2026-11-21T18:20:00",
+      "durationSeconds": 10200,
+      "carrier": "SK",
+      "carrierName": "SAS",
+      "flightNumber": "SK1585",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": null
+  },
+  {
+   "id": "20ef01af512a00001ab6f78c_0|20ef01af512a00001ab6f78c_1",
+   "tripType": "oneway",
+   "price": 156.0,
+   "priceFormatted": "156 EUR",
+   "totalDurationSeconds": 21300,
+   "bookingUrl": "https://kiwi.com/u/6d73xv",
+   "imageId": "barcelona_es",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 0,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "BCN",
+    "departureTime": "2026-11-21T17:10:00",
+    "arrivalTime": "2026-11-21T23:05:00",
+    "durationSeconds": 21300,
+    "stops": 1,
+    "route": [
+     "WAW",
+     "MUC",
+     "BCN"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "MUC",
+      "fromCity": "Warsaw",
+      "toCity": "Munich",
+      "fromName": "Warsaw Chopin",
+      "toName": "Munich",
+      "fromCountry": "Poland",
+      "toCountry": "Germany",
+      "departureTime": "2026-11-21T17:10:00",
+      "arrivalTime": "2026-11-21T18:45:00",
+      "durationSeconds": 5700,
+      "carrier": "LH",
+      "carrierName": "Lufthansa",
+      "flightNumber": "LH1615",
+      "cabinClass": "Economy"
+     },
+     {
+      "from": "MUC",
+      "to": "BCN",
+      "fromCity": "Munich",
+      "toCity": "Barcelona",
+      "fromName": "Munich",
+      "toName": "Barcelona\u2013El Prat",
+      "fromCountry": "Germany",
+      "toCountry": "Spain",
+      "departureTime": "2026-11-21T20:55:00",
+      "arrivalTime": "2026-11-21T23:05:00",
+      "durationSeconds": 7800,
+      "carrier": "LH",
+      "carrierName": "Lufthansa",
+      "flightNumber": "LH1816",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": null
+  },
+  {
+   "id": "20ef01af512a00009e2de4f4_0|20ef01af512a00009e2de4f4_1",
+   "tripType": "oneway",
+   "price": 164.0,
+   "priceFormatted": "164 EUR",
+   "totalDurationSeconds": 19200,
+   "bookingUrl": "https://kiwi.com/u/v8yucmg",
+   "imageId": "barcelona_es",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 0,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "BCN",
+    "departureTime": "2026-11-21T14:35:00",
+    "arrivalTime": "2026-11-21T19:55:00",
+    "durationSeconds": 19200,
+    "stops": 1,
+    "route": [
+     "WAW",
+     "FRA",
+     "BCN"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "FRA",
+      "fromCity": "Warsaw",
+      "toCity": "Frankfurt",
+      "fromName": "Warsaw Chopin",
+      "toName": "Frankfurt International Airport",
+      "fromCountry": "Poland",
+      "toCountry": "Germany",
+      "departureTime": "2026-11-21T14:35:00",
+      "arrivalTime": "2026-11-21T16:25:00",
+      "durationSeconds": 6600,
+      "carrier": "LH",
+      "carrierName": "Lufthansa",
+      "flightNumber": "LH1345",
+      "cabinClass": "Economy"
+     },
+     {
+      "from": "FRA",
+      "to": "BCN",
+      "fromCity": "Frankfurt",
+      "toCity": "Barcelona",
+      "fromName": "Frankfurt International Airport",
+      "toName": "Barcelona\u2013El Prat",
+      "fromCountry": "Germany",
+      "toCountry": "Spain",
+      "departureTime": "2026-11-21T17:55:00",
+      "arrivalTime": "2026-11-21T19:55:00",
+      "durationSeconds": 7200,
+      "carrier": "LH",
+      "carrierName": "Lufthansa",
+      "flightNumber": "LH1136",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": null
+  },
+  {
+   "id": "20ef01af512a00004249878e_0|20ef01af512a00004249878e_1",
+   "tripType": "oneway",
+   "price": 174.0,
+   "priceFormatted": "174 EUR",
+   "totalDurationSeconds": 19800,
+   "bookingUrl": "https://kiwi.com/u/drhtxd",
+   "imageId": "barcelona_es",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 0,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "BCN",
+    "departureTime": "2026-11-21T17:25:00",
+    "arrivalTime": "2026-11-21T22:55:00",
+    "durationSeconds": 19800,
+    "stops": 1,
+    "route": [
+     "WAW",
+     "CDG",
+     "BCN"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "CDG",
+      "fromCity": "Warsaw",
+      "toCity": "Paris",
+      "fromName": "Warsaw Chopin",
+      "toName": "Charles de Gaulle Airport",
+      "fromCountry": "Poland",
+      "toCountry": "France",
+      "departureTime": "2026-11-21T17:25:00",
+      "arrivalTime": "2026-11-21T20:00:00",
+      "durationSeconds": 9300,
+      "carrier": "AF",
+      "carrierName": "Air France",
+      "flightNumber": "AF1047",
+      "cabinClass": "Economy"
+     },
+     {
+      "from": "CDG",
+      "to": "BCN",
+      "fromCity": "Paris",
+      "toCity": "Barcelona",
+      "fromName": "Charles de Gaulle Airport",
+      "toName": "Barcelona\u2013El Prat",
+      "fromCountry": "France",
+      "toCountry": "Spain",
+      "departureTime": "2026-11-21T21:00:00",
+      "arrivalTime": "2026-11-21T22:55:00",
+      "durationSeconds": 6900,
+      "carrier": "AF",
+      "carrierName": "Air France",
+      "flightNumber": "AF1448",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": null
+  }
+ ],
+ "searchTimeMs": 3467,
+ "error": null
+}

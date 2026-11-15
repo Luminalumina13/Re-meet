@@ -11,7 +11,8 @@ import { Badge, Button } from "@/components/ui/primitives";
 export function LegRow({ leg, compact }: { leg: Leg; compact?: boolean }) {
   const { t, locale } = useI18n();
   const carriers = [...new Set(leg.segments.map((s) => s.carrierName ?? s.carrier))].join(", ");
-  const nums = leg.segments.map((s) => `${s.carrier}${s.flightNumber}`).join(" · ");
+  const nums = leg.segments.filter((s) => s.flightNumber).map((s) => `${s.carrier}${s.flightNumber}`).join(" · ");
+  const via = leg.segments.length > 1 ? ` (${leg.segments.slice(0, -1).map((s) => s.to).join(", ")})` : "";
   const nextDay = localDate(leg.arriveLocal) !== localDate(leg.departLocal);
   return (
     <div className={cx("grid items-center gap-3", compact ? "grid-cols-[auto_1fr_auto]" : "grid-cols-[72px_1fr_72px] sm:grid-cols-[88px_1fr_88px]")}>
@@ -26,7 +27,7 @@ export function LegRow({ leg, compact }: { leg: Leg; compact?: boolean }) {
           <span className="h-px flex-1 bg-border-strong" />
           <span className="whitespace-nowrap">
             {fmtDurationLocalized(leg.durationMin, t.meetup.hours, t.meetup.minutes)} ·{" "}
-            {leg.stops === 0 ? t.common.direct : `${leg.stops} ${leg.stops === 1 ? t.common.stop : t.common.stops}${leg.stops ? ` (${leg.segments.slice(0, -1).map((s) => s.to).join(", ")})` : ""}`}
+            {leg.stops === 0 ? t.common.direct : `${leg.stops} ${leg.stops === 1 ? t.common.stop : t.common.stops}${via}`}
           </span>
           <span className="h-px flex-1 bg-border-strong" />
         </div>
@@ -77,6 +78,22 @@ export function FlightCard({ it, onTrack, adults = 1 }: { it: ScoredItinerary; o
               {adults > 1 ? `${fmtMoney({ amount: it.price.amount / adults, currency: it.price.currency }, locale)} ${t.common.perPerson} · ` : ""}
               {it.providerName}
             </div>
+            {it.otherOffers && it.otherOffers.length > 0 && (
+              <div className="mt-1 flex flex-wrap justify-end gap-x-2 text-xs text-ink-3">
+                <span>{t.common.alsoOn}:</span>
+                {it.otherOffers.map((o) =>
+                  o.deepLink ? (
+                    <a key={o.provider} href={o.deepLink} target="_blank" rel="noreferrer" className="font-semibold text-ink-2 tabular-nums hover:text-accent hover:underline">
+                      {o.providerName} {fmtMoney(o.price, locale)}
+                    </a>
+                  ) : (
+                    <span key={o.provider} className="tabular-nums">
+                      {o.providerName} {fmtMoney(o.price, locale)}
+                    </span>
+                  ),
+                )}
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-2">
             {onTrack && (

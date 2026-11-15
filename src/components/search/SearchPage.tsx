@@ -15,10 +15,12 @@ import { WeekendPicker } from "./WeekendPicker";
 import { TimeWindows } from "./TimeWindows";
 import { FlightCard } from "./FlightCard";
 import { ProviderBar } from "./ProviderBar";
+import { AirlineFilter, filterByCarriers } from "./AirlineFilter";
 import { WatchDialog } from "@/components/watch/WatchDialog";
 import { cx } from "@/lib/format";
 
 type Mode = "weekend" | "custom";
+const PAGE = 15;
 
 export function SearchPage() {
   const { t } = useI18n();
@@ -38,6 +40,8 @@ export function SearchPage() {
   const [error, setError] = useState<string | null>(null);
   const [res, setRes] = useState<SearchResponse | null>(null);
   const [trackIt, setTrackIt] = useState<ScoredItinerary | null>(null);
+  const [airlines, setAirlines] = useState<Set<string>>(new Set());
+  const [visible, setVisible] = useState(PAGE);
 
   const dates = useMemo(() => {
     if (mode === "weekend") {
@@ -58,6 +62,8 @@ export function SearchPage() {
     setError(null);
     try {
       setRes(await postJson<SearchResponse>("/api/search", request));
+      setAirlines(new Set());
+      setVisible(PAGE);
     } catch (e) {
       setError(e instanceof Error ? e.message : t.common.error);
     } finally {
@@ -65,7 +71,7 @@ export function SearchPage() {
     }
   }, [origin, destination, request, t]);
 
-  const sorted = useMemo(() => (res ? sortItineraries(res.itineraries, sort) : []), [res, sort]);
+  const sorted = useMemo(() => (res ? sortItineraries(filterByCarriers(res.itineraries, airlines), sort) : []), [res, sort, airlines]);
   const label = `${getAirport(origin)?.city ?? origin} → ${getAirport(destination)?.city ?? destination} · ${dates.departDate}${dates.returnDate ? ` – ${dates.returnDate}` : ""}`;
 
   return (
@@ -170,6 +176,7 @@ export function SearchPage() {
         {error && <div className="rounded-xl border border-critical/40 bg-critical/10 px-4 py-3 text-sm text-critical">{error}</div>}
         {loading && (
           <div className="flex flex-col gap-3">
+            <p className="text-sm text-ink-3">{t.common.polling}</p>
             {[0, 1, 2].map((i) => (
               <Skeleton key={i} className="h-36" />
             ))}
@@ -185,13 +192,19 @@ export function SearchPage() {
                 options={(["best", "cheapest", "fastest", "comfort"] as SortKey[]).map((k) => ({ value: k, label: t.filters[k] }))}
               />
             </div>
+            <AirlineFilter list={res.itineraries} selected={airlines} onChange={setAirlines} />
             {sorted.length === 0 ? (
               <Card className="p-8 text-center text-ink-2">{t.common.nothingFound}</Card>
             ) : (
               <div className="flex flex-col gap-3">
-                {sorted.map((it) => (
+                {sorted.slice(0, visible).map((it) => (
                   <FlightCard key={it.id} it={it} adults={adults} onTrack={setTrackIt} />
                 ))}
+                {sorted.length > visible && (
+                  <Button variant="secondary" className="self-center" onClick={() => setVisible((v) => v + PAGE)}>
+                    {t.common.showMore} ({sorted.length - visible})
+                  </Button>
+                )}
               </div>
             )}
           </>

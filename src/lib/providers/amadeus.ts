@@ -42,6 +42,7 @@ const CABIN: Record<SearchRequest["cabin"], string> = {
 export class AmadeusProvider implements FlightProvider {
   readonly id = "amadeus";
   readonly name = "Amadeus";
+  readonly kind = "aggregator" as const;
   private readonly clientId = process.env.AMADEUS_CLIENT_ID ?? "";
   private readonly clientSecret = process.env.AMADEUS_CLIENT_SECRET ?? "";
   private readonly baseUrl =

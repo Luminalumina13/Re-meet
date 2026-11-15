@@ -22,8 +22,26 @@ export function legFromSegments(segments: Segment[]): Leg {
 /** Flight fingerprint independent of provider — used for de-duplication and "new offer" detection. */
 export function signatureOf(legs: Leg[]): string {
   return legs
-    .map((l) => l.segments.map((s) => `${s.carrier}${s.flightNumber}@${s.departUtc.slice(0, 16)}`).join(">"))
+    .map((l) =>
+      l.segments.every((s) => s.flightNumber)
+        ? l.segments.map((s) => `${s.carrier}${s.flightNumber}@${s.departUtc.slice(0, 16)}`).join(">")
+        : `${l.segments[0]?.carrier ?? ""}:${l.from}${l.to}@${l.departUtc.slice(0, 16)}>${l.arriveUtc.slice(0, 16)}/${l.stops}`,
+    )
     .join("|");
+}
+
+/**
+ * Provider-independent identity of a trip: same route and same departure/arrival instants.
+ * Two different airlines with identical times on one route are practically non-existent,
+ * so this matches one source's "W6 WAW 15:05→BCN 18:15" with another's "W6 1477".
+ */
+export function tripKey(legs: Leg[]): string {
+  return legs.map((l) => `${l.from}${l.to}@${l.departUtc.slice(0, 16)}>${l.arriveUtc.slice(0, 16)}`).join("|");
+}
+
+/** How much detail a source gave about the legs (flight numbers and connection airports). */
+export function detailScore(it: Itinerary): number {
+  return it.legs.reduce((s, l) => s + l.segments.filter((g) => g.flightNumber).length + (l.segments.length === l.stops + 1 ? 1 : 0), 0);
 }
 
 export function finalize(partial: Omit<Itinerary, "signature">): Itinerary {

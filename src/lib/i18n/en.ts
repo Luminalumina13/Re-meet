@@ -44,6 +44,12 @@ export const en: Dict = {
     seatsLeft: "seats left",
     advanced: "Time settings",
     reset: "Reset",
+    alsoOn: "Also on",
+    showMore: "Show more",
+    polling: "Querying Kiwi.com, lastminute.com and Ryanair. A search for several friends can take up to half a minute.",
+    airlines: "Airlines",
+    onlyAirlines: "Show only the selected",
+    allAirlines: "All",
   },
   filters: {
     ideal: "Ideal weekend",

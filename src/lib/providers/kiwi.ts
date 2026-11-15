@@ -47,8 +47,9 @@ const CABIN: Record<SearchRequest["cabin"], string> = {
 };
 
 export class KiwiProvider implements FlightProvider {
-  readonly id = "kiwi";
-  readonly name = "Kiwi.com";
+  readonly id = "kiwi-tequila";
+  readonly name = "Kiwi.com Tequila";
+  readonly kind = "aggregator" as const;
   private readonly apiKey = process.env.KIWI_API_KEY ?? "";
   private readonly baseUrl = process.env.KIWI_BASE_URL ?? "https://api.tequila.kiwi.com";
 
@@ -109,7 +110,7 @@ export class KiwiProvider implements FlightProvider {
     const legs = [legFromSegments(out)];
     if (back.length) legs.push(legFromSegments(back));
     return finalize({
-      id: `kiwi-${it.id}`,
+      id: `kiwi-tequila-${it.id}`,
       provider: this.id,
       providerName: this.name,
       legs,

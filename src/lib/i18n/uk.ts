@@ -42,6 +42,12 @@ export const uk = {
     seatsLeft: "місць залишилось",
     advanced: "Налаштування часу",
     reset: "Скинути",
+    alsoOn: "Також",
+    showMore: "Показати ще",
+    polling: "Опитуємо Kiwi.com, lastminute.com і Ryanair. Пошук для кількох друзів може тривати до пів хвилини.",
+    airlines: "Авіакомпанії",
+    onlyAirlines: "Показати лише вибрані",
+    allAirlines: "Усі",
   },
   filters: {
     ideal: "Ідеальні вихідні",

@@ -16,6 +16,8 @@ export const IDEAL_WEEKEND_FILTERS: SearchFilters = {
 
 export function legMatchesWindow(leg: Leg, w?: TimeWindow): boolean {
   if (!w) return true;
+  // Arrival bounds are wall-clock times on the day of departure: landing on a later day fails them.
+  if ((w.arriveAfter || w.arriveBefore) && leg.arriveLocal.slice(0, 10) !== leg.departLocal.slice(0, 10)) return false;
   const dep = localMinutes(leg.departLocal);
   const arr = localMinutes(leg.arriveLocal);
   if (w.departAfter && dep < hhmmToMinutes(w.departAfter)) return false;

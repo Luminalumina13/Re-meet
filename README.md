@@ -11,7 +11,7 @@ Flight search tuned for **weekends** — and a planner that picks tickets for **
 - **Weekend search** — pick a weekend (Sat–Sun, Fri–Sun, Fri–Mon, …) and a route. The default *Ideal weekend* preset keeps only flights that leave **no earlier than 08:00** and bring you home **in the evening (17:00–23:30)**. Results get a *comfort score* (time windows, directness, speed) and a composite rank mixing comfort and price. Sort by best / cheapest / fastest / most comfortable.
 - **Meetup planner** — add friends with their home airports and one or more candidate meeting cities (optionally the friends' own cities). The engine picks an outbound and a return per friend to **maximise time everyone is in the same place**, trading hours against money with a single knob (*what an hour together is worth*). Shows a timeline of who is there when, the shared window, and a time-vs-price frontier of alternatives. Friends who live in the destination are hosts (no flights).
 - **Price tracking** — save any search or meetup query as a *watch*. A scheduler re-runs it, records price history, and raises alerts for **price drops**, **new offers** (flights not seen before), **target price reached**, big rises and vanished offers. Alerts go to the in-app page, a webhook (Slack/Discord/anything) and/or Telegram.
-- **Connectors** — Kiwi.com (Tequila), Amadeus Self-Service and Duffel adapters behind one `FlightProvider` interface, queried in parallel, de-duplicated (same flights → cheapest wins) and cached. With no keys configured a deterministic **demo provider** generates realistic synthetic schedules so everything works out of the box (the UI says so).
+- **Real flight data without keys** — Kiwi.com and lastminute.com (via their public MCP servers) plus a direct Ryanair connector, queried in parallel, merged across sources with price comparison, and cached. Duffel, Kiwi Tequila and Amadeus adapters are available when you have keys. A deterministic **demo provider** (`PROVIDERS=mock`) generates synthetic schedules for offline development.
 - UI in Ukrainian and English, light/dark theme, responsive.
 
 ## Stack
@@ -43,19 +43,35 @@ npm run dev              # http://localhost:3000
 
 `npm test` runs the unit tests, `npm run lint` and `npm run typecheck` do what they say, `npm run build && npm start` for production.
 
-## Configuring connectors
+## Flight sources
 
-Set any of these in `.env`; configured providers are used, the rest skipped. If none is configured, demo data is served.
+Out of the box the app queries three sources in parallel, with **no API keys**:
 
-| Provider | Variables |
-|---|---|
-| Kiwi.com Tequila | `KIWI_API_KEY` |
-| Amadeus Self-Service | `AMADEUS_CLIENT_ID`, `AMADEUS_CLIENT_SECRET`, `AMADEUS_ENV=test\|production` |
-| Duffel | `DUFFEL_ACCESS_TOKEN` |
+| Source | Id | What it covers | How |
+|---|---|---|---|
+| Kiwi.com | `kiwi` | Hundreds of airlines, incl. Ryanair, Wizz Air, easyJet, Vueling, LOT, Lufthansa group, Air France-KLM, and Kiwi's self-transfer combinations | Kiwi.com's public MCP server, `https://mcp.kiwi.com` |
+| lastminute.com | `lastminute` | Full-service and low-cost airlines; a second price for the same flights | lastminute.com's official public MCP server, `https://mcp.lastminute.com/mcp` |
+| Ryanair | `ryanair` | Every Ryanair-group flight (FR, RK, AL…) directly from the airline | Ryanair's public fare-finder endpoint |
 
-`PROVIDERS=kiwi,duffel` restricts the set; `PROVIDERS=mock` forces demo data; `INCLUDE_DEMO=1` merges demo data with real results (useful for development).
+Results are merged: the same trip from several sources becomes one card with the cheapest price, the most detailed flight description (flight numbers, connection airports) and the other sources' prices for comparison. Above the results, an airline filter lists every operating carrier found.
 
-Adding another vendor = one file implementing `FlightProvider` (`search(req) → Itinerary[]`) and one line in `providers/registry.ts`. Times are stored as local wall-clock strings plus UTC instants; vendors that return local times without offsets are converted with the airport time-zone table.
+Each MCP source returns at most 15–20 itineraries per call, so the connector splits the day into departure-time windows and queries them in parallel. Ryanair's fare finder returns only the cheapest flight in a time window, so the connector splits the window around every flight it finds until the whole day is listed (about 2n+1 requests for n flights).
+
+Optional sources that need keys:
+
+| Source | Id | Variables | Status (Nov 2026) |
+|---|---|---|---|
+| Duffel | `duffel` | `DUFFEL_ACCESS_TOKEN` | Open sign-up; test tokens only return the fictional "Duffel Airways", live tokens need account verification |
+| Kiwi.com Tequila | `kiwi-tequila` | `KIWI_API_KEY` | Invite-only since 2024 |
+| Amadeus | `amadeus` | `AMADEUS_CLIENT_ID`, `AMADEUS_CLIENT_SECRET` | Self-Service portal closed on 17 July 2026; Enterprise contracts only |
+
+`PROVIDERS=kiwi,ryanair` restricts the set; `PROVIDERS=mock` forces demo data; `INCLUDE_DEMO=1` adds demo data next to real results. Each no-key source can be turned off with `KIWI_MCP_ENABLED=0`, `LASTMINUTE_MCP_ENABLED=0`, `RYANAIR_ENABLED=0`.
+
+Adding another source = one file implementing `FlightProvider` (`search(req) → Itinerary[]`) and one line in `providers/registry.ts`.
+
+**Terms of use.** The Kiwi.com and lastminute.com MCP servers are published for AI assistants, and Ryanair's terms restrict automated use of its website by third parties. Fine for personal use and prototyping; for a public or commercial product, agree terms with each company (or use Duffel/partner APIs). Requests are cached for 10 minutes and throttled.
+
+**Behind a proxy.** Node's built-in `fetch` ignores `HTTPS_PROXY` unless started with `NODE_USE_ENV_PROXY=1` (Node ≥ 22.21).
 
 ## Price tracking
 

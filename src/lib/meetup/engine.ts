@@ -158,7 +158,7 @@ export function planMeetup(
           inbound: ib,
           arriveUtc: ob.legs[0].arriveUtc,
           departUtc: ib.legs[0].departUtc,
-          price: ob.price.amount + ib.price.amount,
+          price: Math.round((ob.price.amount + ib.price.amount) * 100) / 100,
         };
       });
       plans.push({
@@ -212,7 +212,8 @@ export async function meetup(req: MeetupRequest, opts: AggregateOptions = {}): P
   const unreachable: MeetupResponse["unreachable"] = [];
   const topK = req.topK ?? 6;
 
-  for (const destination of req.destinations) {
+  // Destinations are independent: fetch and plan them in parallel.
+  await Promise.all(req.destinations.map(async (destination) => {
     const sets: CandidateSets = { outbound: new Map(), inbound: new Map() };
     await Promise.all(
       req.friends
@@ -230,7 +231,7 @@ export async function meetup(req: MeetupRequest, opts: AggregateOptions = {}): P
     const res = planMeetup(req, destination, sets);
     allPlans.push(...res.plans);
     unreachable.push(...res.unreachable);
-  }
+  }));
 
   allPlans.sort((a, b) => b.score - a.score || a.totalPrice - b.totalPrice);
   const frontier = paretoFrontier(allPlans);
