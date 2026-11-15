@@ -120,8 +120,12 @@ export function SearchPage() {
   const autoRan = useRef(false);
   useEffect(() => {
     if (autoRan.current || !params.get("to")) return;
-    autoRan.current = true;
-    const id = setTimeout(run, 0);
+    // Mark as done only when the timer fires: in dev, React runs effects twice and cancels the first timer.
+    const id = setTimeout(() => {
+      if (autoRan.current) return;
+      autoRan.current = true;
+      run();
+    }, 0);
     return () => clearTimeout(id);
   }, [params, run]);
 
