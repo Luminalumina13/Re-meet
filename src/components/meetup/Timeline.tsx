@@ -12,6 +12,8 @@ function fmtLocal(localIso: string, locale: string): string {
 }
 
 export const SERIES = ["var(--series-1)", "var(--series-2)", "var(--series-3)", "var(--series-4)", "var(--series-5)", "var(--series-6)"];
+/** Readable label colour on each series colour (white or dark, whichever contrasts more in the current theme). */
+export const SERIES_INK = ["var(--series-1-ink)", "var(--series-2-ink)", "var(--series-3-ink)", "var(--series-4-ink)", "var(--series-5-ink)", "var(--series-6-ink)"];
 
 /**
  * Gantt-style view: one row per friend, bar = time present in the destination,
@@ -60,7 +62,8 @@ export function Timeline({ plan, departDate, returnDate, colorIndex }: { plan: M
           <div className="absolute inset-y-0 bg-accent/12 border-x-2 border-accent/60" style={{ left: `${meetL}%`, width: `${Math.max(0.3, meetR - meetL)}%` }} title={t.meetup.meetWindow} />
           <div className="relative flex flex-col gap-2 py-1">
             {plan.friends.map((f) => {
-              const color = SERIES[colorIndex(f.friend.id) % SERIES.length];
+              const seriesIdx = colorIndex(f.friend.id) % SERIES.length;
+              const color = SERIES[seriesIdx];
               const host = !f.outbound;
               const l = host ? 0 : x(f.arriveUtc!);
               const r = host ? 100 : x(f.departUtc!);
@@ -70,15 +73,15 @@ export function Timeline({ plan, departDate, returnDate, colorIndex }: { plan: M
               return (
                 <div key={id} className="relative h-8" onMouseEnter={() => setHover(id)} onMouseLeave={() => setHover(null)}>
                   <div
-                    className={cx("absolute top-1 h-6 rounded-md transition-opacity flex items-center justify-between px-1.5 text-[11px] font-semibold text-white", hover && hover !== id && "opacity-50")}
-                    style={{ left: `${l}%`, width: `${Math.max(1.5, r - l)}%`, background: color, opacity: host ? 0.45 : undefined }}
+                    className={cx("absolute top-1 h-6 rounded-md transition-opacity flex items-center justify-between px-1.5 text-[11px] font-semibold", hover && hover !== id && "opacity-50")}
+                    style={{ left: `${l}%`, width: `${Math.max(1.5, r - l)}%`, background: color, color: SERIES_INK[seriesIdx], opacity: host ? 0.45 : undefined }}
                   >
                     {host ? (
                       <span className="text-ink">{t.meetup.host}</span>
                     ) : (
                       <>
-                        <span className="tabular-nums drop-shadow">{arrive}</span>
-                        <span className="tabular-nums drop-shadow">{leave}</span>
+                        <span className="tabular-nums">{arrive}</span>
+                        <span className="tabular-nums">{leave}</span>
                       </>
                     )}
                   </div>
