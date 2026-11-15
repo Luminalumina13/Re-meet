@@ -83,7 +83,7 @@ export function FlightCard({ it, onTrack, adults = 1 }: { it: ScoredItinerary; o
                 <span>{t.common.alsoOn}:</span>
                 {it.otherOffers.map((o) =>
                   o.deepLink ? (
-                    <a key={o.provider} href={o.deepLink} target="_blank" rel="noreferrer" className="font-semibold text-ink-2 tabular-nums hover:text-accent hover:underline">
+                    <a key={o.provider} href={o.deepLink} target="_blank" rel="noreferrer" className="font-semibold text-ink-2 tabular-nums hover:text-accent-text hover:underline">
                       {o.providerName} {fmtMoney(o.price, locale)}
                     </a>
                   ) : (
@@ -103,7 +103,7 @@ export function FlightCard({ it, onTrack, adults = 1 }: { it: ScoredItinerary; o
               </Button>
             )}
             {it.deepLink ? (
-              <a href={it.deepLink} target="_blank" rel="noreferrer" className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-accent px-3 text-[13px] font-semibold text-accent-ink hover:bg-accent-strong">
+              <a href={it.deepLink} target="_blank" rel="noreferrer" className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-accent px-3 text-[13px] font-semibold text-accent-ink hover:bg-accent-hover">
                 {t.common.open} <ExternalLink className="h-3.5 w-3.5" />
               </a>
             ) : (

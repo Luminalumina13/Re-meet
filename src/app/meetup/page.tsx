@@ -1,5 +1,10 @@
+import { Suspense } from "react";
 import { MeetupPage } from "@/components/meetup/MeetupPage";
 
 export default function Page() {
-  return <MeetupPage />;
+  return (
+    <Suspense>
+      <MeetupPage />
+    </Suspense>
+  );
 }

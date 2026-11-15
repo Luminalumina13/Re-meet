@@ -1,7 +1,12 @@
 import type { Dict } from "./uk";
 
 export const en: Dict = {
-  app: { name: "re:meet", tagline: "Weekend-friendly flights — and meetups for friends from different cities" },
+  app: { name: "Re:meeet", tagline: "Make time together last longer" },
+  brand: {
+    slogan: "Make time together last longer.",
+    line: "Distance shouldn't decide how often you meet.",
+    cta: "Plan your meet-up",
+  },
   nav: { search: "Search", explore: "Anywhere", meetup: "Meetup", watches: "Tracking" },
   theme: { light: "Light theme", dark: "Dark theme" },
   lang: { uk: "UA", en: "EN" },
@@ -114,6 +119,7 @@ export const en: Dict = {
     tickets: "Everyone's tickets",
     trackPlan: "Track this query",
   },
+  share: { button: "Share", copied: "Link copied" },
   flex: {
     title: "Flexible dates ±3 days",
     subtitle: "The cheapest fares on the days around your dates. Press a price to search those dates.",

@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Bell, Compass, SlidersHorizontal } from "lucide-react";
 import type { ExploreDestination, ExploreResponse } from "@/lib/explore/types";
 import type { ExploreRequestInput } from "@/lib/api/schemas";
@@ -11,6 +12,8 @@ import { useI18n } from "@/lib/i18n";
 import { postJson } from "@/lib/client";
 import { cx } from "@/lib/format";
 import { useSessionSnapshot } from "@/lib/useSessionSnapshot";
+import { buildExploreQuery, parseExploreQuery } from "@/lib/share";
+import { ShareButton } from "@/components/ShareButton";
 import { AirportPicker } from "@/components/ui/AirportPicker";
 import { Button, Card, Chip, Field, Input, Segmented, Skeleton, Stepper, Switch } from "@/components/ui/primitives";
 import { Modal } from "@/components/ui/Modal";
@@ -39,15 +42,20 @@ function sortDestinations(list: ExploreDestination[], key: SortKey): ExploreDest
 
 export function ExplorePage() {
   const { t } = useI18n();
-  const [origin, setOrigin] = useState("WAW");
-  const [saturday, setSaturday] = useState(() => nextSaturday(todayIso()));
-  const [shape, setShape] = useState<WeekendShape>("sat-sun");
-  const [maxHours, setMaxHours] = useState(4);
-  const [directOnly, setDirectOnly] = useState(false);
-  const [budget, setBudget] = useState("");
-  const [adults, setAdults] = useState(1);
-  const [children, setChildren] = useState(0);
-  const [infants, setInfants] = useState(0);
+  const params = useSearchParams();
+  // A shared link pre-fills the form and runs the search; unknown or past values are ignored.
+  const [seed] = useState(() => parseExploreQuery(params));
+  const [origin, setOrigin] = useState(seed.origin ?? "WAW");
+  // The default airport is only an example: shown light and wiped when the field gets focus.
+  const [sampleFrom, setSampleFrom] = useState(!seed.origin);
+  const [saturday, setSaturday] = useState(() => (seed.saturday && seed.saturday >= todayIso() ? seed.saturday : nextSaturday(todayIso())));
+  const [shape, setShape] = useState<WeekendShape>(seed.shape ?? "sat-sun");
+  const [maxHours, setMaxHours] = useState(seed.maxHours ?? 4);
+  const [directOnly, setDirectOnly] = useState(seed.directOnly ?? false);
+  const [budget, setBudget] = useState(seed.budget ?? "");
+  const [adults, setAdults] = useState(seed.adults ?? 1);
+  const [children, setChildren] = useState(seed.children ?? 0);
+  const [infants, setInfants] = useState(seed.infants ?? 0);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -98,12 +106,30 @@ export function ExplorePage() {
     }
   }, [origin, request, t]);
 
+  const shareQuery = useMemo(
+    () => buildExploreQuery({ origin, saturday, shape, maxHours, directOnly, budget, adults, children, infants }),
+    [origin, saturday, shape, maxHours, directOnly, budget, adults, children, infants],
+  );
+  const fromLink = Boolean(params.get("from"));
+  const autoRan = useRef(false);
+  useEffect(() => {
+    if (!fromLink || autoRan.current) return;
+    // Marked done only when the timer fires: dev-mode double effects cancel the first timer.
+    const id = setTimeout(() => {
+      if (autoRan.current) return;
+      autoRan.current = true;
+      void run();
+    }, 0);
+    return () => clearTimeout(id);
+  }, [fromLink, run]);
+
   const snapshot = useMemo(
-    () => ({ origin, saturday, shape, maxHours, directOnly, budget, adults, children, infants, filterState, sort, res }),
-    [origin, saturday, shape, maxHours, directOnly, budget, adults, children, infants, filterState, sort, res],
+    () => ({ origin, sampleFrom, saturday, shape, maxHours, directOnly, budget, adults, children, infants, filterState, sort, res }),
+    [origin, sampleFrom, saturday, shape, maxHours, directOnly, budget, adults, children, infants, filterState, sort, res],
   );
   useSessionSnapshot("remeet:explore", snapshot, (s) => {
     if (s.origin) setOrigin(s.origin);
+    if (s.sampleFrom !== undefined) setSampleFrom(s.sampleFrom);
     if (s.saturday && s.saturday >= todayIso()) setSaturday(s.saturday);
     if (s.shape) setShape(s.shape);
     if (s.maxHours) setMaxHours(s.maxHours);
@@ -115,7 +141,7 @@ export function ExplorePage() {
     restoreFilters(s.filterState);
     if (s.sort) setSort(s.sort);
     if (s.res) setRes(s.res);
-  });
+  }, fromLink);
 
   const countries = useMemo(() => {
     const m = new Map<string, number>();
@@ -135,7 +161,7 @@ export function ExplorePage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4">
-      <section className="hero-glow rounded-b-3xl pb-8 pt-10 sm:pt-14">
+      <section className="hero-glow pb-8 pt-10 sm:pt-14">
         <h1 className="max-w-2xl text-3xl font-extrabold tracking-tight sm:text-4xl">{t.explore.title}</h1>
         <p className="mt-3 max-w-xl text-ink-2">{t.explore.subtitle}</p>
       </section>
@@ -151,7 +177,7 @@ export function ExplorePage() {
           <div className="flex flex-col gap-5">
             <div className="grid grid-cols-[1fr_auto] gap-3">
               <Field label={t.common.from}>
-                <AirportPicker value={origin} onChange={setOrigin} placeholder={t.common.airportPlaceholder} />
+                <AirportPicker value={origin} onChange={setOrigin} sample={sampleFrom} onSampleFocus={() => setSampleFrom(false)} placeholder={t.common.airportPlaceholder} />
               </Field>
               <Field label={t.common.adults}>
                 <Stepper value={adults} onChange={changeAdults} max={9 - children - infants} />
@@ -212,7 +238,8 @@ export function ExplorePage() {
                 </p>
               )}
             </div>
-            <div className="mt-auto flex justify-end">
+            <div className="mt-auto flex items-start justify-end gap-3">
+              <ShareButton path="/explore" query={shareQuery} disabled={!origin} />
               <Button type="submit" variant="primary" size="lg" loading={loading} disabled={!origin}>
                 <Compass className="h-4 w-4" /> {loading ? t.explore.finding : t.explore.find}
               </Button>

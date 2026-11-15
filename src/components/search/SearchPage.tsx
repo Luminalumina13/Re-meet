@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeftRight, Search, SlidersHorizontal } from "lucide-react";
 import type { SearchResponse, ScoredItinerary } from "@/lib/domain/types";
@@ -21,34 +22,36 @@ import { AirlineFilter, filterByCarriers } from "./AirlineFilter";
 import { WatchDialog } from "@/components/watch/WatchDialog";
 import { cx } from "@/lib/format";
 import { useSessionSnapshot } from "@/lib/useSessionSnapshot";
+import { buildSearchQuery, parseSearchQuery } from "@/lib/share";
+import { ShareButton } from "@/components/ShareButton";
 import { useSearchFilters } from "@/lib/useSearchFilters";
 
 type Mode = "weekend" | "custom";
 const PAGE = 15;
 
 const SHAPES: WeekendShape[] = ["sat-sun", "fri-sun", "sat-mon", "fri-mon", "thu-sun"];
-const iataParam = (v: string | null) => (v && /^[A-Za-z]{3}$/.test(v) ? v.toUpperCase() : null);
-
 export function SearchPage() {
   const { t } = useI18n();
   const params = useSearchParams();
-  const [origin, setOrigin] = useState(() => iataParam(params.get("from")) ?? "WAW");
-  const [destination, setDestination] = useState(() => iataParam(params.get("to")) ?? "BCN");
-  const [mode, setMode] = useState<Mode>("weekend");
-  const [saturday, setSaturday] = useState(() => {
-    const s = params.get("sat");
-    return s && /^\d{4}-\d{2}-\d{2}$/.test(s) && s >= todayIso() ? s : nextSaturday(todayIso());
+  // A shared link (or a destination card) pre-fills the form; unknown or past values are ignored.
+  const [seed] = useState(() => parseSearchQuery(params));
+  const [origin, setOrigin] = useState(seed.origin ?? "WAW");
+  const [destination, setDestination] = useState(seed.destination ?? "BCN");
+  // Default route is only an example: shown light and wiped when the field gets focus.
+  const [sampleFrom, setSampleFrom] = useState(!seed.origin);
+  const [sampleTo, setSampleTo] = useState(!seed.destination);
+  const [mode, setMode] = useState<Mode>(seed.mode ?? "weekend");
+  const [saturday, setSaturday] = useState(() => (seed.saturday && seed.saturday >= todayIso() ? seed.saturday : nextSaturday(todayIso())));
+  const [shape, setShape] = useState<WeekendShape>(seed.shape ?? "sat-sun");
+  const [departDate, setDepartDate] = useState(() => (seed.departDate && seed.departDate >= todayIso() ? seed.departDate : nextSaturday(todayIso())));
+  const [returnDate, setReturnDate] = useState<string>(() => {
+    if (seed.mode === "custom") return seed.returnDate && seed.returnDate >= (seed.departDate ?? "") ? seed.returnDate : "";
+    return weekendFromSaturday(nextSaturday(todayIso()), "sat-sun").returnDate;
   });
-  const [shape, setShape] = useState<WeekendShape>(() => {
-    const s = params.get("shape") as WeekendShape | null;
-    return s && SHAPES.includes(s) ? s : "sat-sun";
-  });
-  const [departDate, setDepartDate] = useState(() => nextSaturday(todayIso()));
-  const [returnDate, setReturnDate] = useState<string>(() => weekendFromSaturday(nextSaturday(todayIso()), "sat-sun").returnDate);
-  const [adults, setAdults] = useState(1);
-  const [children, setChildren] = useState(0);
-  const [infants, setInfants] = useState(0);
-  const [cabin, setCabin] = useState<SearchRequestInput["cabin"]>("economy");
+  const [adults, setAdults] = useState(seed.adults ?? 1);
+  const [children, setChildren] = useState(seed.children ?? 0);
+  const [infants, setInfants] = useState(seed.infants ?? 0);
+  const [cabin, setCabin] = useState<SearchRequestInput["cabin"]>(seed.cabin ?? "economy");
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [sort, setSort] = useState<SortKey>("best");
   const [loading, setLoading] = useState(false);
@@ -94,14 +97,16 @@ export function SearchPage() {
   }, [origin, destination, request, t]);
 
   const snapshot = useMemo(
-    () => ({ origin, destination, mode, saturday, shape, departDate, returnDate, adults, children, infants, cabin, filterState, sort, res }),
-    [origin, destination, mode, saturday, shape, departDate, returnDate, adults, children, infants, cabin, filterState, sort, res],
+    () => ({ origin, destination, sampleFrom, sampleTo, mode, saturday, shape, departDate, returnDate, adults, children, infants, cabin, filterState, sort, res }),
+    [origin, destination, sampleFrom, sampleTo, mode, saturday, shape, departDate, returnDate, adults, children, infants, cabin, filterState, sort, res],
   );
   // A search arriving via the URL (destination card) wins over whatever was stored.
   useSessionSnapshot("remeet:search", snapshot, (s) => {
     const today = todayIso();
     if (s.origin) setOrigin(s.origin);
     if (s.destination) setDestination(s.destination);
+    if (s.sampleFrom !== undefined) setSampleFrom(s.sampleFrom);
+    if (s.sampleTo !== undefined) setSampleTo(s.sampleTo);
     if (s.mode) setMode(s.mode);
     if (s.saturday && s.saturday >= today) setSaturday(s.saturday);
     if (s.shape && SHAPES.includes(s.shape)) setShape(s.shape);
@@ -117,6 +122,10 @@ export function SearchPage() {
     if (s.res) setRes(s.res);
   }, Boolean(params.get("to")));
 
+  const shareQuery = useMemo(
+    () => buildSearchQuery({ origin, destination, mode, saturday, shape, departDate, returnDate: returnDate || undefined, adults, children, infants, cabin: cabin ?? "economy" }),
+    [origin, destination, mode, saturday, shape, departDate, returnDate, adults, children, infants, cabin],
+  );
   const flexParams = useMemo<FlexParams>(
     () => ({ origin, destination, departDate: dates.departDate, returnDate: dates.returnDate, adults, children, infants, cabin: cabin ?? "economy", currency: "EUR", filters }),
     [origin, destination, dates, adults, children, infants, cabin, filters],
@@ -156,9 +165,14 @@ export function SearchPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4">
-      <section className="hero-glow rounded-b-3xl pb-8 pt-10 sm:pt-14">
+      <section className="hero-glow pb-8 pt-10 sm:pt-14">
+        <p className="mb-3 text-sm font-semibold tracking-wide text-accent-text">{t.brand.slogan}</p>
         <h1 className="max-w-2xl text-3xl font-extrabold tracking-tight sm:text-4xl">{t.search.title}</h1>
         <p className="mt-3 max-w-xl text-ink-2">{t.search.subtitle}</p>
+        <p className="mt-2 max-w-xl text-sm text-ink-3">{t.brand.line}</p>
+        <Link href="/meetup" className="mt-5 inline-flex h-11 items-center rounded-xl bg-accent px-5 text-[15px] font-semibold text-accent-ink shadow-[0_6px_16px_-8px_var(--accent)] transition hover:bg-accent-hover">
+          {t.brand.cta}
+        </Link>
       </section>
 
       <Card className="-mt-2 p-4 sm:p-6">
@@ -171,7 +185,7 @@ export function SearchPage() {
         >
           <div className="grid gap-3 md:grid-cols-[1fr_auto_1fr_auto_auto] md:items-end">
             <Field label={t.common.from}>
-              <AirportPicker value={origin} onChange={setOrigin} placeholder={t.common.airportPlaceholder} exclude={[destination]} />
+              <AirportPicker value={origin} onChange={setOrigin} sample={sampleFrom} onSampleFocus={() => setSampleFrom(false)} placeholder={t.common.airportPlaceholder} exclude={[destination]} />
             </Field>
             <Button
               variant="ghost"
@@ -180,12 +194,14 @@ export function SearchPage() {
               onClick={() => {
                 setOrigin(destination);
                 setDestination(origin);
+                setSampleFrom(false);
+                setSampleTo(false);
               }}
             >
               <ArrowLeftRight className="h-4 w-4" />
             </Button>
             <Field label={t.common.to}>
-              <AirportPicker value={destination} onChange={setDestination} placeholder={t.common.airportPlaceholder} exclude={[origin]} />
+              <AirportPicker value={destination} onChange={setDestination} sample={sampleTo} onSampleFocus={() => setSampleTo(false)} placeholder={t.common.airportPlaceholder} exclude={[origin]} />
             </Field>
             <Field label={t.common.adults}>
               <Stepper value={adults} onChange={changeAdults} max={9 - children - infants} />
@@ -250,7 +266,8 @@ export function SearchPage() {
             )}
           </div>
 
-          <div className="flex items-center justify-end gap-3">
+          <div className="flex items-start justify-end gap-3">
+            <ShareButton path="/" query={shareQuery} disabled={!origin || !destination} />
             <Button type="submit" variant="primary" size="lg" loading={loading} disabled={!origin || !destination}>
               <Search className="h-4 w-4" /> {loading ? t.common.searching : t.common.search}
             </Button>

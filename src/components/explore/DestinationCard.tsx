@@ -89,7 +89,7 @@ export function DestinationCard({ d, searchHref, onDetails }: { d: ExploreDestin
             <Search className="h-3.5 w-3.5" /> {t.explore.more}
           </Link>
           {d.best.deepLink && (
-            <a href={d.best.deepLink} target="_blank" rel="noreferrer" className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-accent px-3 text-[13px] font-semibold text-accent-ink hover:bg-accent-strong">
+            <a href={d.best.deepLink} target="_blank" rel="noreferrer" className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-accent px-3 text-[13px] font-semibold text-accent-ink hover:bg-accent-hover">
               {t.common.open} <ExternalLink className="h-3.5 w-3.5" />
             </a>
           )}

@@ -71,7 +71,7 @@ export function WatchesPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4">
-      <section className="hero-glow rounded-b-3xl pb-8 pt-10 sm:pt-14">
+      <section className="hero-glow pb-8 pt-10 sm:pt-14">
         <h1 className="max-w-2xl text-3xl font-extrabold tracking-tight sm:text-4xl">{t.watch.title}</h1>
         <p className="mt-3 max-w-xl text-ink-2">{t.watch.subtitle}</p>
         <p className="mt-2 text-xs text-ink-3">{t.watch.scheduleHint}</p>

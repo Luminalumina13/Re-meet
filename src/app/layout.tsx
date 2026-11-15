@@ -7,14 +7,14 @@ import { Header } from "@/components/Header";
 const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin", "cyrillic"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "re:meet — weekend flights & friend meetups",
-  description: "Flight search tuned for weekends and for friends meeting from different cities.",
+  title: "Re:meeet — make time together last longer",
+  description: "Flights for weekends and meet-ups: find a place and a time that works for everyone, wherever your people live.",
 };
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f6f6f8" },
-    { media: "(prefers-color-scheme: dark)", color: "#0f0f14" },
+    { media: "(prefers-color-scheme: light)", color: "#f5f4f8" },
+    { media: "(prefers-color-scheme: dark)", color: "#14121c" },
   ],
 };
 
@@ -30,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <I18nProvider>
           <Header />
           <main className="flex-1">{children}</main>
-          <footer className="mx-auto w-full max-w-6xl px-4 py-8 text-xs text-ink-3">re:meet · Kiwi.com · lastminute.com · Ryanair · Duffel</footer>
+          <footer className="mx-auto w-full max-w-6xl px-4 py-8 text-xs text-ink-3">Re:meeet · Make time together last longer · Kiwi.com · lastminute.com · Ryanair · Duffel</footer>
         </I18nProvider>
       </body>
     </html>

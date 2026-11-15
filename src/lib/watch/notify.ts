@@ -8,7 +8,7 @@ import { watchStore } from "./store";
 export async function notify(watch: Watch, alerts: Alert[]): Promise<void> {
   if (!alerts.length) return;
   const text = alerts.map((a) => `• ${a.message}`).join("\n");
-  const title = `Re-meet · ${watch.label}`;
+  const title = `Re:meeet · ${watch.label}`;
   const jobs: Promise<unknown>[] = [];
 
   if (watch.notify.webhookUrl) {

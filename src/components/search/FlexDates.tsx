@@ -108,7 +108,7 @@ export function FlexDates({ params, onPick }: { params: FlexParams; onPick: (dep
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h3 className="flex items-center gap-2 text-base font-bold">
-            <CalendarRange className="h-4 w-4 text-accent" /> {t.flex.title}
+            <CalendarRange className="h-4 w-4 text-accent-text" /> {t.flex.title}
           </h3>
           <p className="mt-0.5 text-xs text-ink-3">{t.flex.subtitle}</p>
         </div>
@@ -137,7 +137,7 @@ export function FlexDates({ params, onPick }: { params: FlexParams; onPick: (dep
                   <tr>
                     <th className="p-1 text-left text-[11px] font-semibold uppercase tracking-wide text-ink-3">{t.flex.corner}</th>
                     {returnDays.map((r) => (
-                      <th key={r} className={cx("p-1 text-xs font-semibold", r === params.returnDate ? "text-accent" : "text-ink-2")}>
+                      <th key={r} className={cx("p-1 text-xs font-semibold", r === params.returnDate ? "text-accent-text" : "text-ink-2")}>
                         {day(r)}
                       </th>
                     ))}
@@ -146,7 +146,7 @@ export function FlexDates({ params, onPick }: { params: FlexParams; onPick: (dep
                 <tbody>
                   {departDays.map((d) => (
                     <tr key={d}>
-                      <th className={cx("whitespace-nowrap p-1 text-left text-xs font-semibold", d === params.departDate ? "text-accent" : "text-ink-2")}>{day(d)}</th>
+                      <th className={cx("whitespace-nowrap p-1 text-left text-xs font-semibold", d === params.departDate ? "text-accent-text" : "text-ink-2")}>{day(d)}</th>
                       {returnDays.map((r) => {
                         const c = cellOf(d, r);
                         const loading = price("outbound", d) === undefined || price("inbound", r) === undefined;
@@ -181,7 +181,7 @@ export function FlexDates({ params, onPick }: { params: FlexParams; onPick: (dep
                   const c = oneWay.find((x) => x.depart === d);
                   return (
                     <div key={d} className="flex flex-1 flex-col items-center gap-1">
-                      <span className={cx("text-xs font-semibold", d === params.departDate ? "text-accent" : "text-ink-2")}>{day(d)}</span>
+                      <span className={cx("text-xs font-semibold", d === params.departDate ? "text-accent-text" : "text-ink-2")}>{day(d)}</span>
                       {c ? (
                         <button
                           type="button"
