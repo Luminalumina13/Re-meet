@@ -356,7 +356,7 @@ export function MeetupPage() {
               <div className="grid gap-4 lg:grid-cols-[1fr_360px] items-start">
                 <div className="flex flex-col gap-4">
                   {plans.map((p, i) => (
-                    <PlanCard key={p.id} plan={p} rank={res.plans.indexOf(p) + 1} departDate={weekend.departDate} returnDate={weekend.returnDate} colorIndex={colorIndex} highlight={i === 0} onTrack={i === 0 ? () => setTrack(true) : undefined} />
+                    <PlanCard key={p.id} plan={p} rank={res.plans.indexOf(p) + 1} departDate={dates.departDate} returnDate={dates.returnDate} colorIndex={colorIndex} highlight={i === 0} onTrack={i === 0 ? () => setTrack(true) : undefined} />
                   ))}
                 </div>
                 <Card className="p-4 lg:sticky lg:top-20">
@@ -375,7 +375,7 @@ export function MeetupPage() {
           open
           onClose={() => setTrack(false)}
           params={{ kind: "meetup", request }}
-          defaultLabel={`${t.nav.meetup}: ${allDest.map((d) => getAirport(d)?.city ?? d).join("/")} · ${weekend.departDate}`}
+          defaultLabel={`${t.nav.meetup}: ${allDest.map((d) => getAirport(d)?.city ?? d).join("/")} · ${dates.departDate}`}
           currentPrice={res.plans[0]?.totalPrice}
           currency="EUR"
         />

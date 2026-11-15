@@ -12,7 +12,7 @@ import { useI18n } from "@/lib/i18n";
 import { postJson } from "@/lib/client";
 import { cx } from "@/lib/format";
 import { useSessionSnapshot } from "@/lib/useSessionSnapshot";
-import { buildExploreQuery, parseExploreQuery } from "@/lib/share";
+import { buildExploreQuery, buildSearchQuery, parseExploreQuery } from "@/lib/share";
 import { ShareButton } from "@/components/ShareButton";
 import { AirportPicker } from "@/components/ui/AirportPicker";
 import { Button, Card, Chip, Field, Input, Segmented, Skeleton, Stepper, Switch } from "@/components/ui/primitives";
@@ -50,6 +50,9 @@ export function ExplorePage() {
   const [sampleFrom, setSampleFrom] = useState(!seed.origin);
   const [saturday, setSaturday] = useState(() => (seed.saturday && seed.saturday >= todayIso() ? seed.saturday : nextSaturday(todayIso())));
   const [shape, setShape] = useState<WeekendShape>(seed.shape ?? "sat-sun");
+  const [mode, setMode] = useState<"weekend" | "custom">(seed.mode ?? "weekend");
+  const [departDate, setDepartDate] = useState(() => (seed.departDate && seed.departDate >= todayIso() ? seed.departDate : nextSaturday(todayIso())));
+  const [returnDate, setReturnDate] = useState(() => (seed.returnDate && seed.returnDate >= (seed.departDate ?? "") ? seed.returnDate : weekendFromSaturday(nextSaturday(todayIso()), "sat-sun").returnDate));
   const [maxHours, setMaxHours] = useState(seed.maxHours ?? 4);
   const [directOnly, setDirectOnly] = useState(seed.directOnly ?? false);
   const [budget, setBudget] = useState(seed.budget ?? "");
@@ -71,12 +74,14 @@ export function ExplorePage() {
   };
 
   const weekend = useMemo(() => weekendFromSaturday(saturday, shape), [saturday, shape]);
-  const { filters, setFilters, state: filterState, restore: restoreFilters } = useSearchFilters(weekend.departDate);
+  const dates = useMemo(() => (mode === "weekend" ? { departDate: weekend.departDate, returnDate: weekend.returnDate } : { departDate, returnDate }), [mode, weekend, departDate, returnDate]);
+  const datesOk = Boolean(dates.departDate && dates.returnDate && dates.returnDate >= dates.departDate);
+  const { filters, setFilters, state: filterState, restore: restoreFilters } = useSearchFilters(dates.departDate);
   const request = useMemo<ExploreRequestInput>(
     () => ({
       origin,
-      departDate: weekend.departDate,
-      returnDate: weekend.returnDate,
+      departDate: dates.departDate,
+      returnDate: dates.returnDate,
       adults,
       children,
       infants,
@@ -89,11 +94,11 @@ export function ExplorePage() {
         maxPrice: budget ? Number(budget) : filters.maxPrice,
       },
     }),
-    [origin, weekend, adults, children, infants, maxHours, filters, directOnly, budget],
+    [origin, dates, adults, children, infants, maxHours, filters, directOnly, budget],
   );
 
   const run = useCallback(async () => {
-    if (!origin) return;
+    if (!origin || !datesOk) return;
     setLoading(true);
     setError(null);
     try {
@@ -104,11 +109,11 @@ export function ExplorePage() {
     } finally {
       setLoading(false);
     }
-  }, [origin, request, t]);
+  }, [origin, datesOk, request, t]);
 
   const shareQuery = useMemo(
-    () => buildExploreQuery({ origin, saturday, shape, maxHours, directOnly, budget, adults, children, infants }),
-    [origin, saturday, shape, maxHours, directOnly, budget, adults, children, infants],
+    () => buildExploreQuery({ origin, mode, saturday, shape, departDate, returnDate, maxHours, directOnly, budget, adults, children, infants }),
+    [origin, mode, saturday, shape, departDate, returnDate, maxHours, directOnly, budget, adults, children, infants],
   );
   const fromLink = Boolean(params.get("from"));
   const autoRan = useRef(false);
@@ -124,12 +129,15 @@ export function ExplorePage() {
   }, [fromLink, run]);
 
   const snapshot = useMemo(
-    () => ({ origin, sampleFrom, saturday, shape, maxHours, directOnly, budget, adults, children, infants, filterState, sort, res }),
-    [origin, sampleFrom, saturday, shape, maxHours, directOnly, budget, adults, children, infants, filterState, sort, res],
+    () => ({ origin, sampleFrom, mode, saturday, shape, departDate, returnDate, maxHours, directOnly, budget, adults, children, infants, filterState, sort, res }),
+    [origin, sampleFrom, mode, saturday, shape, departDate, returnDate, maxHours, directOnly, budget, adults, children, infants, filterState, sort, res],
   );
   useSessionSnapshot("remeet:explore", snapshot, (s) => {
     if (s.origin) setOrigin(s.origin);
     if (s.sampleFrom !== undefined) setSampleFrom(s.sampleFrom);
+    if (s.mode) setMode(s.mode);
+    if (s.departDate && s.departDate >= todayIso()) setDepartDate(s.departDate);
+    if (s.returnDate && s.returnDate >= todayIso()) setReturnDate(s.returnDate);
     if (s.saturday && s.saturday >= todayIso()) setSaturday(s.saturday);
     if (s.shape) setShape(s.shape);
     if (s.maxHours) setMaxHours(s.maxHours);
@@ -155,8 +163,9 @@ export function ExplorePage() {
   }, [res, country, sort]);
 
   const searchHref = (d: ExploreDestination) => {
-    const q = new URLSearchParams({ from: origin, to: d.best.legs[0].to, sat: saturday, shape });
-    return `/?${q}`;
+    // Open the normal search with the same dates (or weekend) and party.
+    const base = { origin, destination: d.best.legs[0].to, adults, children, infants };
+    return `/?${buildSearchQuery(mode === "weekend" ? { ...base, mode, saturday, shape } : { ...base, mode, departDate: dates.departDate, returnDate: dates.returnDate })}`;
   };
 
   return (
@@ -215,32 +224,59 @@ export function ExplorePage() {
           </div>
 
           <div className="flex flex-col gap-5">
-            <Field label={t.common.weekend}>
-              <WeekendPicker
-                saturday={saturday}
-                shape={shape}
-                onChange={(v) => {
-                  setSaturday(v.saturday);
-                  setShape(v.shape);
-                }}
+            <div className="flex flex-col gap-3">
+              <Segmented
+                value={mode}
+                onChange={setMode}
+                options={[
+                  { value: "weekend", label: t.common.weekend },
+                  { value: "custom", label: t.common.customDates },
+                ]}
               />
-            </Field>
+              {mode === "weekend" ? (
+                <WeekendPicker
+                  saturday={saturday}
+                  shape={shape}
+                  onChange={(v) => {
+                    setSaturday(v.saturday);
+                    setShape(v.shape);
+                  }}
+                />
+              ) : (
+                <div className="grid gap-3 sm:max-w-md sm:grid-cols-2">
+                  <Field label={t.common.depart}>
+                    <Input
+                      type="date"
+                      value={departDate}
+                      min={todayIso()}
+                      onChange={(e) => {
+                        setDepartDate(e.target.value);
+                        if (returnDate < e.target.value) setReturnDate(e.target.value);
+                      }}
+                    />
+                  </Field>
+                  <Field label={t.common.return}>
+                    <Input type="date" value={returnDate} min={departDate} onChange={(e) => setReturnDate(e.target.value)} />
+                  </Field>
+                </div>
+              )}
+            </div>
             <div className="flex flex-col gap-3 border-t border-border pt-4">
               <button type="button" onClick={() => setShowAdvanced((s) => !s)} className="inline-flex items-center gap-2 self-start text-sm font-semibold text-ink-2 hover:text-ink">
                 <SlidersHorizontal className="h-4 w-4" /> {t.common.advanced}
                 <span className={cx("text-xs text-ink-3 transition", showAdvanced && "rotate-180")}>▾</span>
               </button>
               {showAdvanced ? (
-                <TimeWindows value={filters} onChange={setFilters} departDate={weekend.departDate} />
+                <TimeWindows value={filters} onChange={setFilters} departDate={dates.departDate} />
               ) : (
                 <p className="text-xs text-ink-3">
-                  {t.filters.ideal}: {idealHint(t, weekend.departDate)}
+                  {t.filters.ideal}: {idealHint(t, dates.departDate)}
                 </p>
               )}
             </div>
             <div className="mt-auto flex items-start justify-end gap-3">
-              <ShareButton path="/explore" query={shareQuery} disabled={!origin} />
-              <Button type="submit" variant="primary" size="lg" loading={loading} disabled={!origin}>
+              <ShareButton path="/explore" query={shareQuery} disabled={!origin || !datesOk} />
+              <Button type="submit" variant="primary" size="lg" loading={loading} disabled={!origin || !datesOk}>
                 <Compass className="h-4 w-4" /> {loading ? t.explore.finding : t.explore.find}
               </Button>
             </div>
@@ -325,7 +361,7 @@ export function ExplorePage() {
           open
           onClose={() => setTrack(false)}
           params={{ kind: "explore", request }}
-          defaultLabel={`${getAirport(origin)?.city ?? origin} → ✈ ≤ ${maxHours} ${t.meetup.hours} · ${weekend.departDate}`}
+          defaultLabel={`${getAirport(origin)?.city ?? origin} → ✈ ≤ ${maxHours} ${t.meetup.hours} · ${dates.departDate}`}
           currentPrice={res.destinations.length ? Math.min(...res.destinations.map((d) => d.cheapest.price.amount)) : undefined}
           currency="EUR"
         />
