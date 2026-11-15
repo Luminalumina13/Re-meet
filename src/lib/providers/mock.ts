@@ -1,5 +1,6 @@
 import type { Itinerary, Leg, SearchRequest, Segment } from "@/lib/domain/types";
-import { distanceKm, getAirport } from "@/lib/data/airports";
+import { AIRPORTS, distanceKm, getAirport } from "@/lib/data/airports";
+import type { ExploreRequest } from "@/lib/explore/types";
 import type { Airport } from "@/lib/domain/types";
 import { localToUtc, utcToLocal, minutesToHhmm, weekday } from "@/lib/domain/time";
 import type { FlightProvider } from "./types";
@@ -119,6 +120,32 @@ export class MockProvider implements FlightProvider {
       }
     }
     return combos;
+  }
+
+  /** Demo "anywhere": round trips to the nearest airports a direct flight reaches within the limit. */
+  async explore(req: ExploreRequest): Promise<Itinerary[]> {
+    const from = getAirport(req.origin);
+    if (!from) return [];
+    const reach = req.maxFlightHours * 60;
+    const targets = AIRPORTS.filter((a) => a.city !== from.city)
+      .map((a) => ({ a, km: distanceKm(from, a) }))
+      .filter((x) => 35 + (x.km / 780) * 60 <= reach + 15)
+      .sort((x, y) => x.km - y.km)
+      .slice(0, 30);
+    const lists = await Promise.all(
+      targets.map(({ a }) =>
+        this.search({
+          origin: from.iata,
+          destination: a.iata,
+          departDate: req.departDate,
+          returnDate: req.returnDate,
+          adults: req.adults,
+          cabin: req.cabin,
+          currency: req.currency,
+        }),
+      ),
+    );
+    return lists.flat();
   }
 
   private toItinerary(req: SearchRequest, legs: Leg[], idx: number): Itinerary {

@@ -1,0 +1,1256 @@
+{
+ "query": "WAW \u2192 anywhere on 21/11/2026, returning 22/11/2026, 1 adult [\u22644h flight; dep from 08:00; ret arr from 17:00; one per city]",
+ "currency": "EUR",
+ "passengers": {
+  "adults": 1,
+  "children": 0,
+  "infants": 0
+ },
+ "resultsCount": 15,
+ "itineraries": [
+  {
+   "id": "20ef057b512a512b6c08a069_0|20ef057b512a512b6c08a069_1",
+   "tripType": "return",
+   "price": 215.0,
+   "priceFormatted": "215 EUR",
+   "totalDurationSeconds": 14400,
+   "bookingUrl": "https://kiwi.com/u/mv7grn",
+   "imageId": "zurich_ch",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 0,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "ZRH",
+    "departureTime": "2026-11-21T19:45:00",
+    "arrivalTime": "2026-11-21T21:50:00",
+    "durationSeconds": 7500,
+    "stops": 0,
+    "route": [
+     "WAW",
+     "ZRH"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "ZRH",
+      "fromCity": "Warsaw",
+      "toCity": "Z\u00fcrich",
+      "fromName": "Warsaw Chopin",
+      "toName": "Z\u00fcrich Airport",
+      "fromCountry": "Poland",
+      "toCountry": "Switzerland",
+      "departureTime": "2026-11-21T19:45:00",
+      "arrivalTime": "2026-11-21T21:50:00",
+      "durationSeconds": 7500,
+      "carrier": "LX",
+      "carrierName": "Swiss International Air Lines",
+      "flightNumber": "LX1353",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": {
+    "from": "ZRH",
+    "to": "WAW",
+    "departureTime": "2026-11-22T17:00:00",
+    "arrivalTime": "2026-11-22T18:55:00",
+    "durationSeconds": 6900,
+    "stops": 0,
+    "route": [
+     "ZRH",
+     "WAW"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "ZRH",
+      "to": "WAW",
+      "fromCity": "Z\u00fcrich",
+      "toCity": "Warsaw",
+      "fromName": "Z\u00fcrich Airport",
+      "toName": "Warsaw Chopin",
+      "fromCountry": "Switzerland",
+      "toCountry": "Poland",
+      "departureTime": "2026-11-22T17:00:00",
+      "arrivalTime": "2026-11-22T18:55:00",
+      "durationSeconds": 6900,
+      "carrier": "LX",
+      "carrierName": "Swiss International Air Lines",
+      "flightNumber": "LX1352",
+      "cabinClass": "Economy"
+     }
+    ]
+   }
+  },
+  {
+   "id": "20ef25c3512a512bad6ae72e_0|20ef25c3512a512bad6ae72e_1",
+   "tripType": "return",
+   "price": 279.0,
+   "priceFormatted": "279 EUR",
+   "totalDurationSeconds": 17700,
+   "bookingUrl": "https://kiwi.com/u/vhtcszg",
+   "imageId": "paris_fr",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 0,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "CDG",
+    "departureTime": "2026-11-21T13:05:00",
+    "arrivalTime": "2026-11-21T15:45:00",
+    "durationSeconds": 9600,
+    "stops": 0,
+    "route": [
+     "WAW",
+     "CDG"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "CDG",
+      "fromCity": "Warsaw",
+      "toCity": "Paris",
+      "fromName": "Warsaw Chopin",
+      "toName": "Charles de Gaulle Airport",
+      "fromCountry": "Poland",
+      "toCountry": "France",
+      "departureTime": "2026-11-21T13:05:00",
+      "arrivalTime": "2026-11-21T15:45:00",
+      "durationSeconds": 9600,
+      "carrier": "AF",
+      "carrierName": "Air France",
+      "flightNumber": "AF1147",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": {
+    "from": "CDG",
+    "to": "WAW",
+    "departureTime": "2026-11-22T15:45:00",
+    "arrivalTime": "2026-11-22T18:00:00",
+    "durationSeconds": 8100,
+    "stops": 0,
+    "route": [
+     "CDG",
+     "WAW"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "CDG",
+      "to": "WAW",
+      "fromCity": "Paris",
+      "toCity": "Warsaw",
+      "fromName": "Charles de Gaulle Airport",
+      "toName": "Warsaw Chopin",
+      "fromCountry": "France",
+      "toCountry": "Poland",
+      "departureTime": "2026-11-22T15:45:00",
+      "arrivalTime": "2026-11-22T18:00:00",
+      "durationSeconds": 8100,
+      "carrier": "AF",
+      "carrierName": "Air France",
+      "flightNumber": "AF1346",
+      "cabinClass": "Economy"
+     }
+    ]
+   }
+  },
+  {
+   "id": "20ef145c512a512b25e2c464_0|20ef145c512a512b25e2c464_1",
+   "tripType": "return",
+   "price": 310.0,
+   "priceFormatted": "310 EUR",
+   "totalDurationSeconds": 9300,
+   "bookingUrl": "https://kiwi.com/u/jxq4cmc",
+   "imageId": "prague_cz",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 1,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "PRG",
+    "departureTime": "2026-11-21T10:50:00",
+    "arrivalTime": "2026-11-21T12:10:00",
+    "durationSeconds": 4800,
+    "stops": 0,
+    "route": [
+     "WAW",
+     "PRG"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "PRG",
+      "fromCity": "Warsaw",
+      "toCity": "Prague",
+      "fromName": "Warsaw Chopin",
+      "toName": "V\u00e1clav Havel Airport Prague",
+      "fromCountry": "Poland",
+      "toCountry": "Czechia",
+      "departureTime": "2026-11-21T10:50:00",
+      "arrivalTime": "2026-11-21T12:10:00",
+      "durationSeconds": 4800,
+      "carrier": "LO",
+      "carrierName": "LOT Polish Airlines",
+      "flightNumber": "LO527",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": {
+    "from": "PRG",
+    "to": "WAW",
+    "departureTime": "2026-11-22T19:40:00",
+    "arrivalTime": "2026-11-22T20:55:00",
+    "durationSeconds": 4500,
+    "stops": 0,
+    "route": [
+     "PRG",
+     "WAW"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "PRG",
+      "to": "WAW",
+      "fromCity": "Prague",
+      "toCity": "Warsaw",
+      "fromName": "V\u00e1clav Havel Airport Prague",
+      "toName": "Warsaw Chopin",
+      "fromCountry": "Czechia",
+      "toCountry": "Poland",
+      "departureTime": "2026-11-22T19:40:00",
+      "arrivalTime": "2026-11-22T20:55:00",
+      "durationSeconds": 4500,
+      "carrier": "LO",
+      "carrierName": "LOT Polish Airlines",
+      "flightNumber": "LO526",
+      "cabinClass": "Economy"
+     }
+    ]
+   }
+  },
+  {
+   "id": "20ef2602512a512b121fcda2_0|20ef2602512a512b121fcda2_1",
+   "tripType": "return",
+   "price": 324.0,
+   "priceFormatted": "324 EUR",
+   "totalDurationSeconds": 12900,
+   "bookingUrl": "https://kiwi.com/u/sg6czr9",
+   "imageId": "stockholm_se",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 1,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "ARN",
+    "departureTime": "2026-11-21T16:55:00",
+    "arrivalTime": "2026-11-21T18:50:00",
+    "durationSeconds": 6900,
+    "stops": 0,
+    "route": [
+     "WAW",
+     "ARN"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "ARN",
+      "fromCity": "Warsaw",
+      "toCity": "Stockholm",
+      "fromName": "Warsaw Chopin",
+      "toName": "Stockholm Arlanda",
+      "fromCountry": "Poland",
+      "toCountry": "Sweden",
+      "departureTime": "2026-11-21T16:55:00",
+      "arrivalTime": "2026-11-21T18:50:00",
+      "durationSeconds": 6900,
+      "carrier": "LO",
+      "carrierName": "LOT Polish Airlines",
+      "flightNumber": "LO457",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": {
+    "from": "ARN",
+    "to": "WAW",
+    "departureTime": "2026-11-22T19:30:00",
+    "arrivalTime": "2026-11-22T21:10:00",
+    "durationSeconds": 6000,
+    "stops": 0,
+    "route": [
+     "ARN",
+     "WAW"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "ARN",
+      "to": "WAW",
+      "fromCity": "Stockholm",
+      "toCity": "Warsaw",
+      "fromName": "Stockholm Arlanda",
+      "toName": "Warsaw Chopin",
+      "fromCountry": "Sweden",
+      "toCountry": "Poland",
+      "departureTime": "2026-11-22T19:30:00",
+      "arrivalTime": "2026-11-22T21:10:00",
+      "durationSeconds": 6000,
+      "carrier": "LO",
+      "carrierName": "LOT Polish Airlines",
+      "flightNumber": "LO458",
+      "cabinClass": "Economy"
+     }
+    ]
+   }
+  },
+  {
+   "id": "20ef0042512a512bb62eaf9d_0|20ef0042512a512bb62eaf9d_1",
+   "tripType": "return",
+   "price": 362.0,
+   "priceFormatted": "362 EUR",
+   "totalDurationSeconds": 9000,
+   "bookingUrl": "https://kiwi.com/u/q8gb6x",
+   "imageId": "berlin_de",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 1,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "BER",
+    "departureTime": "2026-11-21T09:25:00",
+    "arrivalTime": "2026-11-21T10:45:00",
+    "durationSeconds": 4800,
+    "stops": 0,
+    "route": [
+     "WAW",
+     "BER"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "BER",
+      "fromCity": "Warsaw",
+      "toCity": "Berlin",
+      "fromName": "Warsaw Chopin",
+      "toName": "Berlin Brandenburg",
+      "fromCountry": "Poland",
+      "toCountry": "Germany",
+      "departureTime": "2026-11-21T09:25:00",
+      "arrivalTime": "2026-11-21T10:45:00",
+      "durationSeconds": 4800,
+      "carrier": "LO",
+      "carrierName": "LOT Polish Airlines",
+      "flightNumber": "LO387",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": {
+    "from": "BER",
+    "to": "WAW",
+    "departureTime": "2026-11-22T18:40:00",
+    "arrivalTime": "2026-11-22T19:50:00",
+    "durationSeconds": 4200,
+    "stops": 0,
+    "route": [
+     "BER",
+     "WAW"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "BER",
+      "to": "WAW",
+      "fromCity": "Berlin",
+      "toCity": "Warsaw",
+      "fromName": "Berlin Brandenburg",
+      "toName": "Warsaw Chopin",
+      "fromCountry": "Germany",
+      "toCountry": "Poland",
+      "departureTime": "2026-11-22T18:40:00",
+      "arrivalTime": "2026-11-22T19:50:00",
+      "durationSeconds": 4200,
+      "carrier": "LO",
+      "carrierName": "LOT Polish Airlines",
+      "flightNumber": "LO390",
+      "cabinClass": "Economy"
+     }
+    ]
+   }
+  },
+  {
+   "id": "20ef0f58512a512b5a34ab76_0|20ef0f58512a512b5a34ab76_1",
+   "tripType": "return",
+   "price": 364.0,
+   "priceFormatted": "364 EUR",
+   "totalDurationSeconds": 14400,
+   "bookingUrl": "https://kiwi.com/u/d6yfng",
+   "imageId": "sofia_bg",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 1,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "SOF",
+    "departureTime": "2026-11-21T10:50:00",
+    "arrivalTime": "2026-11-21T13:50:00",
+    "durationSeconds": 7200,
+    "stops": 0,
+    "route": [
+     "WAW",
+     "SOF"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "SOF",
+      "fromCity": "Warsaw",
+      "toCity": "Sofia",
+      "fromName": "Warsaw Chopin",
+      "toName": "Sofia",
+      "fromCountry": "Poland",
+      "toCountry": "Bulgaria",
+      "departureTime": "2026-11-21T10:50:00",
+      "arrivalTime": "2026-11-21T13:50:00",
+      "durationSeconds": 7200,
+      "carrier": "LO",
+      "carrierName": "LOT Polish Airlines",
+      "flightNumber": "LO631",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": {
+    "from": "SOF",
+    "to": "WAW",
+    "departureTime": "2026-11-22T18:40:00",
+    "arrivalTime": "2026-11-22T19:40:00",
+    "durationSeconds": 7200,
+    "stops": 0,
+    "route": [
+     "SOF",
+     "WAW"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "SOF",
+      "to": "WAW",
+      "fromCity": "Sofia",
+      "toCity": "Warsaw",
+      "fromName": "Sofia",
+      "toName": "Warsaw Chopin",
+      "fromCountry": "Bulgaria",
+      "toCountry": "Poland",
+      "departureTime": "2026-11-22T18:40:00",
+      "arrivalTime": "2026-11-22T19:40:00",
+      "durationSeconds": 7200,
+      "carrier": "LO",
+      "carrierName": "LOT Polish Airlines",
+      "flightNumber": "LO634",
+      "cabinClass": "Economy"
+     }
+    ]
+   }
+  },
+  {
+   "id": "20ef1f2b512a512b30df2633_0|20ef1f2b512a512b30df2633_1",
+   "tripType": "return",
+   "price": 402.0,
+   "priceFormatted": "402 EUR",
+   "totalDurationSeconds": 15000,
+   "bookingUrl": "https://kiwi.com/u/rvu36vk",
+   "imageId": "brussels_be",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 1,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "BRU",
+    "departureTime": "2026-11-21T16:35:00",
+    "arrivalTime": "2026-11-21T18:45:00",
+    "durationSeconds": 7800,
+    "stops": 0,
+    "route": [
+     "WAW",
+     "BRU"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "BRU",
+      "fromCity": "Warsaw",
+      "toCity": "Brussels",
+      "fromName": "Warsaw Chopin",
+      "toName": "Brussels",
+      "fromCountry": "Poland",
+      "toCountry": "Belgium",
+      "departureTime": "2026-11-21T16:35:00",
+      "arrivalTime": "2026-11-21T18:45:00",
+      "durationSeconds": 7800,
+      "carrier": "LO",
+      "carrierName": "LOT Polish Airlines",
+      "flightNumber": "LO233",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": {
+    "from": "BRU",
+    "to": "WAW",
+    "departureTime": "2026-11-22T19:40:00",
+    "arrivalTime": "2026-11-22T21:40:00",
+    "durationSeconds": 7200,
+    "stops": 0,
+    "route": [
+     "BRU",
+     "WAW"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "BRU",
+      "to": "WAW",
+      "fromCity": "Brussels",
+      "toCity": "Warsaw",
+      "fromName": "Brussels",
+      "toName": "Warsaw Chopin",
+      "fromCountry": "Belgium",
+      "toCountry": "Poland",
+      "departureTime": "2026-11-22T19:40:00",
+      "arrivalTime": "2026-11-22T21:40:00",
+      "durationSeconds": 7200,
+      "carrier": "LO",
+      "carrierName": "LOT Polish Airlines",
+      "flightNumber": "LO234",
+      "cabinClass": "Economy"
+     }
+    ]
+   }
+  },
+  {
+   "id": "20ef0c88512a512bceeed72b_0|20ef0c88512a512bceeed72b_1",
+   "tripType": "return",
+   "price": 403.0,
+   "priceFormatted": "403 EUR",
+   "totalDurationSeconds": 8100,
+   "bookingUrl": "https://kiwi.com/u/c3865u",
+   "imageId": "vilnius_lt",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 1,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "VNO",
+    "departureTime": "2026-11-21T11:55:00",
+    "arrivalTime": "2026-11-21T14:00:00",
+    "durationSeconds": 3900,
+    "stops": 0,
+    "route": [
+     "WAW",
+     "VNO"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "VNO",
+      "fromCity": "Warsaw",
+      "toCity": "Vilnius",
+      "fromName": "Warsaw Chopin",
+      "toName": "Vilnius",
+      "fromCountry": "Poland",
+      "toCountry": "Lithuania",
+      "departureTime": "2026-11-21T11:55:00",
+      "arrivalTime": "2026-11-21T14:00:00",
+      "durationSeconds": 3900,
+      "carrier": "LO",
+      "carrierName": "LOT Polish Airlines",
+      "flightNumber": "LO771",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": {
+    "from": "VNO",
+    "to": "WAW",
+    "departureTime": "2026-11-22T19:10:00",
+    "arrivalTime": "2026-11-22T19:20:00",
+    "durationSeconds": 4200,
+    "stops": 0,
+    "route": [
+     "VNO",
+     "WAW"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "VNO",
+      "to": "WAW",
+      "fromCity": "Vilnius",
+      "toCity": "Warsaw",
+      "fromName": "Vilnius",
+      "toName": "Warsaw Chopin",
+      "fromCountry": "Lithuania",
+      "toCountry": "Poland",
+      "departureTime": "2026-11-22T19:10:00",
+      "arrivalTime": "2026-11-22T19:20:00",
+      "durationSeconds": 4200,
+      "carrier": "LO",
+      "carrierName": "LOT Polish Airlines",
+      "flightNumber": "LO776",
+      "cabinClass": "Economy"
+     }
+    ]
+   }
+  },
+  {
+   "id": "20ef0f0c512a512b1224888f_0|20ef0f0c512a512b1224888f_1",
+   "tripType": "return",
+   "price": 413.0,
+   "priceFormatted": "413 EUR",
+   "totalDurationSeconds": 17400,
+   "bookingUrl": "https://kiwi.com/u/njhwudv",
+   "imageId": "rome_it",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 1,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "FCO",
+    "departureTime": "2026-11-21T16:10:00",
+    "arrivalTime": "2026-11-21T18:35:00",
+    "durationSeconds": 8700,
+    "stops": 0,
+    "route": [
+     "WAW",
+     "FCO"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "FCO",
+      "fromCity": "Warsaw",
+      "toCity": "Rome",
+      "fromName": "Warsaw Chopin",
+      "toName": "Leonardo da Vinci\u2013Fiumicino Airport",
+      "fromCountry": "Poland",
+      "toCountry": "Italy",
+      "departureTime": "2026-11-21T16:10:00",
+      "arrivalTime": "2026-11-21T18:35:00",
+      "durationSeconds": 8700,
+      "carrier": "LO",
+      "carrierName": "LOT Polish Airlines",
+      "flightNumber": "LO303",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": {
+    "from": "FCO",
+    "to": "WAW",
+    "departureTime": "2026-11-22T19:35:00",
+    "arrivalTime": "2026-11-22T22:00:00",
+    "durationSeconds": 8700,
+    "stops": 0,
+    "route": [
+     "FCO",
+     "WAW"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "FCO",
+      "to": "WAW",
+      "fromCity": "Rome",
+      "toCity": "Warsaw",
+      "fromName": "Leonardo da Vinci\u2013Fiumicino Airport",
+      "toName": "Warsaw Chopin",
+      "fromCountry": "Italy",
+      "toCountry": "Poland",
+      "departureTime": "2026-11-22T19:35:00",
+      "arrivalTime": "2026-11-22T22:00:00",
+      "durationSeconds": 8700,
+      "carrier": "LO",
+      "carrierName": "LOT Polish Airlines",
+      "flightNumber": "LO304",
+      "cabinClass": "Economy"
+     }
+    ]
+   }
+  },
+  {
+   "id": "20ef170f512a512bef874939_0|20ef170f512a512bef874939_1",
+   "tripType": "return",
+   "price": 418.0,
+   "priceFormatted": "418 EUR",
+   "totalDurationSeconds": 19500,
+   "bookingUrl": "https://kiwi.com/u/p9zs67",
+   "imageId": "istanbul_tr",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 1,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "IST",
+    "departureTime": "2026-11-21T09:10:00",
+    "arrivalTime": "2026-11-21T14:00:00",
+    "durationSeconds": 10200,
+    "stops": 0,
+    "route": [
+     "WAW",
+     "IST"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "IST",
+      "fromCity": "Warsaw",
+      "toCity": "Istanbul",
+      "fromName": "Warsaw Chopin",
+      "toName": "Istanbul Airport",
+      "fromCountry": "Poland",
+      "toCountry": "Turkey",
+      "departureTime": "2026-11-21T09:10:00",
+      "arrivalTime": "2026-11-21T14:00:00",
+      "durationSeconds": 10200,
+      "carrier": "LO",
+      "carrierName": "LOT Polish Airlines",
+      "flightNumber": "LO133",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": {
+    "from": "IST",
+    "to": "WAW",
+    "departureTime": "2026-11-22T18:30:00",
+    "arrivalTime": "2026-11-22T19:05:00",
+    "durationSeconds": 9300,
+    "stops": 0,
+    "route": [
+     "IST",
+     "WAW"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "IST",
+      "to": "WAW",
+      "fromCity": "Istanbul",
+      "toCity": "Warsaw",
+      "fromName": "Istanbul Airport",
+      "toName": "Warsaw Chopin",
+      "fromCountry": "Turkey",
+      "toCountry": "Poland",
+      "departureTime": "2026-11-22T18:30:00",
+      "arrivalTime": "2026-11-22T19:05:00",
+      "durationSeconds": 9300,
+      "carrier": "LO",
+      "carrierName": "LOT Polish Airlines",
+      "flightNumber": "LO136",
+      "cabinClass": "Economy"
+     }
+    ]
+   }
+  },
+  {
+   "id": "20ef22c3512a512b1cc8c435_0|20ef22c3512a512b1cc8c435_1",
+   "tripType": "return",
+   "price": 457.0,
+   "priceFormatted": "457 EUR",
+   "totalDurationSeconds": 12300,
+   "bookingUrl": "https://kiwi.com/u/5chp5n",
+   "imageId": "tallinn_ee",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 1,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "TLL",
+    "departureTime": "2026-11-21T10:40:00",
+    "arrivalTime": "2026-11-21T13:25:00",
+    "durationSeconds": 6300,
+    "stops": 0,
+    "route": [
+     "WAW",
+     "TLL"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "TLL",
+      "fromCity": "Warsaw",
+      "toCity": "Tallinn",
+      "fromName": "Warsaw Chopin",
+      "toName": "Tallinn",
+      "fromCountry": "Poland",
+      "toCountry": "Estonia",
+      "departureTime": "2026-11-21T10:40:00",
+      "arrivalTime": "2026-11-21T13:25:00",
+      "durationSeconds": 6300,
+      "carrier": "LO",
+      "carrierName": "LOT Polish Airlines",
+      "flightNumber": "LO785",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": {
+    "from": "TLL",
+    "to": "WAW",
+    "departureTime": "2026-11-22T18:25:00",
+    "arrivalTime": "2026-11-22T19:05:00",
+    "durationSeconds": 6000,
+    "stops": 0,
+    "route": [
+     "TLL",
+     "WAW"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "TLL",
+      "to": "WAW",
+      "fromCity": "Tallinn",
+      "toCity": "Warsaw",
+      "fromName": "Tallinn",
+      "toName": "Warsaw Chopin",
+      "fromCountry": "Estonia",
+      "toCountry": "Poland",
+      "departureTime": "2026-11-22T18:25:00",
+      "arrivalTime": "2026-11-22T19:05:00",
+      "durationSeconds": 6000,
+      "carrier": "LO",
+      "carrierName": "LOT Polish Airlines",
+      "flightNumber": "LO788",
+      "cabinClass": "Economy"
+     }
+    ]
+   }
+  },
+  {
+   "id": "20ef23fa512a512bac2adc93_0|20ef23fa512a512bac2adc93_1|20ef23fa512a512bac2adc93_2|20ef23fa512a512bac2adc93_3",
+   "tripType": "return",
+   "price": 480.0,
+   "priceFormatted": "480 EUR",
+   "totalDurationSeconds": 28200,
+   "bookingUrl": "https://kiwi.com/u/2jwbvz",
+   "imageId": "geneva_ch",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 0,
+    "checkedBag": 1
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "GVA",
+    "departureTime": "2026-11-21T09:20:00",
+    "arrivalTime": "2026-11-21T13:15:00",
+    "durationSeconds": 14100,
+    "stops": 1,
+    "route": [
+     "WAW",
+     "FRA",
+     "GVA"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "FRA",
+      "fromCity": "Warsaw",
+      "toCity": "Frankfurt",
+      "fromName": "Warsaw Chopin",
+      "toName": "Frankfurt International Airport",
+      "fromCountry": "Poland",
+      "toCountry": "Germany",
+      "departureTime": "2026-11-21T09:20:00",
+      "arrivalTime": "2026-11-21T11:10:00",
+      "durationSeconds": 6600,
+      "carrier": "LH",
+      "carrierName": "Lufthansa",
+      "flightNumber": "LH1343",
+      "cabinClass": "Economy"
+     },
+     {
+      "from": "FRA",
+      "to": "GVA",
+      "fromCity": "Frankfurt",
+      "toCity": "Geneva",
+      "fromName": "Frankfurt International Airport",
+      "toName": "Geneva",
+      "fromCountry": "Germany",
+      "toCountry": "Switzerland",
+      "departureTime": "2026-11-21T12:05:00",
+      "arrivalTime": "2026-11-21T13:15:00",
+      "durationSeconds": 4200,
+      "carrier": "LH",
+      "carrierName": "Lufthansa",
+      "flightNumber": "LH1216",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": {
+    "from": "GVA",
+    "to": "WAW",
+    "departureTime": "2026-11-22T13:45:00",
+    "arrivalTime": "2026-11-22T17:40:00",
+    "durationSeconds": 14100,
+    "stops": 1,
+    "route": [
+     "GVA",
+     "FRA",
+     "WAW"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "GVA",
+      "to": "FRA",
+      "fromCity": "Geneva",
+      "toCity": "Frankfurt",
+      "fromName": "Geneva",
+      "toName": "Frankfurt International Airport",
+      "fromCountry": "Switzerland",
+      "toCountry": "Germany",
+      "departureTime": "2026-11-22T13:45:00",
+      "arrivalTime": "2026-11-22T15:00:00",
+      "durationSeconds": 4500,
+      "carrier": "LH",
+      "carrierName": "Lufthansa",
+      "flightNumber": "LH1217",
+      "cabinClass": "Economy"
+     },
+     {
+      "from": "FRA",
+      "to": "WAW",
+      "fromCity": "Frankfurt",
+      "toCity": "Warsaw",
+      "fromName": "Frankfurt International Airport",
+      "toName": "Warsaw Chopin",
+      "fromCountry": "Germany",
+      "toCountry": "Poland",
+      "departureTime": "2026-11-22T16:00:00",
+      "arrivalTime": "2026-11-22T17:40:00",
+      "durationSeconds": 6000,
+      "carrier": "LH",
+      "carrierName": "Lufthansa",
+      "flightNumber": "LH1346",
+      "cabinClass": "Economy"
+     }
+    ]
+   }
+  },
+  {
+   "id": "20ef19ef512a512bcff288db_0|20ef19ef512a512bcff288db_1",
+   "tripType": "return",
+   "price": 500.0,
+   "priceFormatted": "500 EUR",
+   "totalDurationSeconds": 9300,
+   "bookingUrl": "https://kiwi.com/u/q3ynnw",
+   "imageId": "vienna_at",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 1,
+    "checkedBag": 1
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "VIE",
+    "departureTime": "2026-11-21T10:10:00",
+    "arrivalTime": "2026-11-21T11:30:00",
+    "durationSeconds": 4800,
+    "stops": 0,
+    "route": [
+     "WAW",
+     "VIE"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "VIE",
+      "fromCity": "Warsaw",
+      "toCity": "Vienna",
+      "fromName": "Warsaw Chopin",
+      "toName": "Vienna International Airport",
+      "fromCountry": "Poland",
+      "toCountry": "Austria",
+      "departureTime": "2026-11-21T10:10:00",
+      "arrivalTime": "2026-11-21T11:30:00",
+      "durationSeconds": 4800,
+      "carrier": "OS",
+      "carrierName": "Austrian Airlines",
+      "flightNumber": "OS662",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": {
+    "from": "VIE",
+    "to": "WAW",
+    "departureTime": "2026-11-22T17:30:00",
+    "arrivalTime": "2026-11-22T18:45:00",
+    "durationSeconds": 4500,
+    "stops": 0,
+    "route": [
+     "VIE",
+     "WAW"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "VIE",
+      "to": "WAW",
+      "fromCity": "Vienna",
+      "toCity": "Warsaw",
+      "fromName": "Vienna International Airport",
+      "toName": "Warsaw Chopin",
+      "fromCountry": "Austria",
+      "toCountry": "Poland",
+      "departureTime": "2026-11-22T17:30:00",
+      "arrivalTime": "2026-11-22T18:45:00",
+      "durationSeconds": 4500,
+      "carrier": "OS",
+      "carrierName": "Austrian Airlines",
+      "flightNumber": "OS667",
+      "cabinClass": "Economy"
+     }
+    ]
+   }
+  },
+  {
+   "id": "20ef1777512a512bc8bdc44c_0|20ef1777512a512bc8bdc44c_1",
+   "tripType": "return",
+   "price": 514.0,
+   "priceFormatted": "514 EUR",
+   "totalDurationSeconds": 9600,
+   "bookingUrl": "https://kiwi.com/u/hzzy6x",
+   "imageId": "riga_lv",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 1,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "RIX",
+    "departureTime": "2026-11-21T15:35:00",
+    "arrivalTime": "2026-11-21T17:55:00",
+    "durationSeconds": 4800,
+    "stops": 0,
+    "route": [
+     "WAW",
+     "RIX"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "RIX",
+      "fromCity": "Warsaw",
+      "toCity": "Riga",
+      "fromName": "Warsaw Chopin",
+      "toName": "Riga International",
+      "fromCountry": "Poland",
+      "toCountry": "Latvia",
+      "departureTime": "2026-11-21T15:35:00",
+      "arrivalTime": "2026-11-21T17:55:00",
+      "durationSeconds": 4800,
+      "carrier": "LO",
+      "carrierName": "LOT Polish Airlines",
+      "flightNumber": "LO781",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": {
+    "from": "RIX",
+    "to": "WAW",
+    "departureTime": "2026-11-22T18:40:00",
+    "arrivalTime": "2026-11-22T19:00:00",
+    "durationSeconds": 4800,
+    "stops": 0,
+    "route": [
+     "RIX",
+     "WAW"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "RIX",
+      "to": "WAW",
+      "fromCity": "Riga",
+      "toCity": "Warsaw",
+      "fromName": "Riga International",
+      "toName": "Warsaw Chopin",
+      "fromCountry": "Latvia",
+      "toCountry": "Poland",
+      "departureTime": "2026-11-22T18:40:00",
+      "arrivalTime": "2026-11-22T19:00:00",
+      "durationSeconds": 4800,
+      "carrier": "LO",
+      "carrierName": "LOT Polish Airlines",
+      "flightNumber": "LO782",
+      "cabinClass": "Economy"
+     }
+    ]
+   }
+  },
+  {
+   "id": "20ef1cce512a512b0fac38fa_0|20ef1cce512a512b0fac38fa_1|20ef1cce512a512b0fac38fa_2|20ef1cce512a512b0fac38fa_3",
+   "tripType": "return",
+   "price": 547.0,
+   "priceFormatted": "547 EUR",
+   "totalDurationSeconds": 26400,
+   "bookingUrl": "https://kiwi.com/u/45rt7k",
+   "imageId": "oslo_no",
+   "baggage": {
+    "personalItem": 1,
+    "cabinBag": 0,
+    "checkedBag": 0
+   },
+   "outbound": {
+    "from": "WAW",
+    "to": "OSL",
+    "departureTime": "2026-11-21T15:30:00",
+    "arrivalTime": "2026-11-21T18:50:00",
+    "durationSeconds": 12000,
+    "stops": 1,
+    "route": [
+     "WAW",
+     "CPH",
+     "OSL"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "WAW",
+      "to": "CPH",
+      "fromCity": "Warsaw",
+      "toCity": "Copenhagen",
+      "fromName": "Warsaw Chopin",
+      "toName": "Airport Copenhagen",
+      "fromCountry": "Poland",
+      "toCountry": "Denmark",
+      "departureTime": "2026-11-21T15:30:00",
+      "arrivalTime": "2026-11-21T16:55:00",
+      "durationSeconds": 5100,
+      "carrier": "SK",
+      "carrierName": "SAS",
+      "flightNumber": "SK2762",
+      "cabinClass": "Economy"
+     },
+     {
+      "from": "CPH",
+      "to": "OSL",
+      "fromCity": "Copenhagen",
+      "toCity": "Oslo",
+      "fromName": "Airport Copenhagen",
+      "toName": "Oslo Airport, Gardermoen",
+      "fromCountry": "Denmark",
+      "toCountry": "Norway",
+      "departureTime": "2026-11-21T17:35:00",
+      "arrivalTime": "2026-11-21T18:50:00",
+      "durationSeconds": 4500,
+      "carrier": "SK",
+      "carrierName": "SAS",
+      "flightNumber": "SK1468",
+      "cabinClass": "Economy"
+     }
+    ]
+   },
+   "inbound": {
+    "from": "OSL",
+    "to": "WAW",
+    "departureTime": "2026-11-22T17:10:00",
+    "arrivalTime": "2026-11-22T21:10:00",
+    "durationSeconds": 14400,
+    "stops": 1,
+    "route": [
+     "OSL",
+     "CPH",
+     "WAW"
+    ],
+    "cabinClass": "Economy",
+    "segments": [
+     {
+      "from": "OSL",
+      "to": "CPH",
+      "fromCity": "Oslo",
+      "toCity": "Copenhagen",
+      "fromName": "Oslo Airport, Gardermoen",
+      "toName": "Airport Copenhagen",
+      "fromCountry": "Norway",
+      "toCountry": "Denmark",
+      "departureTime": "2026-11-22T17:10:00",
+      "arrivalTime": "2026-11-22T18:25:00",
+      "durationSeconds": 4500,
+      "carrier": "SK",
+      "carrierName": "SAS",
+      "flightNumber": "SK1465",
+      "cabinClass": "Economy"
+     },
+     {
+      "from": "CPH",
+      "to": "WAW",
+      "fromCity": "Copenhagen",
+      "toCity": "Warsaw",
+      "fromName": "Airport Copenhagen",
+      "toName": "Warsaw Chopin",
+      "fromCountry": "Denmark",
+      "toCountry": "Poland",
+      "departureTime": "2026-11-22T19:50:00",
+      "arrivalTime": "2026-11-22T21:10:00",
+      "durationSeconds": 4800,
+      "carrier": "SK",
+      "carrierName": "SAS",
+      "flightNumber": "SK8190",
+      "cabinClass": "Economy"
+     }
+    ]
+   }
+  }
+ ],
+ "searchTimeMs": 2193,
+ "error": null
+}

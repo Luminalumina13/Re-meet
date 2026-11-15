@@ -30,6 +30,10 @@ function describe(w: Watch): string {
     const r = w.params.request;
     return `${getAirport(r.origin)?.city ?? r.origin} → ${getAirport(r.destination)?.city ?? r.destination} · ${r.departDate}${r.returnDate ? ` – ${r.returnDate}` : ""}`;
   }
+  if (w.params.kind === "explore") {
+    const r = w.params.request;
+    return `${getAirport(r.origin)?.city ?? r.origin} → ✈ ≤ ${r.maxFlightHours} h · ${r.departDate} – ${r.returnDate}`;
+  }
   const r = w.params.request;
   return `${r.friends.map((f) => f.name).join(", ")} → ${r.destinations.map((d) => getAirport(d)?.city ?? d).join("/")} · ${r.departDate} – ${r.returnDate}`;
 }
@@ -101,7 +105,7 @@ export function WatchesPage() {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <Badge tone={w.params.kind === "meetup" ? "accent" : "neutral"}>{t.watch.kind[w.params.kind]}</Badge>
+                    <Badge tone={w.params.kind === "search" ? "neutral" : "accent"}>{t.watch.kind[w.params.kind]}</Badge>
                     {!w.active && <Badge tone="warn">{t.watch.paused}</Badge>}
                   </div>
                   <h3 className="mt-1 truncate text-lg font-bold">{w.label}</h3>

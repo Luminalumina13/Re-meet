@@ -2,9 +2,9 @@
 
 Flight search tuned for **weekends** — and a planner that picks tickets for **friends flying from different cities** so that the time they spend together is maximal. With **price tracking** on top.
 
-| Weekend search | Friends meetup | Price tracking |
-|---|---|---|
-| ![search](docs/screenshots/search-light.png) | ![meetup](docs/screenshots/meetup-light.png) | ![watches](docs/screenshots/watches-dark.png) |
+| Weekend search | Weekend anywhere | Friends meetup | Price tracking |
+|---|---|---|---|
+| ![search](docs/screenshots/search-light.png) | ![explore](docs/screenshots/explore-light.png) | ![meetup](docs/screenshots/meetup-light.png) | ![watches](docs/screenshots/watches-dark.png) |
 
 ## What it does
 
@@ -42,6 +42,12 @@ npm run dev              # http://localhost:3000
 ```
 
 `npm test` runs the unit tests, `npm run lint` and `npm run typecheck` do what they say, `npm run build && npm start` for production.
+
+## Weekend anywhere
+
+`/explore` answers "where can I go this weekend?": pick a departure city, a weekend and the longest flight you accept each way (for example up to 4 hours, connections included). The app asks Kiwi.com for every reachable city ("anywhere", one best option per city, four departure windows, two price pages each), applies the same ideal-weekend windows, and shows one card per destination: price from, flight time, hours on the ground, times, airlines and a photo. Sort by best, cheapest, most time there or shortest flight; filter by country; open the booking, or jump to the regular search for that city with everything prefilled. The whole query can be saved as a price watch: you get alerts on price drops and on new destinations.
+
+API: `POST /api/explore` with `{ origin, departDate, returnDate, maxFlightHours, adults, filters }`.
 
 ## Flight sources
 
@@ -88,6 +94,7 @@ Notifications: per watch, a webhook URL (JSON `{ text, label, alerts }`) and/or 
 | Route | Body / params | Returns |
 |---|---|---|
 | `POST /api/search` | `SearchRequest` (origin, destination, departDate, returnDate?, adults, cabin, currency, filters) | ranked itineraries + per-provider status |
+| `POST /api/explore` | `ExploreRequest` (origin, dates, maxFlightHours, filters) | destinations grouped by city with best and cheapest option |
 | `POST /api/meetup` | `MeetupRequest` (friends[], destinations[], dates, valuePerHour, filters…) | ranked plans, Pareto frontier, unreachable friends |
 | `GET /api/airports?q=` | query | airports |
 | `GET/POST /api/watches`, `GET/PATCH/DELETE /api/watches/:id`, `POST /api/watches/:id/check`, `GET/POST /api/watches/check` | | watch CRUD, manual and scheduled checks |

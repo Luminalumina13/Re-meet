@@ -46,6 +46,9 @@ export interface Leg {
   durationMin: number;
   stops: number;
   segments: Segment[];
+  /** Destination city/country names when the source provides them (for airports outside our table). */
+  toCity?: string;
+  toCountry?: string;
 }
 
 export interface Itinerary {
@@ -62,6 +65,8 @@ export interface Itinerary {
   signature: string;
   /** The same flights offered by other sources, cheapest first (filled in by the aggregator). */
   otherOffers?: Offer[];
+  /** Destination photo, when the source provides one. */
+  imageUrl?: string;
 }
 
 export interface Offer {
@@ -88,6 +93,8 @@ export interface SearchFilters {
   maxStops?: number;
   maxPrice?: number;
   carriers?: string[];
+  /** Upper bound on each leg's door-to-door flight time, minutes (connections included). */
+  maxDurationMin?: number;
 }
 
 export interface SearchRequest {

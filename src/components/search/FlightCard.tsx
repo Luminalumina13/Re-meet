@@ -25,7 +25,7 @@ export function LegRow({ leg, compact }: { leg: Leg; compact?: boolean }) {
       <div className="min-w-0">
         <div className="flex items-center gap-2 text-xs text-ink-3">
           <span className="h-px flex-1 bg-border-strong" />
-          <span className="whitespace-nowrap">
+          <span className="min-w-0 truncate">
             {fmtDurationLocalized(leg.durationMin, t.meetup.hours, t.meetup.minutes)} ·{" "}
             {leg.stops === 0 ? t.common.direct : `${leg.stops} ${leg.stops === 1 ? t.common.stop : t.common.stops}${via}`}
           </span>

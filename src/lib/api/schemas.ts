@@ -20,6 +20,7 @@ export const filtersSchema = z
     maxStops: z.number().int().min(0).max(3).optional(),
     maxPrice: z.number().positive().optional(),
     carriers: z.array(z.string().length(2)).max(30).optional(),
+    maxDurationMin: z.number().int().min(30).max(24 * 60).optional(),
   })
   .strict();
 
@@ -61,11 +62,25 @@ export const meetupRequestSchema = z
   })
   .refine((v) => v.returnDate >= v.departDate, { message: "Return before departure", path: ["returnDate"] });
 
+export const exploreRequestSchema = z
+  .object({
+    origin: iata,
+    departDate: isoDate,
+    returnDate: isoDate,
+    adults: z.number().int().min(1).max(9).default(1),
+    cabin: cabinSchema.default("economy"),
+    currency: z.string().length(3).toUpperCase().default("EUR"),
+    maxFlightHours: z.number().min(1).max(16).default(4),
+    filters: filtersSchema.optional(),
+  })
+  .refine((v) => v.returnDate >= v.departDate, { message: "Return before departure", path: ["returnDate"] });
+
 export const watchCreateSchema = z.object({
   label: z.string().trim().min(1).max(120),
   params: z.discriminatedUnion("kind", [
     z.object({ kind: z.literal("search"), request: searchRequestSchema }),
     z.object({ kind: z.literal("meetup"), request: meetupRequestSchema }),
+    z.object({ kind: z.literal("explore"), request: exploreRequestSchema }),
   ]),
   targetPrice: z.number().positive().optional(),
   dropThreshold: z.number().min(0.01).max(0.9).optional(),
@@ -93,3 +108,4 @@ export const watchPatchSchema = z.object({
 export type SearchRequestInput = z.input<typeof searchRequestSchema>;
 export type MeetupRequestInput = z.input<typeof meetupRequestSchema>;
 export type WatchCreateInput = z.input<typeof watchCreateSchema>;
+export type ExploreRequestInput = z.input<typeof exploreRequestSchema>;

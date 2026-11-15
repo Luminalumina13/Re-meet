@@ -31,6 +31,7 @@ export function itineraryMatches(it: Itinerary, f?: SearchFilters): boolean {
   if (!f) return true;
   const [out, back] = it.legs;
   if (f.maxStops !== undefined && it.legs.some((l) => l.stops > f.maxStops!)) return false;
+  if (f.maxDurationMin !== undefined && it.legs.some((l) => l.durationMin > f.maxDurationMin!)) return false;
   if (f.maxPrice !== undefined && it.price.amount > f.maxPrice) return false;
   if (f.carriers && f.carriers.length) {
     const ok = it.legs.every((l) => l.segments.every((s) => f.carriers!.includes(s.carrier)));

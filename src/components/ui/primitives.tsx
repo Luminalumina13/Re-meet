@@ -110,7 +110,7 @@ export function Chip({
 
 export function Segmented<T extends string>({ value, onChange, options }: { value: T; onChange: (v: T) => void; options: { value: T; label: ReactNode }[] }) {
   return (
-    <div role="tablist" className="inline-flex rounded-xl bg-surface-2 p-1 border border-border">
+    <div role="tablist" className="inline-flex max-w-full overflow-x-auto rounded-xl bg-surface-2 p-1 border border-border [scrollbar-width:none]">
       {options.map((o) => (
         <button
           key={o.value}
@@ -119,7 +119,7 @@ export function Segmented<T extends string>({ value, onChange, options }: { valu
           aria-selected={o.value === value}
           onClick={() => onChange(o.value)}
           className={cx(
-            "h-8 rounded-lg px-3 text-[13px] font-semibold transition",
+            "h-8 shrink-0 whitespace-nowrap rounded-lg px-3 text-[13px] font-semibold transition",
             o.value === value ? "bg-surface text-ink shadow-sm" : "text-ink-3 hover:text-ink",
           )}
         >

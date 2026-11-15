@@ -1,4 +1,5 @@
 import type { Itinerary, ProviderKind, SearchRequest } from "@/lib/domain/types";
+import type { ExploreRequest } from "@/lib/explore/types";
 
 /**
  * A flight data connector. Implementations map a vendor API onto the domain model.
@@ -15,6 +16,8 @@ export interface FlightProvider {
   /** Whether credentials/config are present. Unconfigured providers are skipped. */
   isConfigured(): boolean;
   search(req: SearchRequest, signal?: AbortSignal): Promise<Itinerary[]>;
+  /** Optional "anywhere" search: round trips from one origin to every reachable destination. */
+  explore?(req: ExploreRequest, signal?: AbortSignal): Promise<Itinerary[]>;
 }
 
 export class ProviderError extends Error {

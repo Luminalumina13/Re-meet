@@ -202,7 +202,7 @@ function hashKey(s: string): string {
 function oneWayFilters(f: SearchFilters | undefined, direction: "outbound" | "inbound"): SearchFilters | undefined {
   if (!f) return undefined;
   // For one-way searches the only leg is legs[0]; apply the matching window to it.
-  return { maxStops: f.maxStops, maxPrice: f.maxPrice, carriers: f.carriers, outbound: direction === "outbound" ? f.outbound : f.inbound };
+  return { maxStops: f.maxStops, maxPrice: f.maxPrice, carriers: f.carriers, maxDurationMin: f.maxDurationMin, outbound: direction === "outbound" ? f.outbound : f.inbound };
 }
 
 /** Fetch candidates for every friend and destination, then plan. */
@@ -261,6 +261,7 @@ function matchesOneWay(it: Itinerary, f?: SearchFilters): boolean {
   if (!f) return true;
   const leg = it.legs[0];
   if (f.maxStops !== undefined && leg.stops > f.maxStops) return false;
+  if (f.maxDurationMin !== undefined && leg.durationMin > f.maxDurationMin) return false;
   if (f.maxPrice !== undefined && it.price.amount > f.maxPrice) return false;
   if (f.carriers?.length && !leg.segments.every((s) => f.carriers!.includes(s.carrier))) return false;
   return legMatchesWindow(leg, f.outbound);

@@ -67,3 +67,30 @@ describe("overnight penalty", () => {
     expect(late.comfort).toBeLessThan(100);
   });
 });
+
+describe("search cache", () => {
+  it("does not cache failed or aborted fetches", async () => {
+    const { fetchRaw, clearSearchCache } = await import("@/lib/providers/aggregator");
+    clearSearchCache();
+    let calls = 0;
+    const flaky = {
+      id: "flaky",
+      name: "Flaky",
+      kind: "aggregator" as const,
+      isConfigured: () => true,
+      search: async () => {
+        calls++;
+        if (calls === 1) throw new Error("This operation was aborted");
+        return provider.search({ ...base, origin: "WAW", destination: "BCN", departDate: "2026-11-21" });
+      },
+    };
+    const req = { ...base, origin: "WAW", destination: "BCN", departDate: "2026-11-21" };
+    const first = await fetchRaw(req, { providers: [flaky] });
+    expect(first.providers[0].status).toBe("error");
+    const second = await fetchRaw(req, { providers: [flaky] });
+    expect(second.cached).toBe(false);
+    expect(second.raw.length).toBeGreaterThan(0);
+    const third = await fetchRaw(req, { providers: [flaky] });
+    expect(third.cached).toBe(true);
+  });
+});

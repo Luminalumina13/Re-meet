@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { search } from "@/lib/providers/aggregator";
 import { meetup } from "@/lib/meetup/engine";
+import { explore } from "@/lib/explore/engine";
 import type { Alert, PricePoint, Watch, WatchStore } from "./types";
 import { notify } from "./notify";
 import { watchStore } from "./store";
@@ -20,6 +21,16 @@ export async function snapshot(watch: Watch): Promise<Snapshot> {
       bestPrice: prices.length ? Math.min(...prices) : null,
       count: res.itineraries.length,
       signatures: res.itineraries.map((i) => i.signature),
+    };
+  }
+  if (watch.params.kind === "explore") {
+    const res = await explore(watch.params.request, { fresh: true });
+    const prices = res.destinations.map((d) => d.cheapest.price.amount);
+    return {
+      bestPrice: prices.length ? Math.min(...prices) : null,
+      count: res.destinations.length,
+      // A new destination or a new best flight to a known one counts as a new offer.
+      signatures: res.destinations.map((d) => `${d.key}|${d.cheapest.signature}`),
     };
   }
   const res = await meetup(watch.params.request, { fresh: true });

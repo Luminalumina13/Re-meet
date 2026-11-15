@@ -43,6 +43,7 @@ export function Header() {
 
   const links = [
     { href: "/", label: t.nav.search },
+    { href: "/explore", label: t.nav.explore },
     { href: "/meetup", label: t.nav.meetup },
     { href: "/watches", label: t.nav.watches },
   ];
@@ -59,7 +60,7 @@ export function Header() {
               key={l.href}
               href={l.href}
               className={cx(
-                "rounded-lg px-3 py-1.5 text-[13px] font-semibold transition",
+                "whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[13px] font-semibold transition sm:px-3",
                 path === l.href ? "bg-surface text-ink shadow-sm" : "text-ink-3 hover:text-ink",
               )}
             >

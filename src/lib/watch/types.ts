@@ -1,5 +1,6 @@
 import type { SearchRequest } from "@/lib/domain/types";
 import type { MeetupRequest } from "@/lib/meetup/types";
+import type { ExploreRequest } from "@/lib/explore/types";
 
 export interface PricePoint {
   at: string;
@@ -25,7 +26,10 @@ export interface NotifyConfig {
   telegramChatId?: string;
 }
 
-export type WatchParams = { kind: "search"; request: SearchRequest } | { kind: "meetup"; request: MeetupRequest };
+export type WatchParams =
+  | { kind: "search"; request: SearchRequest }
+  | { kind: "meetup"; request: MeetupRequest }
+  | { kind: "explore"; request: ExploreRequest };
 
 export interface Watch {
   id: string;

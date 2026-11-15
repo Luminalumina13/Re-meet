@@ -61,7 +61,9 @@ export async function fetchRaw(
   );
   const raw = dedupe(results.flat());
   const value = { raw, providers: statuses.sort((a, b) => a.id.localeCompare(b.id)) };
-  cache.set(key, value);
+  // Never cache failures: an aborted request (user navigated away) or a source outage would
+  // otherwise be served to everyone for the cache lifetime.
+  if (!opts.signal?.aborted && statuses.every((s) => s.status !== "error")) cache.set(key, value);
   return { ...value, cached: false };
 }
 

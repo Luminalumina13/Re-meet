@@ -6,6 +6,7 @@ import { ProviderError } from "./types";
 import { TtlCache } from "./cache";
 import { createLimiter } from "./limiter";
 import { finalize, httpJson } from "./util";
+import type { ExploreRequest } from "@/lib/explore/types";
 
 /**
  * Kiwi.com connector over its public MCP server (https://mcp.kiwi.com), no API key needed.
@@ -22,6 +23,8 @@ import { finalize, httpJson } from "./util";
 interface KiwiSeg {
   from: string;
   to: string;
+  toCity?: string;
+  toCountry?: string;
   departureTime: string;
   arrivalTime: string;
   durationSeconds?: number;
@@ -45,6 +48,7 @@ export interface KiwiMcpItinerary {
   tripType: "oneway" | "return";
   price: number;
   bookingUrl?: string;
+  imageId?: string;
   outbound: KiwiLeg;
   inbound?: KiwiLeg;
 }
@@ -145,22 +149,22 @@ export class KiwiMcpProvider implements FlightProvider {
     return this.enabled;
   }
 
-  /** The query plan: one tool call per departure window that overlaps the requested outbound window. */
-  plan(req: SearchRequest): Record<string, unknown>[] {
-    const f: SearchFilters = req.filters ?? {};
-    const [dLo, dHi] = hourBounds(f.outbound?.departAfter, f.outbound?.departBefore);
+  private baseArgs(
+    q: { origin: string; destination: string; departDate: string; returnDate?: string; adults: number; cabin: SearchRequest["cabin"]; currency: string },
+    f: SearchFilters,
+  ): Record<string, unknown> {
     const base: Record<string, unknown> = {
-      flyFrom: req.origin,
-      flyTo: req.destination,
-      departureDate: ddmmyyyy(req.departDate),
-      adults: req.adults,
-      cabinClass: CABIN[req.cabin],
-      currency: req.currency,
+      flyFrom: q.origin,
+      flyTo: q.destination,
+      departureDate: ddmmyyyy(q.departDate),
+      adults: q.adults,
+      cabinClass: CABIN[q.cabin],
+      currency: q.currency,
       sort: "price",
       locale: "en",
     };
-    if (req.returnDate) {
-      base.returnDate = ddmmyyyy(req.returnDate);
+    if (q.returnDate) {
+      base.returnDate = ddmmyyyy(q.returnDate);
       const [rLo, rHi] = hourBounds(f.inbound?.arriveAfter, f.inbound?.arriveBefore);
       if (rLo > 0) base.ret_atime_from = rLo;
       if (rHi < 23) base.ret_atime_to = rHi;
@@ -168,6 +172,13 @@ export class KiwiMcpProvider implements FlightProvider {
     if (f.maxStops !== undefined) base.max_sector_stopovers = f.maxStops;
     if (f.maxPrice !== undefined) base.price_to = Math.ceil(f.maxPrice);
     if (f.carriers?.length) base.select_airlines = f.carriers.join(",");
+    if (f.maxDurationMin !== undefined) base.max_fly_duration = Math.ceil(f.maxDurationMin / 60);
+    return base;
+  }
+
+  /** Split the outbound departure window into the standard hour windows. */
+  private windowed(base: Record<string, unknown>, f: SearchFilters): Record<string, unknown>[] {
+    const [dLo, dHi] = hourBounds(f.outbound?.departAfter, f.outbound?.departBefore);
     return WINDOWS.filter(([a, b]) => b >= dLo && a <= dHi).map(([a, b]) => ({
       ...base,
       dtime_from: Math.max(a, dLo),
@@ -175,31 +186,70 @@ export class KiwiMcpProvider implements FlightProvider {
     }));
   }
 
-  async search(req: SearchRequest, signal?: AbortSignal): Promise<Itinerary[]> {
-    const calls = this.plan(req);
-    const results = await Promise.allSettled(
-      calls.map(async (args) => {
-        const key = JSON.stringify(args);
-        const hit = cache.get(key);
-        if (hit) return hit;
-        const res = await this.call("search-flight", args, signal);
-        cache.set(key, res);
-        return res;
-      }),
-    );
-    const ok = results.filter((r): r is PromiseFulfilledResult<KiwiMcpResult> => r.status === "fulfilled");
+  /** The query plan: one tool call per departure window that overlaps the requested outbound window. */
+  plan(req: SearchRequest): Record<string, unknown>[] {
+    const f: SearchFilters = req.filters ?? {};
+    return this.windowed(this.baseArgs(req, f), f);
+  }
+
+  /** Plan for an "anywhere" search: every reachable city, one best option per city per window. */
+  explorePlan(req: ExploreRequest): Record<string, unknown>[] {
+    const f: SearchFilters = { ...req.filters, maxDurationMin: Math.round(req.maxFlightHours * 60) };
+    const base = this.baseArgs({ ...req, destination: "anywhere" }, f);
+    base.one_for_city = true;
+    return this.windowed(base, f);
+  }
+
+  private async cachedCall(args: Record<string, unknown>, signal?: AbortSignal): Promise<KiwiMcpResult> {
+    const key = JSON.stringify(args);
+    const hit = cache.get(key);
+    if (hit) return hit;
+    const res = await this.call("search-flight", args, signal);
+    cache.set(key, res);
+    return res;
+  }
+
+  private collect(results: PromiseSettledResult<KiwiMcpResult[]>[], currency: string): Itinerary[] {
+    const ok = results.filter((r): r is PromiseFulfilledResult<KiwiMcpResult[]> => r.status === "fulfilled");
     if (!ok.length && results.length) throw (results[0] as PromiseRejectedResult).reason;
     const seen = new Set<string>();
     const out: Itinerary[] = [];
-    for (const r of ok) {
-      for (const it of r.value.itineraries ?? []) {
-        if (seen.has(it.id)) continue;
-        seen.add(it.id);
-        const mapped = this.map(it, r.value.currency || req.currency);
-        if (mapped) out.push(mapped);
-      }
-    }
+    for (const r of ok)
+      for (const page of r.value)
+        for (const it of page.itineraries ?? []) {
+          if (seen.has(it.id)) continue;
+          seen.add(it.id);
+          const mapped = this.map(it, page.currency || currency);
+          if (mapped) out.push(mapped);
+        }
     return out;
+  }
+
+  async search(req: SearchRequest, signal?: AbortSignal): Promise<Itinerary[]> {
+    const results = await Promise.allSettled(this.plan(req).map(async (args) => [await this.cachedCall(args, signal)]));
+    return this.collect(results, req.currency);
+  }
+
+  /**
+   * "Anywhere" search. Each call returns at most ~15 cities, cheapest first, so per departure window
+   * a second page is fetched starting from the first page's highest price.
+   */
+  async explore(req: ExploreRequest, signal?: AbortSignal, pages = 2): Promise<Itinerary[]> {
+    const results = await Promise.allSettled(
+      this.explorePlan(req).map(async (args) => {
+        const out: KiwiMcpResult[] = [];
+        let cur = args;
+        for (let p = 0; p < pages; p++) {
+          const res = await this.cachedCall(cur, signal);
+          out.push(res);
+          const its = res.itineraries ?? [];
+          if (its.length < 15) break;
+          cur = { ...args, price_from: Math.floor(Math.max(...its.map((i) => i.price))) };
+        }
+        return out;
+      }),
+    );
+    return this.collect(results, req.currency);
   }
 
   map(it: KiwiMcpItinerary, currency: string): Itinerary | null {
@@ -213,6 +263,7 @@ export class KiwiMcpProvider implements FlightProvider {
         legs,
         price: { amount: it.price, currency },
         deepLink: it.bookingUrl,
+        imageUrl: it.imageId ? `https://images.kiwi.com/photos/600x600/${it.imageId}.jpg` : undefined,
       });
     } catch {
       return null;
@@ -272,6 +323,8 @@ export function toLeg(l: KiwiLeg): Leg {
     durationMin: Math.round(l.durationSeconds / 60),
     stops: segments.length - 1,
     segments,
+    toCity: l.segments[l.segments.length - 1]?.toCity,
+    toCountry: l.segments[l.segments.length - 1]?.toCountry,
   };
 }
 

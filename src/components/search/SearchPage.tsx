@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { ArrowLeftRight, Search, SlidersHorizontal } from "lucide-react";
 import type { SearchFilters, SearchResponse, ScoredItinerary } from "@/lib/domain/types";
 import { IDEAL_WEEKEND_FILTERS, sortItineraries, type SortKey } from "@/lib/domain/filters";
@@ -22,13 +23,23 @@ import { cx } from "@/lib/format";
 type Mode = "weekend" | "custom";
 const PAGE = 15;
 
+const SHAPES: WeekendShape[] = ["sat-sun", "fri-sun", "sat-mon", "fri-mon", "thu-sun"];
+const iataParam = (v: string | null) => (v && /^[A-Za-z]{3}$/.test(v) ? v.toUpperCase() : null);
+
 export function SearchPage() {
   const { t } = useI18n();
-  const [origin, setOrigin] = useState("WAW");
-  const [destination, setDestination] = useState("BCN");
+  const params = useSearchParams();
+  const [origin, setOrigin] = useState(() => iataParam(params.get("from")) ?? "WAW");
+  const [destination, setDestination] = useState(() => iataParam(params.get("to")) ?? "BCN");
   const [mode, setMode] = useState<Mode>("weekend");
-  const [saturday, setSaturday] = useState(() => nextSaturday(todayIso()));
-  const [shape, setShape] = useState<WeekendShape>("sat-sun");
+  const [saturday, setSaturday] = useState(() => {
+    const s = params.get("sat");
+    return s && /^\d{4}-\d{2}-\d{2}$/.test(s) && s >= todayIso() ? s : nextSaturday(todayIso());
+  });
+  const [shape, setShape] = useState<WeekendShape>(() => {
+    const s = params.get("shape") as WeekendShape | null;
+    return s && SHAPES.includes(s) ? s : "sat-sun";
+  });
   const [departDate, setDepartDate] = useState(() => nextSaturday(todayIso()));
   const [returnDate, setReturnDate] = useState<string>(() => weekendFromSaturday(nextSaturday(todayIso()), "sat-sun").returnDate);
   const [adults, setAdults] = useState(1);
@@ -70,6 +81,15 @@ export function SearchPage() {
       setLoading(false);
     }
   }, [origin, destination, request, t]);
+
+  // Arriving from a destination card: run the search right away (once).
+  const autoRan = useRef(false);
+  useEffect(() => {
+    if (autoRan.current || !params.get("to")) return;
+    autoRan.current = true;
+    const id = setTimeout(run, 0);
+    return () => clearTimeout(id);
+  }, [params, run]);
 
   const sorted = useMemo(() => (res ? sortItineraries(filterByCarriers(res.itineraries, airlines), sort) : []), [res, sort, airlines]);
   const label = `${getAirport(origin)?.city ?? origin} → ${getAirport(destination)?.city ?? destination} · ${dates.departDate}${dates.returnDate ? ` – ${dates.returnDate}` : ""}`;
