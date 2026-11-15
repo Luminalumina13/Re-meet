@@ -3,12 +3,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { Bell, Pause, Play, RefreshCw, Trash2, TrendingDown, TrendingUp, Sparkles, Target, CircleOff } from "lucide-react";
 import type { Alert, Watch } from "@/lib/watch/types";
-import { getAirport } from "@/lib/data/airports";
+import { describeWatch } from "@/lib/watch/describe";
 import { useI18n } from "@/lib/i18n";
 import { api } from "@/lib/client";
 import { fmtDateTime, fmtMoney, cx } from "@/lib/format";
 import { Badge, Button, Card, Skeleton } from "@/components/ui/primitives";
 import { Sparkline } from "./Sparkline";
+import { TelegramConnect } from "./TelegramConnect";
 
 const ICON: Record<Alert["type"], typeof Bell> = {
   price_drop: TrendingDown,
@@ -24,19 +25,6 @@ const TONE: Record<Alert["type"], "good" | "critical" | "accent" | "warn" | "neu
   target_reached: "good",
   no_results: "warn",
 };
-
-function describe(w: Watch): string {
-  if (w.params.kind === "search") {
-    const r = w.params.request;
-    return `${getAirport(r.origin)?.city ?? r.origin} → ${getAirport(r.destination)?.city ?? r.destination} · ${r.departDate}${r.returnDate ? ` – ${r.returnDate}` : ""}`;
-  }
-  if (w.params.kind === "explore") {
-    const r = w.params.request;
-    return `${getAirport(r.origin)?.city ?? r.origin} → ✈ ≤ ${r.maxFlightHours} h · ${r.departDate} – ${r.returnDate}`;
-  }
-  const r = w.params.request;
-  return `${r.friends.map((f) => f.name).join(", ")} → ${r.destinations.map((d) => getAirport(d)?.city ?? d).join("/")} · ${r.departDate} – ${r.returnDate}`;
-}
 
 export function WatchesPage() {
   const { t, locale } = useI18n();
@@ -60,6 +48,13 @@ export function WatchesPage() {
       alive = false;
     };
   }, []);
+
+  // Returning from Telegram: pick up that the chat got connected.
+  useEffect(() => {
+    const onFocus = () => void load();
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [load]);
 
   const act = async (id: string, fn: () => Promise<unknown>) => {
     setBusy(id);
@@ -109,7 +104,7 @@ export function WatchesPage() {
                     {!w.active && <Badge tone="warn">{t.watch.paused}</Badge>}
                   </div>
                   <h3 className="mt-1 truncate text-lg font-bold">{w.label}</h3>
-                  <p className="truncate text-xs text-ink-3">{describe(w)}</p>
+                  <p className="truncate text-xs text-ink-3">{describeWatch(w)}</p>
                 </div>
                 <div className="text-right shrink-0">
                   <div className="text-2xl font-extrabold tabular-nums tracking-tight">
@@ -151,6 +146,7 @@ export function WatchesPage() {
                   {t.watch.lastChecked}: {w.lastCheckedAt ? fmtDateTime(w.lastCheckedAt, locale) : t.watch.never}
                   {w.lastCount !== undefined && ` · ${w.lastCount} ${t.common.results}`}
                 </span>
+                <TelegramConnect watchId={w.id} connected={Boolean(w.notify.telegramVerified)} onChanged={load} />
                 <div className="flex items-center gap-1">
                   <Button size="sm" variant="ghost" loading={busy === w.id} onClick={() => act(w.id, () => api(`/api/watches/${w.id}/check`, { method: "POST" }))}>
                     <RefreshCw className="h-3.5 w-3.5" /> {t.watch.checkNow}

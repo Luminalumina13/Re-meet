@@ -95,6 +95,8 @@ export function diffAlerts(watch: Watch, snap: Snapshot, now = new Date().toISOS
           type: "new_offer",
           message: `${fresh.length} new offer${fresh.length > 1 ? "s" : ""} appeared (${snap.count} total)`,
           signatures: fresh.slice(0, 20),
+          count: fresh.length,
+          total: snap.count,
         }),
       );
     }

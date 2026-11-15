@@ -19,11 +19,24 @@ export interface Alert {
   previousPrice?: number;
   /** signatures of newly seen itineraries (for new_offer) */
   signatures?: string[];
+  /** new_offer: how many offers are new, and how many exist in total */
+  count?: number;
+  total?: number;
 }
 
 export interface NotifyConfig {
   webhookUrl?: string;
   telegramChatId?: string;
+  /** True only when the chat was linked through the bot (one-time link). Gates what the bot shows to that chat. */
+  telegramVerified?: boolean;
+  /** Language of the chat that linked the bot, for alert texts. */
+  telegramLang?: "uk" | "en";
+}
+
+/** One-time token behind the "Connect Telegram" link. */
+export interface TelegramLink {
+  token: string;
+  expiresAt: string;
 }
 
 export type WatchParams =
@@ -40,6 +53,7 @@ export interface Watch {
   /** minimal relative drop to alert on, e.g. 0.05 = 5 % */
   dropThreshold: number;
   notify: NotifyConfig;
+  telegramLink?: TelegramLink;
   active: boolean;
   createdAt: string;
   updatedAt: string;

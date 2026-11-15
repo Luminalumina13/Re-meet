@@ -6,6 +6,7 @@ import type { WatchCreateInput } from "@/lib/api/schemas";
 import type { Watch } from "@/lib/watch/types";
 import { useI18n } from "@/lib/i18n";
 import { postJson } from "@/lib/client";
+import { TelegramConnect } from "./TelegramConnect";
 import { Modal } from "@/components/ui/Modal";
 import { Button, Field, Input, Select } from "@/components/ui/primitives";
 
@@ -29,7 +30,6 @@ export function WatchDialog({
   const [target, setTarget] = useState<string>(currentPrice ? String(Math.round(currentPrice * 0.85)) : "");
   const [drop, setDrop] = useState("0.05");
   const [webhook, setWebhook] = useState("");
-  const [telegram, setTelegram] = useState("");
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState<Watch | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -43,7 +43,7 @@ export function WatchDialog({
         params,
         targetPrice: target ? Number(target) : undefined,
         dropThreshold: Number(drop),
-        notify: { webhookUrl: webhook || undefined, telegramChatId: telegram || undefined },
+        notify: { webhookUrl: webhook || undefined },
       };
       setDone(await postJson<Watch>("/api/watches", body));
     } catch (e) {
@@ -66,6 +66,7 @@ export function WatchDialog({
               {t.watch.best}: {new Intl.NumberFormat(locale, { style: "currency", currency, maximumFractionDigits: 0 }).format(done.lastBestPrice)}
             </p>
           )}
+          <TelegramConnect watchId={done.id} connected={Boolean(done.notify.telegramVerified)} />
           <p className="text-xs text-ink-3 max-w-sm">{t.watch.scheduleHint}</p>
           <Button variant="primary" onClick={onClose}>
             OK
@@ -92,9 +93,6 @@ export function WatchDialog({
           </div>
           <Field label={t.watch.webhook}>
             <Input type="url" value={webhook} onChange={(e) => setWebhook(e.target.value)} placeholder="https://hooks.slack.com/…" />
-          </Field>
-          <Field label={t.watch.telegram} hint={t.watch.telegramHint}>
-            <Input value={telegram} onChange={(e) => setTelegram(e.target.value)} placeholder="123456789" />
           </Field>
           {err && <p className="text-sm text-critical">{err}</p>}
           <div className="flex justify-end gap-2 pt-1">
