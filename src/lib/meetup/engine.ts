@@ -75,11 +75,42 @@ function cheapestAtOrAfter(ix: Indexed, t: number): Itinerary | null {
   return ans >= 0 ? ix.best[ans] : null;
 }
 
+/** One airport a friend can fly from: both directions must use it, so they get home to their car. */
+interface Route {
+  origin: string;
+  out: Indexed;
+  back: Indexed;
+}
+
 interface FriendOptions {
   friend: Friend;
   host: boolean;
-  out: Indexed;
-  back: Indexed;
+  routes: Route[];
+}
+
+function groupBy(list: Itinerary[], airport: (it: Itinerary) => string): Map<string, Itinerary[]> {
+  const m = new Map<string, Itinerary[]>();
+  for (const it of list) {
+    const k = airport(it);
+    const arr = m.get(k);
+    if (arr) arr.push(it);
+    else m.set(k, [it]);
+  }
+  return m;
+}
+
+/** Cheapest round trip for this friend that arrives by `ts` and leaves no earlier than `te`, over all their airports. */
+function bestRoute(o: FriendOptions, ts: number, te: number, budget?: number): { ob: Itinerary; ib: Itinerary; total: number } | null {
+  let best: { ob: Itinerary; ib: Itinerary; total: number } | null = null;
+  for (const r of o.routes) {
+    const ob = cheapestAtOrBefore(r.out, ts);
+    const ib = cheapestAtOrAfter(r.back, te);
+    if (!ob || !ib) continue;
+    const total = ob.price.amount + ib.price.amount;
+    if (budget !== undefined && total > budget) continue;
+    if (!best || total < best.total) best = { ob, ib, total };
+  }
+  return best;
 }
 
 export interface CandidateSets {
@@ -98,60 +129,56 @@ export function planMeetup(
 ): { plans: MeetupPlan[]; unreachable: MeetupResponse["unreachable"] } {
   const unreachable: MeetupResponse["unreachable"] = [];
   const opts: FriendOptions[] = req.friends.map((friend) => {
-    const host = friend.origin === destination;
+    const host = friend.origins.includes(destination);
     const o = host ? [] : (sets.outbound.get(friend.id) ?? []);
     const b = host ? [] : (sets.inbound.get(friend.id) ?? []);
-    if (!host && !o.length) unreachable.push({ destination, friendId: friend.id, direction: "outbound" });
-    if (!host && !b.length) unreachable.push({ destination, friendId: friend.id, direction: "inbound" });
-    return {
-      friend,
-      host,
-      out: indexPrefix(o, (it) => ms(it.legs[0].arriveUtc)),
-      back: indexSuffix(b, (it) => ms(it.legs[0].departUtc)),
-    };
+    const outBy = groupBy(o, (it) => it.legs[0].from);
+    const backBy = groupBy(b, (it) => it.legs[0].to);
+    const routes: Route[] = [];
+    for (const [origin, outs] of outBy) {
+      const backs = backBy.get(origin);
+      if (backs) routes.push({ origin, out: indexPrefix(outs, (it) => ms(it.legs[0].arriveUtc)), back: indexSuffix(backs, (it) => ms(it.legs[0].departUtc)) });
+    }
+    if (!host) {
+      if (!o.length || !routes.length) unreachable.push({ destination, friendId: friend.id, direction: "outbound" });
+      if (!b.length || !routes.length) unreachable.push({ destination, friendId: friend.id, direction: "inbound" });
+    }
+    return { friend, host, routes };
   });
   if (unreachable.length) return { plans: [], unreachable };
   const travellers = opts.filter((o) => !o.host);
   if (!travellers.length) return { plans: [], unreachable };
 
-  const starts = [...new Set(travellers.flatMap((o) => o.out.items.map((x) => x.key)))].sort((a, b) => a - b);
-  const ends = [...new Set(travellers.flatMap((o) => o.back.items.map((x) => x.key)))].sort((a, b) => a - b);
+  const starts = [...new Set(travellers.flatMap((o) => o.routes.flatMap((r) => r.out.items.map((x) => x.key))))].sort((a, b) => a - b);
+  const ends = [...new Set(travellers.flatMap((o) => o.routes.flatMap((r) => r.back.items.map((x) => x.key))))].sort((a, b) => a - b);
   const minTogether = (req.minTogetherHours ?? 0) * 60;
   const tz = airportTz(destination);
   const seen = new Set<string>();
   const plans: MeetupPlan[] = [];
 
   for (const ts of starts) {
-    // Outbound choice depends only on ts — resolve once per ts.
-    const outs: (Itinerary | null)[] = travellers.map((o) => cheapestAtOrBefore(o.out, ts));
-    if (outs.some((x) => !x)) continue;
-    if (req.maxBudgetPerPerson !== undefined && outs.some((x) => x!.price.amount > req.maxBudgetPerPerson!)) continue;
-    const outPrice = outs.reduce((s, x) => s + x!.price.amount, 0);
-
     for (const te of ends) {
       const together = Math.round((te - ts) / 60000);
       if (together < Math.max(60, minTogether)) continue;
-      const backs = travellers.map((o) => cheapestAtOrAfter(o.back, te));
-      if (backs.some((x) => !x)) break; // later te only gets harder
-      if (
-        req.maxBudgetPerPerson !== undefined &&
-        travellers.some((_, i) => outs[i]!.price.amount + backs[i]!.price.amount > req.maxBudgetPerPerson!)
-      )
-        continue;
-      const total = outPrice + backs.reduce((s, x) => s + x!.price.amount, 0);
-      const key = travellers.map((_, i) => `${outs[i]!.signature}~${backs[i]!.signature}`).join("#");
+      const picks = travellers.map((o) => bestRoute(o, ts, te, req.maxBudgetPerPerson));
+      // Feasibility only shrinks as the end time moves later, so stop for this start.
+      if (picks.some((x) => !x)) break;
+      const outs = picks.map((x) => x!.ob);
+      const backs = picks.map((x) => x!.ib);
+      const total = picks.reduce((s, x) => s + x!.total, 0);
+      const key = travellers.map((_, i) => `${outs[i].signature}~${backs[i].signature}`).join("#");
       if (seen.has(key)) continue;
       seen.add(key);
 
       // Actual meeting window is defined by the chosen flights, not the probe values.
-      const realStart = Math.max(...outs.map((x) => ms(x!.legs[0].arriveUtc)));
-      const realEnd = Math.min(...backs.map((x) => ms(x!.legs[0].departUtc)));
+      const realStart = Math.max(...outs.map((x) => ms(x.legs[0].arriveUtc)));
+      const realEnd = Math.min(...backs.map((x) => ms(x.legs[0].departUtc)));
       const realTogether = Math.round((realEnd - realStart) / 60000);
       const friends: FriendPlan[] = opts.map((o) => {
         if (o.host) return { friend: o.friend, outbound: null, inbound: null, arriveUtc: null, departUtc: null, price: 0 };
         const i = travellers.indexOf(o);
-        const ob = outs[i]!;
-        const ib = backs[i]!;
+        const ob = outs[i];
+        const ib = backs[i];
         return {
           friend: o.friend,
           outbound: ob,
@@ -217,16 +244,19 @@ export async function meetup(req: MeetupRequest, opts: AggregateOptions = {}): P
     const sets: CandidateSets = { outbound: new Map(), inbound: new Map() };
     await Promise.all(
       req.friends
-        .filter((f) => f.origin !== destination)
-        .map(async (f) => {
-          const base = { adults: 1, cabin: req.cabin, currency: req.currency } as const;
-          const outReq: SearchRequest = { ...base, origin: f.origin, destination, departDate: req.departDate, filters: oneWayFilters(req.filters, "outbound") };
-          const backReq: SearchRequest = { ...base, origin: destination, destination: f.origin, departDate: req.returnDate, filters: oneWayFilters(req.filters, "inbound") };
-          const [o, b] = await Promise.all([fetchRaw(outReq, opts), fetchRaw(backReq, opts)]);
-          for (const s of [...o.providers, ...b.providers]) statuses.set(s.id, s);
-          sets.outbound.set(f.id, o.raw.filter((it) => matchesOneWay(it, outReq.filters)));
-          sets.inbound.set(f.id, b.raw.filter((it) => matchesOneWay(it, backReq.filters)));
-        }),
+        .filter((f) => !f.origins.includes(destination))
+        .flatMap((f) =>
+          f.origins.map(async (origin) => {
+            const base = { adults: 1, cabin: req.cabin, currency: req.currency } as const;
+            const outReq: SearchRequest = { ...base, origin, destination, departDate: req.departDate, filters: oneWayFilters(req.filters, "outbound") };
+            const backReq: SearchRequest = { ...base, origin: destination, destination: origin, departDate: req.returnDate, filters: oneWayFilters(req.filters, "inbound") };
+            const [o, b] = await Promise.all([fetchRaw(outReq, opts), fetchRaw(backReq, opts)]);
+            for (const s of [...o.providers, ...b.providers]) statuses.set(s.id, s);
+            // A friend's airports are searched in parallel; pool the results per friend.
+            sets.outbound.set(f.id, [...(sets.outbound.get(f.id) ?? []), ...o.raw.filter((it) => matchesOneWay(it, outReq.filters))]);
+            sets.inbound.set(f.id, [...(sets.inbound.get(f.id) ?? []), ...b.raw.filter((it) => matchesOneWay(it, backReq.filters))]);
+          }),
+        ),
     );
     const res = planMeetup(req, destination, sets);
     allPlans.push(...res.plans);

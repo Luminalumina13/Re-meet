@@ -8,9 +8,9 @@ import { finalize, legFromSegments } from "@/lib/providers/util";
 
 const req: MeetupRequest = {
   friends: [
-    { id: "a", name: "Ann", origin: "WAW" },
-    { id: "b", name: "Bo", origin: "BER" },
-    { id: "c", name: "Cy", origin: "LIS" },
+    { id: "a", name: "Ann", origins: ["WAW"] },
+    { id: "b", name: "Bo", origins: ["BER"] },
+    { id: "c", name: "Cy", origins: ["LIS"] },
   ],
   destinations: ["BCN"],
   departDate: "2026-11-21",
@@ -48,7 +48,7 @@ describe("planMeetup (pure)", () => {
         ["b", [oneWay("b2", "BCN", "BER", "2026-11-22T19:00:00.000Z", 150, 70)]],
       ]),
     };
-    const r = { ...req, friends: [...req.friends.slice(0, 2), { id: "h", name: "Host", origin: "BCN" }] };
+    const r = { ...req, friends: [...req.friends.slice(0, 2), { id: "h", name: "Host", origins: ["BCN"] }] };
     const { plans, unreachable } = planMeetup(r, "BCN", sets);
     expect(unreachable).toEqual([]);
     expect(plans.length).toBeGreaterThan(1);
@@ -78,7 +78,7 @@ describe("planMeetup (pure)", () => {
 
   it("reports unreachable friends", () => {
     const sets: CandidateSets = { outbound: new Map([["a", []]]), inbound: new Map() };
-    const r = planMeetup({ ...req, friends: req.friends.slice(0, 1).concat({ id: "h", name: "H", origin: "BCN" }) }, "BCN", sets);
+    const r = planMeetup({ ...req, friends: req.friends.slice(0, 1).concat({ id: "h", name: "H", origins: ["BCN"] }) }, "BCN", sets);
     expect(r.plans).toEqual([]);
     expect(r.unreachable).toHaveLength(2);
   });
@@ -102,5 +102,45 @@ describe("meetup end-to-end over mock provider", () => {
       }
     }
     expect(res.plans[0].score).toBeGreaterThanOrEqual(res.plans[res.plans.length - 1].score);
+  });
+});
+
+describe("friends with several airports", () => {
+  const sets: CandidateSets = {
+    outbound: new Map([
+      // Ann can fly from WAW (expensive) or WMI (cheap); Bo only from BER.
+      ["a", [oneWay("a-waw", "WAW", "BCN", "2026-11-21T08:00:00.000Z", 180, 150), oneWay("a-wmi", "WMI", "BCN", "2026-11-21T08:00:00.000Z", 180, 40)]],
+      ["b", [oneWay("b1", "BER", "BCN", "2026-11-21T08:00:00.000Z", 150, 60)]],
+    ]),
+    inbound: new Map([
+      // The cheap return goes to WAW, not WMI, so WMI+WAW must not be mixed.
+      ["a", [oneWay("a-back-waw", "BCN", "WAW", "2026-11-22T18:00:00.000Z", 180, 20), oneWay("a-back-wmi", "BCN", "WMI", "2026-11-22T18:00:00.000Z", 180, 60)]],
+      ["b", [oneWay("b2", "BCN", "BER", "2026-11-22T18:00:00.000Z", 150, 50)]],
+    ]),
+  };
+  const r = { ...req, friends: [{ id: "a", name: "Ann", origins: ["WAW", "WMI"] }, { id: "b", name: "Bo", origins: ["BER"] }] };
+
+  it("picks the cheapest airport and returns to the same one", () => {
+    const { plans, unreachable } = planMeetup(r, "BCN", sets);
+    expect(unreachable).toEqual([]);
+    const a = plans[0].friends.find((f) => f.friend.id === "a")!;
+    // WMI round trip = 40 + 60 = 100 beats WAW = 150 + 20 = 170; a mixed WMI→WAW (60) is not allowed.
+    expect(a.outbound!.id).toBe("a-wmi");
+    expect(a.inbound!.id).toBe("a-back-wmi");
+    expect(a.price).toBe(100);
+  });
+
+  it("treats a friend as host when any of their airports is the destination", () => {
+    const { plans } = planMeetup({ ...r, friends: [{ id: "a", name: "Ann", origins: ["BCN", "WMI"] }, r.friends[1]] }, "BCN", sets);
+    expect(plans[0].friends.find((f) => f.friend.id === "a")!.outbound).toBeNull();
+  });
+});
+
+describe("friend schema", () => {
+  it("accepts the legacy single origin and dedupes airports", async () => {
+    const { friendSchema } = await import("@/lib/api/schemas");
+    expect(friendSchema.parse({ id: "x", name: "X", origin: "KRK" }).origins).toEqual(["KRK"]);
+    expect(friendSchema.parse({ id: "x", name: "X", origins: ["KRK", "KTW", "KRK"] }).origins).toEqual(["KRK", "KTW"]);
+    expect(friendSchema.safeParse({ id: "x", name: "X", origins: [] }).success).toBe(false);
   });
 });

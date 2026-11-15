@@ -87,7 +87,10 @@ export function PlanCard({
                   <div className="mb-2 flex items-center justify-between">
                     <div className="flex items-center gap-2 font-semibold">
                       <span className="h-2.5 w-2.5 rounded-full" style={{ background: color }} />
-                      {f.friend.name} <span className="text-xs text-ink-3">{getAirport(f.friend.origin)?.city ?? f.friend.origin}</span>
+                      {f.friend.name} <span className="text-xs text-ink-3">{(() => {
+                          const code = f.outbound?.legs[0].from ?? f.friend.origins[0];
+                          return getAirport(code)?.city ?? code;
+                        })()}</span>
                     </div>
                     <div className="text-sm font-bold tabular-nums">{f.outbound ? fmtMoney({ amount: f.price, currency: plan.currency }, locale) : t.meetup.host}</div>
                   </div>

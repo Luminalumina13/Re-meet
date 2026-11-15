@@ -3,7 +3,8 @@ import type { Cabin, IATA, Itinerary, ProviderStatus, SearchFilters } from "@/li
 export interface Friend {
   id: string;
   name: string;
-  origin: IATA;
+  /** Airports this friend can fly from (e.g. two cities nearby). The planner picks the best one. */
+  origins: IATA[];
 }
 
 export interface MeetupRequest {

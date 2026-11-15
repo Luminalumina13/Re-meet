@@ -1,16 +1,33 @@
 "use client";
 
 import type { SearchFilters } from "@/lib/domain/types";
-import { IDEAL_WEEKEND_FILTERS } from "@/lib/domain/filters";
+import { FRIDAY_DEPART_AFTER, idealFiltersFor } from "@/lib/domain/filters";
 import { useI18n } from "@/lib/i18n";
 import { Field, Select, Switch } from "@/components/ui/primitives";
 import { TimeSelect } from "@/components/ui/TimeSelect";
 
-export function isIdeal(f: SearchFilters): boolean {
-  return JSON.stringify({ o: f.outbound ?? {}, i: f.inbound ?? {} }) === JSON.stringify({ o: IDEAL_WEEKEND_FILTERS.outbound, i: IDEAL_WEEKEND_FILTERS.inbound });
+export function isIdeal(f: SearchFilters, departDate?: string): boolean {
+  const ideal = idealFiltersFor(departDate);
+  return JSON.stringify({ o: f.outbound ?? {}, i: f.inbound ?? {} }) === JSON.stringify({ o: ideal.outbound, i: ideal.inbound });
 }
 
-export function TimeWindows({ value, onChange, showInbound = true }: { value: SearchFilters; onChange: (f: SearchFilters) => void; showInbound?: boolean }) {
+/** One-line description of the default windows for this departure day. */
+export function idealHint(t: ReturnType<typeof useI18n>["t"], departDate?: string): string {
+  return idealFiltersFor(departDate).outbound?.departAfter === FRIDAY_DEPART_AFTER ? t.filters.idealHintFriday : t.filters.idealHint;
+}
+
+export function TimeWindows({
+  value,
+  onChange,
+  departDate,
+  showInbound = true,
+}: {
+  value: SearchFilters;
+  onChange: (f: SearchFilters) => void;
+  /** Departure day: decides what "ideal" means (afternoon on Fridays). */
+  departDate?: string;
+  showInbound?: boolean;
+}) {
   const { t } = useI18n();
   const o = value.outbound ?? {};
   const i = value.inbound ?? {};
@@ -18,10 +35,13 @@ export function TimeWindows({ value, onChange, showInbound = true }: { value: Se
   return (
     <div className="flex flex-col gap-4">
       <Switch
-        checked={isIdeal(value)}
-        onChange={(on) => set(on ? { outbound: IDEAL_WEEKEND_FILTERS.outbound, inbound: IDEAL_WEEKEND_FILTERS.inbound } : { outbound: {}, inbound: {} })}
+        checked={isIdeal(value, departDate)}
+        onChange={(on) => {
+          const ideal = idealFiltersFor(departDate);
+          set(on ? { outbound: ideal.outbound, inbound: ideal.inbound } : { outbound: {}, inbound: {} });
+        }}
         label={t.filters.ideal}
-        hint={t.filters.idealHint}
+        hint={idealHint(t, departDate)}
       />
       <div className="grid gap-3 sm:grid-cols-2">
         <fieldset className="rounded-xl border border-border p-3">

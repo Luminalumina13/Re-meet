@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeftRight, Search, SlidersHorizontal } from "lucide-react";
-import type { SearchFilters, SearchResponse, ScoredItinerary } from "@/lib/domain/types";
-import { IDEAL_WEEKEND_FILTERS, sortItineraries, type SortKey } from "@/lib/domain/filters";
+import type { SearchResponse, ScoredItinerary } from "@/lib/domain/types";
+import { sortItineraries, type SortKey } from "@/lib/domain/filters";
 import { todayIso, nextSaturday, weekendFromSaturday, type WeekendShape } from "@/lib/domain/dates";
 import { getAirport } from "@/lib/data/airports";
 import { useI18n } from "@/lib/i18n";
@@ -13,13 +13,14 @@ import type { SearchRequestInput } from "@/lib/api/schemas";
 import { AirportPicker } from "@/components/ui/AirportPicker";
 import { Button, Card, Field, Input, Segmented, Select, Skeleton, Stepper } from "@/components/ui/primitives";
 import { WeekendPicker } from "./WeekendPicker";
-import { TimeWindows } from "./TimeWindows";
+import { TimeWindows, idealHint } from "./TimeWindows";
 import { FlightCard } from "./FlightCard";
 import { ProviderBar } from "./ProviderBar";
 import { AirlineFilter, filterByCarriers } from "./AirlineFilter";
 import { WatchDialog } from "@/components/watch/WatchDialog";
 import { cx } from "@/lib/format";
 import { useSessionSnapshot } from "@/lib/useSessionSnapshot";
+import { useSearchFilters } from "@/lib/useSearchFilters";
 
 type Mode = "weekend" | "custom";
 const PAGE = 15;
@@ -47,7 +48,6 @@ export function SearchPage() {
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
   const [cabin, setCabin] = useState<SearchRequestInput["cabin"]>("economy");
-  const [filters, setFilters] = useState<SearchFilters>({ ...IDEAL_WEEKEND_FILTERS });
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [sort, setSort] = useState<SortKey>("best");
   const [loading, setLoading] = useState(false);
@@ -70,6 +70,8 @@ export function SearchPage() {
     return { departDate, returnDate: returnDate || undefined };
   }, [mode, saturday, shape, departDate, returnDate]);
 
+  const { filters, setFilters, state: filterState, restore: restoreFilters } = useSearchFilters(dates.departDate);
+
   const request = useMemo<SearchRequestInput>(
     () => ({ origin, destination, departDate: dates.departDate, returnDate: dates.returnDate, adults, children, infants, cabin, currency: "EUR", filters }),
     [origin, destination, dates, adults, children, infants, cabin, filters],
@@ -91,8 +93,8 @@ export function SearchPage() {
   }, [origin, destination, request, t]);
 
   const snapshot = useMemo(
-    () => ({ origin, destination, mode, saturday, shape, departDate, returnDate, adults, children, infants, cabin, filters, sort, res }),
-    [origin, destination, mode, saturday, shape, departDate, returnDate, adults, children, infants, cabin, filters, sort, res],
+    () => ({ origin, destination, mode, saturday, shape, departDate, returnDate, adults, children, infants, cabin, filterState, sort, res }),
+    [origin, destination, mode, saturday, shape, departDate, returnDate, adults, children, infants, cabin, filterState, sort, res],
   );
   // A search arriving via the URL (destination card) wins over whatever was stored.
   useSessionSnapshot("remeet:search", snapshot, (s) => {
@@ -108,7 +110,7 @@ export function SearchPage() {
     if (s.children !== undefined) setChildren(s.children);
     if (s.infants !== undefined) setInfants(s.infants);
     if (s.cabin) setCabin(s.cabin);
-    if (s.filters) setFilters(s.filters);
+    restoreFilters(s.filterState);
     if (s.sort) setSort(s.sort);
     // Prices go stale, but the list is what the user was reading; they can re-run the search.
     if (s.res) setRes(s.res);
@@ -214,10 +216,10 @@ export function SearchPage() {
               <SlidersHorizontal className="h-4 w-4" /> {t.common.advanced}
               <span className={cx("text-xs text-ink-3 transition", showAdvanced && "rotate-180")}>▾</span>
             </button>
-            {showAdvanced && <TimeWindows value={filters} onChange={setFilters} showInbound={Boolean(dates.returnDate)} />}
+            {showAdvanced && <TimeWindows value={filters} onChange={setFilters} departDate={dates.departDate} showInbound={Boolean(dates.returnDate)} />}
             {!showAdvanced && (
               <p className="text-xs text-ink-3">
-                {t.filters.ideal}: {t.filters.idealHint}
+                {t.filters.ideal}: {idealHint(t, dates.departDate)}
               </p>
             )}
           </div>
