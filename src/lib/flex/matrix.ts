@@ -17,18 +17,35 @@ export interface FlexCell {
   price: number;
 }
 
+/** Buffer between landing and the return take-off for a pair to count as a trip (not a wish about trip length). */
+export const MIN_STAY_MIN = 3 * 60;
+
+interface Timed {
+  price: number;
+  departUtc: string;
+  arriveUtc: string;
+}
+
 /**
- * Round-trip grid from one-way fares: every departure paired with every later (or same-day) return.
- * Pairs missing a fare on either side are left out. Prices are sums of one-way tickets, which can
- * differ from a true return fare, so the UI labels them as estimates.
+ * Round-trip grid from one-way fares. A pair counts only if the return flight leaves at least
+ * `minStayMin` after the outbound lands; for each pair the cheapest such combination wins.
+ * Prices are sums of one-way tickets, which can differ from a true return fare, so the UI labels
+ * them as estimates.
  */
-export function flexGrid(out: Map<string, number | null>, back: Map<string, number | null>): FlexCell[] {
+export function flexGrid(out: Map<string, Timed[]>, back: Map<string, Timed[]>, minStayMin = MIN_STAY_MIN): FlexCell[] {
   const cells: FlexCell[] = [];
-  for (const [depart, po] of out) {
-    if (po == null) continue;
-    for (const [ret, pb] of back) {
-      if (pb == null || ret < depart) continue;
-      cells.push({ depart, ret, price: po + pb });
+  for (const [depart, outs] of out) {
+    for (const [ret, backs] of back) {
+      if (ret < depart) continue;
+      let best: number | null = null;
+      for (const o of outs) {
+        for (const b of backs) {
+          if (Date.parse(b.departUtc) - Date.parse(o.arriveUtc) < minStayMin * 60_000) continue;
+          const sum = o.price + b.price;
+          if (best === null || sum < best) best = sum;
+        }
+      }
+      if (best !== null) cells.push({ depart, ret, price: Math.round(best) });
     }
   }
   return cells;

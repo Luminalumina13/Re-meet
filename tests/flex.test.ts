@@ -12,16 +12,38 @@ describe("flex dates", () => {
     expect(flexDates("2026-11-28", 3, "2026-11-27")).toEqual(["2026-11-27", "2026-11-28", "2026-11-29", "2026-11-30", "2026-12-01"]);
   });
 
-  it("pairs each departure with the same or a later return and skips missing fares", () => {
-    const out = new Map<string, number | null>([["2026-11-27", 50], ["2026-11-28", 40], ["2026-11-29", null]]);
-    const back = new Map<string, number | null>([["2026-11-28", 30], ["2026-11-29", null], ["2026-11-30", 20]]);
-    const cells = flexGrid(out, back);
-    expect(cells).toEqual([
-      { depart: "2026-11-27", ret: "2026-11-28", price: 80 },
-      { depart: "2026-11-27", ret: "2026-11-30", price: 70 },
-      { depart: "2026-11-28", ret: "2026-11-28", price: 70 },
-      { depart: "2026-11-28", ret: "2026-11-30", price: 60 },
+  const opt = (price: number, depart: string, arrive: string) => ({ price, departUtc: depart, arriveUtc: arrive });
+
+  it("pairs only flights that fit together and takes the cheapest combination", () => {
+    const out = new Map([
+      // cheap but lands the next afternoon, after the cheap return has left
+      ["2026-11-21", [opt(94, "2026-11-21T18:20:00Z", "2026-11-22T14:35:00Z"), opt(150, "2026-11-21T18:20:00Z", "2026-11-22T07:50:00Z")]],
     ]);
+    const back = new Map([
+      ["2026-11-22", [opt(184, "2026-11-22T11:10:00Z", "2026-11-22T21:30:00Z")]],
+      ["2026-11-23", [opt(120, "2026-11-23T11:10:00Z", "2026-11-23T21:30:00Z")]],
+    ]);
+    const cells = flexGrid(out, back, 120);
+    // 22 Nov: the 94 € flight lands at 14:35, after the 11:10 return, so only the 150 € one works
+    expect(cells.find((c) => c.ret === "2026-11-22")!.price).toBe(334);
+    // 23 Nov: both fit, so the cheap one wins
+    expect(cells.find((c) => c.ret === "2026-11-23")!.price).toBe(214);
+  });
+
+  it("drops pairs with a return before the departure or too short a stay", () => {
+    const out = new Map([["2026-11-23", [opt(50, "2026-11-23T06:00:00Z", "2026-11-23T08:00:00Z")]]]);
+    const back = new Map([
+      ["2026-11-22", [opt(40, "2026-11-22T20:00:00Z", "2026-11-22T22:00:00Z")]],
+      ["2026-11-23", [opt(40, "2026-11-23T09:00:00Z", "2026-11-23T11:00:00Z")]], // 1 h at the destination
+    ]);
+    expect(flexGrid(out, back)).toEqual([]);
+    expect(flexGrid(out, back, 30)).toEqual([{ depart: "2026-11-23", ret: "2026-11-23", price: 90 }]);
+  });
+
+  it("skips days with no fare", () => {
+    const out = new Map([["2026-11-21", []], ["2026-11-22", [opt(40, "2026-11-22T06:00:00Z", "2026-11-22T08:00:00Z")]]]);
+    const back = new Map([["2026-11-24", [opt(30, "2026-11-24T20:00:00Z", "2026-11-24T22:00:00Z")]]]);
+    expect(flexGrid(out, back)).toEqual([{ depart: "2026-11-22", ret: "2026-11-24", price: 70 }]);
   });
 
   it("ranks prices between 0 and 1", () => {
@@ -41,6 +63,23 @@ describe("flex dates", () => {
     // the return window is applied to the inbound direction only
     const back = await flexDay({ ...base, origin: "BCN", destination: "WAW", date: "2026-11-29", direction: "inbound", filters: IDEAL_WEEKEND_FILTERS }, { providers: [mock], fresh: true });
     expect(back.count).toBeGreaterThan(0);
+  });
+
+  it("offers fares that are not beaten on both price and timing", async () => {
+    const mock = new MockProvider({ volatilitySeed: 3 });
+    const base = { origin: "WAW", destination: "BCN", adults: 1, children: 0, infants: 0, cabin: "economy" as const, currency: "EUR" };
+    const out = await flexDay({ ...base, date: "2026-11-28", direction: "outbound" }, { providers: [mock], fresh: true });
+    expect(out.options.length).toBeGreaterThan(0);
+    expect(out.options[0].price).toBe(out.price);
+    for (let i = 1; i < out.options.length; i++) {
+      expect(out.options[i].price).toBeGreaterThanOrEqual(out.options[i - 1].price);
+      // every dearer option must land earlier than all cheaper ones
+      expect(Date.parse(out.options[i].arriveUtc)).toBeLessThan(Math.min(...out.options.slice(0, i).map((o) => Date.parse(o.arriveUtc))));
+    }
+    const back = await flexDay({ ...base, origin: "BCN", destination: "WAW", date: "2026-11-29", direction: "inbound" }, { providers: [mock], fresh: true });
+    for (let i = 1; i < back.options.length; i++) {
+      expect(Date.parse(back.options[i].departUtc)).toBeGreaterThan(Math.max(...back.options.slice(0, i).map((o) => Date.parse(o.departUtc))));
+    }
   });
 
   it("reports no fare when nothing fits", async () => {
