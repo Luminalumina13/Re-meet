@@ -97,7 +97,17 @@ export function dedupe(list: Itinerary[]): Itinerary[] {
     }));
     out.push({ ...cheapest, legs: richest.legs, signature: richest.signature, otherOffers });
   }
-  return out;
+  return uniqueIds(out);
+}
+
+/** Ids are React keys and map keys: if two different trips ended up with the same one, keep both and tell them apart. */
+function uniqueIds(list: Itinerary[]): Itinerary[] {
+  const seen = new Map<string, number>();
+  return list.map((it) => {
+    const n = seen.get(it.id) ?? 0;
+    seen.set(it.id, n + 1);
+    return n === 0 ? it : { ...it, id: `${it.id}~${n}` };
+  });
 }
 
 export async function search(req: SearchRequest, opts: AggregateOptions = {}): Promise<SearchResponse> {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check } from "lucide-react";
+import { Check, Send } from "lucide-react";
 import type { WatchCreateInput } from "@/lib/api/schemas";
 import type { Watch } from "@/lib/watch/types";
 import { useI18n } from "@/lib/i18n";
@@ -29,7 +29,6 @@ export function WatchDialog({
   const [label, setLabel] = useState(defaultLabel);
   const [target, setTarget] = useState<string>(currentPrice ? String(Math.round(currentPrice * 0.85)) : "");
   const [drop, setDrop] = useState("0.05");
-  const [webhook, setWebhook] = useState("");
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState<Watch | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -43,7 +42,6 @@ export function WatchDialog({
         params,
         targetPrice: target ? Number(target) : undefined,
         dropThreshold: Number(drop),
-        notify: { webhookUrl: webhook || undefined },
       };
       setDone(await postJson<Watch>("/api/watches", body));
     } catch (e) {
@@ -66,10 +64,13 @@ export function WatchDialog({
               {t.watch.best}: {new Intl.NumberFormat(locale, { style: "currency", currency, maximumFractionDigits: 0 }).format(done.lastBestPrice)}
             </p>
           )}
-          <TelegramConnect watchId={done.id} connected={Boolean(done.notify.telegramVerified)} />
-          <p className="text-xs text-ink-3 max-w-sm">{t.watch.scheduleHint}</p>
-          <Button variant="primary" onClick={onClose}>
-            OK
+          <div className="flex w-full max-w-sm flex-col items-center gap-2 rounded-xl border border-border p-4">
+            <p className="text-sm text-ink-2">{t.watch.telegramPrompt}</p>
+            <TelegramConnect watchId={done.id} connected={Boolean(done.notify.telegramVerified)} prominent />
+          </div>
+          <p className="max-w-sm text-xs text-ink-3">{t.watch.scheduleHint}</p>
+          <Button variant="ghost" onClick={onClose}>
+            {done.notify.telegramVerified ? "OK" : t.watch.telegramLater}
           </Button>
         </div>
       ) : (
@@ -91,9 +92,9 @@ export function WatchDialog({
               </Select>
             </Field>
           </div>
-          <Field label={t.watch.webhook}>
-            <Input type="url" value={webhook} onChange={(e) => setWebhook(e.target.value)} placeholder="https://hooks.slack.com/…" />
-          </Field>
+          <p className="flex items-start gap-2 rounded-xl bg-surface-2 px-3 py-2.5 text-sm text-ink-2">
+            <Send className="mt-0.5 h-4 w-4 shrink-0 text-accent" /> {t.watch.telegramStep}
+          </p>
           {err && <p className="text-sm text-critical">{err}</p>}
           <div className="flex justify-end gap-2 pt-1">
             <Button variant="ghost" onClick={onClose}>

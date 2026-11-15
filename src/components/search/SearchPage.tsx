@@ -15,6 +15,7 @@ import { Button, Card, Field, Input, Segmented, Select, Skeleton, Stepper } from
 import { WeekendPicker } from "./WeekendPicker";
 import { TimeWindows, idealHint } from "./TimeWindows";
 import { FlightCard } from "./FlightCard";
+import { FlexDates, type FlexParams } from "./FlexDates";
 import { ProviderBar } from "./ProviderBar";
 import { AirlineFilter, filterByCarriers } from "./AirlineFilter";
 import { WatchDialog } from "@/components/watch/WatchDialog";
@@ -115,6 +116,27 @@ export function SearchPage() {
     // Prices go stale, but the list is what the user was reading; they can re-run the search.
     if (s.res) setRes(s.res);
   }, Boolean(params.get("to")));
+
+  const flexParams = useMemo<FlexParams>(
+    () => ({ origin, destination, departDate: dates.departDate, returnDate: dates.returnDate, adults, children, infants, cabin: cabin ?? "economy", currency: "EUR", filters }),
+    [origin, destination, dates, adults, children, infants, cabin, filters],
+  );
+  // Picking a cell of the flexible-dates grid switches to those exact dates and searches them.
+  const [searchTick, setSearchTick] = useState(0);
+  const runRef = useRef(run);
+  useEffect(() => {
+    runRef.current = run;
+  });
+  const pickDates = (depart: string, ret?: string) => {
+    setMode("custom");
+    setDepartDate(depart);
+    setReturnDate(ret ?? "");
+    setSearchTick((n) => n + 1);
+  };
+  // Runs after the new dates are rendered, so the search uses them.
+  useEffect(() => {
+    if (searchTick > 0) void runRef.current();
+  }, [searchTick]);
 
   // Arriving from a destination card: run the search right away (once).
   const autoRan = useRef(false);
@@ -237,6 +259,7 @@ export function SearchPage() {
       </Card>
 
       <section className="mt-8 flex flex-col gap-4">
+        {origin && destination && <FlexDates params={flexParams} onPick={pickDates} />}
         {error && <div className="rounded-xl border border-critical/40 bg-critical/10 px-4 py-3 text-sm text-critical">{error}</div>}
         {loading && (
           <div className="flex flex-col gap-3">

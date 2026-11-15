@@ -226,7 +226,7 @@ function hashKey(s: string): string {
   return (h >>> 0).toString(36);
 }
 
-function oneWayFilters(f: SearchFilters | undefined, direction: "outbound" | "inbound"): SearchFilters | undefined {
+export function oneWayFilters(f: SearchFilters | undefined, direction: "outbound" | "inbound"): SearchFilters | undefined {
   if (!f) return undefined;
   // For one-way searches the only leg is legs[0]; apply the matching window to it.
   return { maxStops: f.maxStops, maxPrice: f.maxPrice, carriers: f.carriers, maxDurationMin: f.maxDurationMin, outbound: direction === "outbound" ? f.outbound : f.inbound };
@@ -287,7 +287,7 @@ export async function meetup(req: MeetupRequest, opts: AggregateOptions = {}): P
   };
 }
 
-function matchesOneWay(it: Itinerary, f?: SearchFilters): boolean {
+export function matchesOneWay(it: Itinerary, f?: SearchFilters): boolean {
   if (!f) return true;
   const leg = it.legs[0];
   if (f.maxStops !== undefined && leg.stops > f.maxStops) return false;

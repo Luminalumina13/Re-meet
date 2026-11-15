@@ -21,7 +21,33 @@ export const CITY_UK: Record<string, string> = {
   Larnaca: "Ларнака", Paphos: "Пафос", Istanbul: "Стамбул", Antalya: "Анталья", Tbilisi: "Тбілісі", Yerevan: "Єреван",
   "Tel Aviv": "Тель-Авів", Dubai: "Дубай", Doha: "Доха", "New York": "Нью-Йорк", Boston: "Бостон",
   Chicago: "Чикаго", Miami: "Маямі", "Los Angeles": "Лос-Анджелес", "San Francisco": "Сан-Франциско",
+  // more destinations
+  Funchal: "Фуншал", "Ponta Delgada": "Понта-Делгада", Tenerife: "Тенеріфе", "Las Palmas": "Лас-Пальмас", Lanzarote: "Лансароте", Fuerteventura: "Фуертевентура", Ibiza: "Ібіца", Menorca: "Менорка", Bilbao: "Більбао", "Santiago de Compostela": "Сантьяго-де-Компостела", Rhodes: "Родос", Corfu: "Корфу", Chania: "Ханья", Santorini: "Санторіні", Mykonos: "Міконос", Zakynthos: "Закінф", Kos: "Кос", Pula: "Пула", Zadar: "Задар", Pisa: "Піза", Turin: "Турин", Verona: "Верона", Cagliari: "Кальярі", Olbia: "Ольбія", Burgas: "Бургас", Tivat: "Тіват", Dalaman: "Даламан", Bodrum: "Бодрум", Hurghada: "Хургада", "Sharm el-Sheikh": "Шарм-ель-Шейх", Marrakech: "Марракеш", Szczecin: "Щецин", Brno: "Брно", Stavanger: "Ставангер", Malmö: "Мальме", Billund: "Біллунн", Liverpool: "Ліверпуль", Newcastle: "Ньюкасл", Belfast: "Белфаст", Leeds: "Лідс", Cork: "Корк",
   Toronto: "Торонто", Montréal: "Монреаль", Vancouver: "Ванкувер",
+};
+
+/** Other names people type: islands and regions that are not the airport's city. */
+export const ALIAS_UK: Record<string, string[]> = {
+  FNC: ["Мадейра", "Madeira"],
+  PDL: ["Азори", "Азорські острови", "Azores", "Сан-Мігел"],
+  TFS: ["Канари", "Канарські острови", "Canary"],
+  LPA: ["Гран-Канарія", "Gran Canaria", "Канари"],
+  ACE: ["Арресіфе", "Arrecife", "Канари"],
+  FUE: ["Канари"],
+  PMI: ["Майорка", "Mallorca", "Majorca"],
+  IBZ: ["Ібіца", "Eivissa"],
+  SSH: ["Шарм", "Єгипет"],
+  HRG: ["Єгипет"],
+  HER: ["Крит", "Crete"],
+  CHQ: ["Крит", "Crete"],
+  CAG: ["Сардинія", "Sardinia"],
+  OLB: ["Сардинія", "Sardinia"],
+  CTA: ["Сицилія", "Sicily"],
+  PMO: ["Сицилія", "Sicily"],
+  LCA: ["Кіпр"],
+  PFO: ["Кіпр"],
+  RHO: ["Родос"],
+  KGS: ["Кос"],
 };
 
 export const COUNTRY_UK: Record<string, string> = {
@@ -31,7 +57,7 @@ export const COUNTRY_UK: Record<string, string> = {
   NL: "Нідерланди", BE: "Бельгія", LU: "Люксембург", FR: "Франція", GB: "Велика Британія", IE: "Ірландія",
   DK: "Данія", SE: "Швеція", NO: "Норвегія", FI: "Фінляндія", IS: "Ісландія", ES: "Іспанія", PT: "Португалія",
   IT: "Італія", GR: "Греція", MT: "Мальта", CY: "Кіпр", TR: "Туреччина", GE: "Грузія", AM: "Вірменія",
-  IL: "Ізраїль", AE: "ОАЕ", QA: "Катар", US: "США", CA: "Канада",
+  IL: "Ізраїль", EG: "Єгипет", MA: "Марокко", AE: "ОАЕ", QA: "Катар", US: "США", CA: "Канада",
 };
 
 /** Lower-case, strip diacritics and unify apostrophes, so "Krakow" finds Kraków and "Скоп’є" finds Скоп'є. */

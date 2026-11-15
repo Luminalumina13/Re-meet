@@ -44,6 +44,21 @@ export const searchRequestSchema = z
   .refine((v) => v.origin !== v.destination, { message: "Origin and destination must differ", path: ["destination"] })
   .refine((v) => !v.returnDate || v.returnDate >= v.departDate, { message: "Return before departure", path: ["returnDate"] });
 
+/** One day of the flexible-dates grid: the cheapest one-way fare on `date`. */
+export const flexDaySchema = z.object({
+  origin: iata,
+  destination: iata,
+  date: isoDate,
+  /** Which window of the time filters applies: the outbound one or the inbound (return) one. */
+  direction: z.enum(["outbound", "inbound"]).default("outbound"),
+  adults: z.number().int().min(1).max(9).default(1),
+  children: z.number().int().min(0).max(8).default(0),
+  infants: z.number().int().min(0).max(4).default(0),
+  cabin: cabinSchema.default("economy"),
+  currency: z.string().length(3).toUpperCase().default("EUR"),
+  filters: filtersSchema.optional(),
+});
+
 export const friendSchema = z.preprocess(
   // Accept the old single-airport shape (saved watches) and normalise it.
   (v) => (v && typeof v === "object" && "origin" in v && !("origins" in v) ? { ...v, origins: [(v as { origin: unknown }).origin] } : v),
@@ -121,6 +136,7 @@ export const watchPatchSchema = z.object({
     .optional(),
 });
 
+export type FlexDayInput = z.input<typeof flexDaySchema>;
 export type SearchRequestInput = z.input<typeof searchRequestSchema>;
 export type MeetupRequestInput = z.input<typeof meetupRequestSchema>;
 export type WatchCreateInput = z.input<typeof watchCreateSchema>;

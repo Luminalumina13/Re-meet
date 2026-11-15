@@ -83,3 +83,21 @@ describe("vendor mappers", () => {
     expect(isoDurationToMinutes("P1DT1H")).toBe(1500);
   });
 });
+
+describe("dedupe keeps ids unique", () => {
+  it("separates different trips that share an id", async () => {
+    const { dedupe } = await import("@/lib/providers/aggregator");
+    const { finalize, legFromSegments } = await import("@/lib/providers/util");
+    const trip = (arriveUtc: string) =>
+      finalize({
+        id: "same-id",
+        provider: "t",
+        providerName: "t",
+        legs: [legFromSegments([{ from: "VLC", to: "FNC", departLocal: "2027-04-01T16:20", arriveLocal: "2027-04-01T18:20", departUtc: "2027-04-01T14:20:00.000Z", arriveUtc, carrier: "XX", flightNumber: "1", durationMin: 180 }])],
+        price: { amount: 100, currency: "EUR" },
+      });
+    const out = dedupe([trip("2027-04-01T17:20:00.000Z"), trip("2027-04-01T17:50:00.000Z")]);
+    expect(out).toHaveLength(2);
+    expect(new Set(out.map((i) => i.id)).size).toBe(2);
+  });
+});
