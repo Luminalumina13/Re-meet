@@ -44,11 +44,19 @@ export const searchRequestSchema = z
   .refine((v) => v.origin !== v.destination, { message: "Origin and destination must differ", path: ["destination"] })
   .refine((v) => !v.returnDate || v.returnDate >= v.departDate, { message: "Return before departure", path: ["returnDate"] });
 
-export const friendSchema = z.object({
-  id: z.string().min(1).max(40),
-  name: z.string().trim().min(1).max(40),
-  origin: iata,
-});
+export const friendSchema = z.preprocess(
+  // Accept the old single-airport shape (saved watches) and normalise it.
+  (v) => (v && typeof v === "object" && "origin" in v && !("origins" in v) ? { ...v, origins: [(v as { origin: unknown }).origin] } : v),
+  z.object({
+    id: z.string().min(1).max(40),
+    name: z.string().trim().min(1).max(40),
+    origins: z
+      .array(iata)
+      .min(1)
+      .max(4)
+      .transform((a) => [...new Set(a)]),
+  }),
+);
 
 export const meetupRequestSchema = z
   .object({

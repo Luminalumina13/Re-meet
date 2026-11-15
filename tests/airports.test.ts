@@ -12,6 +12,12 @@ describe("airport search", () => {
     expect(top("скоп’є")).toEqual(["SKP"]);
   });
 
+  it("finds Paphos by Ukrainian and English name", () => {
+    expect(top("пафос")).toEqual(["PFO"]);
+    expect(top("paphos")).toEqual(["PFO"]);
+    expect(top("pfo")[0]).toBe("PFO");
+  });
+
   it("understands Ukrainian country names", () => {
     expect(searchAirports("польща", 20).map((a) => a.iata)).toEqual(expect.arrayContaining(["WAW", "KRK"]));
   });

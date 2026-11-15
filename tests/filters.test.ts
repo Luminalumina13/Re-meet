@@ -94,3 +94,14 @@ describe("search cache", () => {
     expect(third.cached).toBe(true);
   });
 });
+
+describe("idealFiltersFor", () => {
+  it("starts the outbound window at noon on Fridays and at 08:00 otherwise", async () => {
+    const { idealFiltersFor } = await import("@/lib/domain/filters");
+    expect(idealFiltersFor("2026-11-20").outbound).toEqual({ departAfter: "12:00" }); // Friday
+    expect(idealFiltersFor("2026-11-21").outbound).toEqual({ departAfter: "08:00" }); // Saturday
+    expect(idealFiltersFor("2026-11-19").outbound).toEqual({ departAfter: "08:00" }); // Thursday
+    expect(idealFiltersFor().outbound).toEqual({ departAfter: "08:00" });
+    expect(idealFiltersFor("2026-11-20").inbound).toEqual(IDEAL_WEEKEND_FILTERS.inbound);
+  });
+});

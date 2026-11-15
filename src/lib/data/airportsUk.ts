@@ -18,7 +18,7 @@ export const CITY_UK: Record<string, string> = {
   Lisbon: "Лісабон", Porto: "Порту", Faro: "Фару", Rome: "Рим", Milan: "Мілан", Venice: "Венеція",
   Bologna: "Болонья", Florence: "Флоренція", Naples: "Неаполь", Catania: "Катанія", Palermo: "Палермо",
   Bari: "Барі", Athens: "Афіни", Thessaloniki: "Салоніки", Heraklion: "Іракліон", Valletta: "Валлетта",
-  Larnaca: "Ларнака", Istanbul: "Стамбул", Antalya: "Анталья", Tbilisi: "Тбілісі", Yerevan: "Єреван",
+  Larnaca: "Ларнака", Paphos: "Пафос", Istanbul: "Стамбул", Antalya: "Анталья", Tbilisi: "Тбілісі", Yerevan: "Єреван",
   "Tel Aviv": "Тель-Авів", Dubai: "Дубай", Doha: "Доха", "New York": "Нью-Йорк", Boston: "Бостон",
   Chicago: "Чикаго", Miami: "Маямі", "Los Angeles": "Лос-Анджелес", "San Francisco": "Сан-Франциско",
   Toronto: "Торонто", Montréal: "Монреаль", Vancouver: "Ванкувер",

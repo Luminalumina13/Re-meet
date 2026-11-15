@@ -6,13 +6,24 @@ import type {
   SearchFilters,
   TimeWindow,
 } from "./types";
-import { hhmmToMinutes, localMinutes } from "./time";
+import { hhmmToMinutes, localMinutes, weekday } from "./time";
 
 /** Default "ideal weekend" windows: leave after breakfast, come back in the evening. */
 export const IDEAL_WEEKEND_FILTERS: SearchFilters = {
   outbound: { departAfter: "08:00" },
   inbound: { arriveAfter: "17:00", arriveBefore: "23:30" },
 };
+
+/** On Fridays people are at work in the morning, so the default outbound window starts at noon. */
+export const FRIDAY_DEPART_AFTER = "12:00";
+
+/** Default windows for a trip leaving on `departDate`: afternoon departure on Fridays, otherwise after breakfast. */
+export function idealFiltersFor(departDate?: string): SearchFilters {
+  if (departDate && weekday(departDate) === 5) {
+    return { outbound: { departAfter: FRIDAY_DEPART_AFTER }, inbound: IDEAL_WEEKEND_FILTERS.inbound };
+  }
+  return { outbound: IDEAL_WEEKEND_FILTERS.outbound, inbound: IDEAL_WEEKEND_FILTERS.inbound };
+}
 
 export function legMatchesWindow(leg: Leg, w?: TimeWindow): boolean {
   if (!w) return true;

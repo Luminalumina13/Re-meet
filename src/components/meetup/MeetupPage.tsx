@@ -1,20 +1,19 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { Plus, SlidersHorizontal, Trash2, Users } from "lucide-react";
-import type { SearchFilters } from "@/lib/domain/types";
+import { Plus, SlidersHorizontal, Trash2, Users, X } from "lucide-react";
 import type { Friend, MeetupResponse } from "@/lib/meetup/types";
 import type { MeetupRequestInput } from "@/lib/api/schemas";
-import { IDEAL_WEEKEND_FILTERS } from "@/lib/domain/filters";
+import { useSearchFilters } from "@/lib/useSearchFilters";
 import { nextSaturday, todayIso, weekendFromSaturday, type WeekendShape } from "@/lib/domain/dates";
 import { getAirport } from "@/lib/data/airports";
 import { useI18n } from "@/lib/i18n";
 import { postJson } from "@/lib/client";
 import { cx, fmtMoney } from "@/lib/format";
 import { AirportPicker } from "@/components/ui/AirportPicker";
-import { Button, Card, Field, Input, Skeleton, Switch } from "@/components/ui/primitives";
+import { Button, Card, Field, Input, Segmented, Skeleton, Switch } from "@/components/ui/primitives";
 import { WeekendPicker } from "@/components/search/WeekendPicker";
-import { TimeWindows } from "@/components/search/TimeWindows";
+import { TimeWindows, idealHint } from "@/components/search/TimeWindows";
 import { ProviderBar } from "@/components/search/ProviderBar";
 import { WatchDialog } from "@/components/watch/WatchDialog";
 import { PlanCard } from "./PlanCard";
@@ -27,17 +26,19 @@ const uid = () => `f${++seq}`;
 export function MeetupPage() {
   const { t, locale } = useI18n();
   const [friends, setFriends] = useState<Friend[]>([
-    { id: "f1", name: "Світлана", origin: "WAW" },
-    { id: "f2", name: "Андрій", origin: "BER" },
-    { id: "f3", name: "Олена", origin: "LIS" },
+    { id: "f1", name: "Світлана", origins: ["WAW"] },
+    { id: "f2", name: "Андрій", origins: ["BER"] },
+    { id: "f3", name: "Олена", origins: ["LIS"] },
   ]);
   const [destinations, setDestinations] = useState<string[]>(["BCN"]);
   const [includeOrigins, setIncludeOrigins] = useState(false);
   const [saturday, setSaturday] = useState(() => nextSaturday(todayIso()));
   const [shape, setShape] = useState<WeekendShape>("sat-sun");
+  const [mode, setMode] = useState<"weekend" | "custom">("weekend");
+  const [departDate, setDepartDate] = useState(() => nextSaturday(todayIso()));
+  const [returnDate, setReturnDate] = useState(() => weekendFromSaturday(nextSaturday(todayIso()), "sat-sun").returnDate);
   const [valuePerHour, setValuePerHour] = useState(15);
   const [budget, setBudget] = useState("");
-  const [filters, setFilters] = useState<SearchFilters>({ ...IDEAL_WEEKEND_FILTERS });
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,18 +47,22 @@ export function MeetupPage() {
   const [track, setTrack] = useState(false);
 
   const weekend = useMemo(() => weekendFromSaturday(saturday, shape), [saturday, shape]);
+  const dates = useMemo(() => (mode === "weekend" ? { departDate: weekend.departDate, returnDate: weekend.returnDate } : { departDate, returnDate }), [mode, weekend, departDate, returnDate]);
+  const { filters, setFilters } = useSearchFilters(dates.departDate);
   const allDest = useMemo(() => {
     const set = new Set(destinations.filter(Boolean));
-    if (includeOrigins) for (const f of friends) if (f.origin) set.add(f.origin);
+    if (includeOrigins) for (const f of friends) for (const o of f.origins) if (o) set.add(o);
     return [...set];
   }, [destinations, includeOrigins, friends]);
 
   const request = useMemo<MeetupRequestInput>(
     () => ({
-      friends: friends.filter((f) => f.origin && f.name.trim()),
+      friends: friends
+        .map((f) => ({ ...f, origins: f.origins.filter(Boolean) }))
+        .filter((f) => f.origins.length > 0 && f.name.trim()),
       destinations: allDest,
-      departDate: weekend.departDate,
-      returnDate: weekend.returnDate,
+      departDate: dates.departDate,
+      returnDate: dates.returnDate,
       cabin: "economy",
       currency: "EUR",
       filters,
@@ -65,9 +70,9 @@ export function MeetupPage() {
       maxBudgetPerPerson: budget ? Number(budget) : undefined,
       topK: 6,
     }),
-    [friends, allDest, weekend, filters, valuePerHour, budget],
+    [friends, allDest, dates, filters, valuePerHour, budget],
   );
-  const valid = request.friends.length >= 2 && allDest.length >= 1;
+  const valid = request.friends.length >= 2 && allDest.length >= 1 && Boolean(dates.departDate) && Boolean(dates.returnDate) && dates.returnDate >= dates.departDate;
 
   const run = useCallback(async () => {
     if (!valid) return;
@@ -113,17 +118,48 @@ export function MeetupPage() {
             </div>
             <div className="flex flex-col gap-2">
               {friends.map((f, i) => (
-                <div key={f.id} className="grid grid-cols-[10px_1fr_1.3fr_auto] items-center gap-2">
-                  <span className="h-2.5 w-2.5 rounded-full" style={{ background: SERIES[i % SERIES.length] }} />
+                <div key={f.id} className="grid grid-cols-[10px_1fr_1.3fr_auto] items-start gap-2">
+                  <span className="mt-3.5 h-2.5 w-2.5 rounded-full" style={{ background: SERIES[i % SERIES.length] }} />
                   <Input value={f.name} placeholder={t.meetup.friendName} onChange={(e) => setFriends((fs) => fs.map((x) => (x.id === f.id ? { ...x, name: e.target.value } : x)))} />
-                  <AirportPicker value={f.origin} onChange={(v) => setFriends((fs) => fs.map((x) => (x.id === f.id ? { ...x, origin: v } : x)))} placeholder={t.common.airportPlaceholder} />
+                  <div className="flex flex-col gap-1.5">
+                    {f.origins.map((o, k) => (
+                      <div key={k} className="flex items-center gap-1">
+                        <AirportPicker
+                          className="flex-1"
+                          value={o}
+                          onChange={(v) => setFriends((fs) => fs.map((x) => (x.id === f.id ? { ...x, origins: x.origins.map((y, j) => (j === k ? v : y)) } : x)))}
+                          placeholder={t.common.airportPlaceholder}
+                        />
+                        {f.origins.length > 1 && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-10 w-8 shrink-0 px-0"
+                            onClick={() => setFriends((fs) => fs.map((x) => (x.id === f.id ? { ...x, origins: x.origins.filter((_, j) => j !== k) } : x)))}
+                            aria-label={t.meetup.removeAirport}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                    {f.origins.length < 4 && (
+                      <button
+                        type="button"
+                        className="inline-flex items-center gap-1 self-start text-xs font-semibold text-ink-3 hover:text-accent"
+                        onClick={() => setFriends((fs) => fs.map((x) => (x.id === f.id ? { ...x, origins: [...x.origins, ""] } : x)))}
+                      >
+                        <Plus className="h-3 w-3" /> {t.meetup.addAirport}
+                      </button>
+                    )}
+                  </div>
                   <Button variant="ghost" size="sm" className="h-10 w-10 px-0" disabled={friends.length <= 2} onClick={() => setFriends((fs) => fs.filter((x) => x.id !== f.id))} aria-label={t.common.delete}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               ))}
               {friends.length < 6 && (
-                <Button variant="ghost" size="sm" className="self-start" onClick={() => setFriends((fs) => [...fs, { id: uid(), name: "", origin: "" }])}>
+                <Button variant="ghost" size="sm" className="self-start" onClick={() => setFriends((fs) => [...fs, { id: uid(), name: "", origins: [""] }])}>
                   <Plus className="h-4 w-4" /> {t.meetup.addFriend}
                 </Button>
               )}
@@ -149,18 +185,60 @@ export function MeetupPage() {
           </div>
 
           <div className="flex flex-col gap-5">
-            <Field label={t.common.weekend}>
-              <WeekendPicker
-                saturday={saturday}
-                shape={shape}
-                onChange={(v) => {
-                  setSaturday(v.saturday);
-                  setShape(v.shape);
-                }}
+            <div className="flex flex-col gap-3">
+              <Segmented
+                value={mode}
+                onChange={setMode}
+                options={[
+                  { value: "weekend", label: t.common.weekend },
+                  { value: "custom", label: t.common.customDates },
+                ]}
               />
-            </Field>
-            <Field label={`${t.meetup.valuePerHour}: ${fmtMoney({ amount: valuePerHour, currency: "EUR" }, locale)}/${t.meetup.hours}`} hint={t.meetup.valueHint}>
-              <input type="range" min={1} max={60} step={1} value={valuePerHour} onChange={(e) => setValuePerHour(Number(e.target.value))} className="w-full" />
+              {mode === "weekend" ? (
+                <WeekendPicker
+                  saturday={saturday}
+                  shape={shape}
+                  onChange={(v) => {
+                    setSaturday(v.saturday);
+                    setShape(v.shape);
+                  }}
+                />
+              ) : (
+                <div className="grid gap-3 sm:max-w-md sm:grid-cols-2">
+                  <Field label={t.common.depart}>
+                    <Input
+                      type="date"
+                      value={departDate}
+                      min={todayIso()}
+                      onChange={(e) => {
+                        setDepartDate(e.target.value);
+                        if (returnDate < e.target.value) setReturnDate(e.target.value);
+                      }}
+                    />
+                  </Field>
+                  <Field label={t.common.return}>
+                    <Input type="date" value={returnDate} min={departDate} onChange={(e) => setReturnDate(e.target.value)} />
+                  </Field>
+                </div>
+              )}
+            </div>
+            <Field label={t.meetup.valuePerHour} hint={t.meetup.valueHint}>
+              <div className="flex flex-col gap-3">
+                <Segmented
+                  value={String(valuePerHour)}
+                  onChange={(v) => setValuePerHour(Number(v))}
+                  options={[
+                    { value: "5", label: t.meetup.priorityCheap },
+                    { value: "15", label: t.meetup.priorityBalanced },
+                    { value: "40", label: t.meetup.priorityTime },
+                  ]}
+                />
+                <p className="text-sm text-ink-2">{t.meetup.valueSentence.replace("{amount}", fmtMoney({ amount: valuePerHour, currency: "EUR" }, locale))}</p>
+                <details className="text-xs text-ink-3">
+                  <summary className="cursor-pointer font-semibold hover:text-ink">{t.meetup.valueFine}</summary>
+                  <input type="range" min={1} max={60} step={1} value={valuePerHour} onChange={(e) => setValuePerHour(Number(e.target.value))} className="mt-2 w-full" aria-label={t.meetup.valuePerHour} />
+                </details>
+              </div>
             </Field>
             <Field label={t.meetup.budget}>
               <Input type="number" min={0} value={budget} placeholder="—" onChange={(e) => setBudget(e.target.value)} className="sm:w-48" />
@@ -171,10 +249,10 @@ export function MeetupPage() {
                 <span className={cx("text-xs text-ink-3 transition", showAdvanced && "rotate-180")}>▾</span>
               </button>
               {showAdvanced ? (
-                <TimeWindows value={filters} onChange={setFilters} />
+                <TimeWindows value={filters} onChange={setFilters} departDate={dates.departDate} />
               ) : (
                 <p className="text-xs text-ink-3">
-                  {t.filters.ideal}: {t.filters.idealHint}
+                  {t.filters.ideal}: {idealHint(t, dates.departDate)}
                 </p>
               )}
             </div>

@@ -2,10 +2,9 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { Bell, Compass, SlidersHorizontal } from "lucide-react";
-import type { SearchFilters } from "@/lib/domain/types";
 import type { ExploreDestination, ExploreResponse } from "@/lib/explore/types";
 import type { ExploreRequestInput } from "@/lib/api/schemas";
-import { IDEAL_WEEKEND_FILTERS } from "@/lib/domain/filters";
+import { useSearchFilters } from "@/lib/useSearchFilters";
 import { nextSaturday, todayIso, weekendFromSaturday, type WeekendShape } from "@/lib/domain/dates";
 import { getAirport } from "@/lib/data/airports";
 import { useI18n } from "@/lib/i18n";
@@ -16,7 +15,7 @@ import { AirportPicker } from "@/components/ui/AirportPicker";
 import { Button, Card, Chip, Field, Input, Segmented, Skeleton, Stepper, Switch } from "@/components/ui/primitives";
 import { Modal } from "@/components/ui/Modal";
 import { WeekendPicker } from "@/components/search/WeekendPicker";
-import { TimeWindows } from "@/components/search/TimeWindows";
+import { TimeWindows, idealHint } from "@/components/search/TimeWindows";
 import { ProviderBar } from "@/components/search/ProviderBar";
 import { FlightCard } from "@/components/search/FlightCard";
 import { WatchDialog } from "@/components/watch/WatchDialog";
@@ -49,7 +48,6 @@ export function ExplorePage() {
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
-  const [filters, setFilters] = useState<SearchFilters>({ ...IDEAL_WEEKEND_FILTERS });
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,6 +63,7 @@ export function ExplorePage() {
   };
 
   const weekend = useMemo(() => weekendFromSaturday(saturday, shape), [saturday, shape]);
+  const { filters, setFilters, state: filterState, restore: restoreFilters } = useSearchFilters(weekend.departDate);
   const request = useMemo<ExploreRequestInput>(
     () => ({
       origin,
@@ -100,8 +99,8 @@ export function ExplorePage() {
   }, [origin, request, t]);
 
   const snapshot = useMemo(
-    () => ({ origin, saturday, shape, maxHours, directOnly, budget, adults, children, infants, filters, sort, res }),
-    [origin, saturday, shape, maxHours, directOnly, budget, adults, children, infants, filters, sort, res],
+    () => ({ origin, saturday, shape, maxHours, directOnly, budget, adults, children, infants, filterState, sort, res }),
+    [origin, saturday, shape, maxHours, directOnly, budget, adults, children, infants, filterState, sort, res],
   );
   useSessionSnapshot("remeet:explore", snapshot, (s) => {
     if (s.origin) setOrigin(s.origin);
@@ -113,7 +112,7 @@ export function ExplorePage() {
     if (s.adults) setAdults(s.adults);
     if (s.children !== undefined) setChildren(s.children);
     if (s.infants !== undefined) setInfants(s.infants);
-    if (s.filters) setFilters(s.filters);
+    restoreFilters(s.filterState);
     if (s.sort) setSort(s.sort);
     if (s.res) setRes(s.res);
   });
@@ -206,10 +205,10 @@ export function ExplorePage() {
                 <span className={cx("text-xs text-ink-3 transition", showAdvanced && "rotate-180")}>▾</span>
               </button>
               {showAdvanced ? (
-                <TimeWindows value={filters} onChange={setFilters} />
+                <TimeWindows value={filters} onChange={setFilters} departDate={weekend.departDate} />
               ) : (
                 <p className="text-xs text-ink-3">
-                  {t.filters.ideal}: {t.filters.idealHint}
+                  {t.filters.ideal}: {idealHint(t, weekend.departDate)}
                 </p>
               )}
             </div>

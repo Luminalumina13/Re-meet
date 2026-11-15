@@ -117,6 +117,7 @@ const ROWS: Row[] = [
   ["HER", "Heraklion", "Heraklion", "GR", "Europe/Athens", 35.3397, 25.1803],
   ["MLA", "Malta", "Valletta", "MT", "Europe/Malta", 35.8575, 14.4775],
   ["LCA", "Larnaca", "Larnaca", "CY", "Asia/Nicosia", 34.8751, 33.6249],
+  ["PFO", "Paphos", "Paphos", "CY", "Asia/Nicosia", 34.718, 32.4857],
   ["IST", "Istanbul", "Istanbul", "TR", "Europe/Istanbul", 41.2753, 28.7519],
   ["SAW", "Sabiha Gökçen", "Istanbul", "TR", "Europe/Istanbul", 40.8986, 29.3092],
   ["AYT", "Antalya", "Antalya", "TR", "Europe/Istanbul", 36.8987, 30.8005],
