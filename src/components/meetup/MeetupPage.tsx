@@ -14,6 +14,7 @@ import { useI18n } from "@/lib/i18n";
 import { postJson } from "@/lib/client";
 import { cx, fmtMoney } from "@/lib/format";
 import { AirportPicker } from "@/components/ui/AirportPicker";
+import { SubmitButton } from "@/components/ui/SubmitButton";
 import { Button, Card, Field, Input, Segmented, Skeleton, Switch } from "@/components/ui/primitives";
 import { WeekendPicker } from "@/components/search/WeekendPicker";
 import { TimeWindows, idealHint } from "@/components/search/TimeWindows";
@@ -321,9 +322,7 @@ export function MeetupPage() {
             </div>
             <div className="flex items-start justify-end gap-3">
               <ShareButton path="/meetup" query={shareQuery} disabled={!valid} />
-              <Button type="submit" variant="primary" size="lg" loading={loading} disabled={!valid}>
-                <Users className="h-4 w-4" /> {loading ? t.meetup.planning : t.meetup.plan}
-              </Button>
+              <SubmitButton icon={<Users className="h-4 w-4" />} idle={t.meetup.plan} busy={t.meetup.planning} loading={loading} disabled={!valid} />
             </div>
           </div>
         </form>
