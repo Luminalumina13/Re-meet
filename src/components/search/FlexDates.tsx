@@ -83,10 +83,11 @@ export function FlexDates({ params, onPick }: { params: FlexParams; onPick: (dep
 
   const grid = useMemo(() => {
     if (!roundTrip) return [];
-    const out = new Map(departDays.map((d) => [d, price("outbound", d) ?? null] as const));
-    const back = new Map(returnDays.map((d) => [d, price("inbound", d) ?? null] as const));
-    return flexGrid(out, back);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const optionsOf = (dir: "outbound" | "inbound", d: string) => {
+      const e = fresh ? entries[`${dir}:${d}`] : undefined;
+      return e && e !== "error" ? e.options : [];
+    };
+    return flexGrid(new Map(departDays.map((d) => [d, optionsOf("outbound", d)] as const)), new Map(returnDays.map((d) => [d, optionsOf("inbound", d)] as const)));
   }, [entries, fresh, roundTrip, departDays, returnDays]);
 
   const oneWay = useMemo(() => (roundTrip ? [] : departDays.map((d) => ({ depart: d, ret: d, price: price("outbound", d) })).filter((c): c is { depart: string; ret: string; price: number } => typeof c.price === "number")),
