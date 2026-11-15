@@ -10,7 +10,8 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "telegram:webhook": "node scripts/telegram-webhook.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.73.0",

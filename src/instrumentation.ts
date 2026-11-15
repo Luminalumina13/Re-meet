@@ -4,6 +4,15 @@
  */
 export async function register() {
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
+  // Telegram bot via long polling (local development; production uses the webhook route).
+  if (process.env.TELEGRAM_MODE === "polling" && process.env.TELEGRAM_BOT_TOKEN) {
+    const g = globalThis as { __telegramPolling?: boolean };
+    if (!g.__telegramPolling) {
+      g.__telegramPolling = true;
+      const { startPolling } = await import("@/lib/telegram/polling");
+      void startPolling().catch((e) => console.warn("[telegram] polling stopped", e));
+    }
+  }
   const every = Number(process.env.WATCH_POLL_MINUTES ?? 0);
   if (!every || Number.isNaN(every)) return;
   const { checkDue } = await import("@/lib/watch/checker");

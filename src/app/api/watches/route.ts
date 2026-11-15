@@ -3,12 +3,13 @@ import { watchCreateSchema } from "@/lib/api/schemas";
 import { badRequest, serverError } from "@/lib/api/respond";
 import { watchStore } from "@/lib/watch/store";
 import { checkWatch } from "@/lib/watch/checker";
+import { publicWatch } from "@/lib/watch/public";
 
 export const runtime = "nodejs";
 
 export async function GET() {
   try {
-    return NextResponse.json(await watchStore().list());
+    return NextResponse.json((await watchStore().list()).map(publicWatch));
   } catch (e) {
     return serverError(e);
   }
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
     const created = await watchStore().create({ ...parsed.data, currency: parsed.data.params.request.currency });
     // Baseline check so the first alert compares against a real price.
     const checked = await checkWatch(created.id);
-    return NextResponse.json(checked?.watch ?? created, { status: 201 });
+    return NextResponse.json(publicWatch(checked?.watch ?? created), { status: 201 });
   } catch (e) {
     return serverError(e);
   }
