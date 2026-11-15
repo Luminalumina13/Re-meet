@@ -1,5 +1,5 @@
 import type { Airport } from "@/lib/domain/types";
-import { CITY_UK, COUNTRY_UK, normalizeQuery } from "./airportsUk";
+import { ALIAS_UK, CITY_UK, COUNTRY_UK, normalizeQuery } from "./airportsUk";
 
 type Row = [iata: string, name: string, city: string, country: string, tz: string, lat: number, lon: number];
 
@@ -138,6 +138,48 @@ const ROWS: Row[] = [
   ["YYZ", "Pearson", "Toronto", "CA", "America/Toronto", 43.6777, -79.6248],
   ["YUL", "Trudeau", "Montréal", "CA", "America/Toronto", 45.4706, -73.7408],
   ["YVR", "Vancouver", "Vancouver", "CA", "America/Vancouver", 49.1947, -123.1792],
+  // More leisure destinations
+  ["FNC", "Madeira", "Funchal", "PT", "Atlantic/Madeira", 32.6979, -16.7745],
+  ["PDL", "João Paulo II", "Ponta Delgada", "PT", "Atlantic/Azores", 37.7412, -25.6979],
+  ["TFS", "Tenerife South", "Tenerife", "ES", "Atlantic/Canary", 28.0445, -16.5725],
+  ["LPA", "Gran Canaria", "Las Palmas", "ES", "Atlantic/Canary", 27.9319, -15.3866],
+  ["ACE", "César Manrique", "Lanzarote", "ES", "Atlantic/Canary", 28.9455, -13.6052],
+  ["FUE", "Fuerteventura", "Fuerteventura", "ES", "Atlantic/Canary", 28.4527, -13.8638],
+  ["IBZ", "Ibiza", "Ibiza", "ES", "Europe/Madrid", 38.8729, 1.3731],
+  ["MAH", "Menorca", "Menorca", "ES", "Europe/Madrid", 39.8626, 4.2186],
+  ["BIO", "Loiu", "Bilbao", "ES", "Europe/Madrid", 43.3011, -2.9106],
+  ["SCQ", "Rosalía de Castro", "Santiago de Compostela", "ES", "Europe/Madrid", 42.8963, -8.4151],
+  ["RHO", "Diagoras", "Rhodes", "GR", "Europe/Athens", 36.4054, 28.0862],
+  ["CFU", "Ioannis Kapodistrias", "Corfu", "GR", "Europe/Athens", 39.6019, 19.9117],
+  ["CHQ", "Souda", "Chania", "GR", "Europe/Athens", 35.5317, 24.1497],
+  ["JTR", "Santorini", "Santorini", "GR", "Europe/Athens", 36.3992, 25.4793],
+  ["JMK", "Mykonos", "Mykonos", "GR", "Europe/Athens", 37.4351, 25.3481],
+  ["ZTH", "Dionysios Solomos", "Zakynthos", "GR", "Europe/Athens", 37.7509, 20.8843],
+  ["KGS", "Ippokratis", "Kos", "GR", "Europe/Athens", 36.7933, 27.0917],
+  ["PUY", "Pula", "Pula", "HR", "Europe/Zagreb", 44.8935, 13.9222],
+  ["ZAD", "Zadar", "Zadar", "HR", "Europe/Zagreb", 44.1083, 15.3467],
+  ["PSA", "Galileo Galilei", "Pisa", "IT", "Europe/Rome", 43.6839, 10.3927],
+  ["TRN", "Caselle", "Turin", "IT", "Europe/Rome", 45.2008, 7.6496],
+  ["VRN", "Valerio Catullo", "Verona", "IT", "Europe/Rome", 45.3957, 10.8885],
+  ["CAG", "Elmas", "Cagliari", "IT", "Europe/Rome", 39.2515, 9.0543],
+  ["OLB", "Costa Smeralda", "Olbia", "IT", "Europe/Rome", 40.8987, 9.5176],
+  ["BOJ", "Burgas", "Burgas", "BG", "Europe/Sofia", 42.5696, 27.5152],
+  ["TIV", "Tivat", "Tivat", "ME", "Europe/Podgorica", 42.4047, 18.7233],
+  ["DLM", "Dalaman", "Dalaman", "TR", "Europe/Istanbul", 36.7131, 28.7925],
+  ["BJV", "Milas-Bodrum", "Bodrum", "TR", "Europe/Istanbul", 37.2506, 27.6643],
+  ["HRG", "Hurghada", "Hurghada", "EG", "Africa/Cairo", 27.1783, 33.7994],
+  ["SSH", "Sharm el-Sheikh", "Sharm el-Sheikh", "EG", "Africa/Cairo", 27.9773, 34.395],
+  ["RAK", "Menara", "Marrakech", "MA", "Africa/Casablanca", 31.6069, -8.0363],
+  ["SZZ", "Solidarity", "Szczecin", "PL", "Europe/Warsaw", 53.5847, 14.9022],
+  ["BRQ", "Tuřany", "Brno", "CZ", "Europe/Prague", 49.1513, 16.6944],
+  ["SVG", "Sola", "Stavanger", "NO", "Europe/Oslo", 58.8767, 5.6378],
+  ["MMX", "Sturup", "Malmö", "SE", "Europe/Stockholm", 55.5363, 13.3762],
+  ["BLL", "Billund", "Billund", "DK", "Europe/Copenhagen", 55.7403, 9.1518],
+  ["LPL", "John Lennon", "Liverpool", "GB", "Europe/London", 53.3336, -2.8497],
+  ["NCL", "Newcastle", "Newcastle", "GB", "Europe/London", 55.0375, -1.6917],
+  ["BFS", "Belfast International", "Belfast", "GB", "Europe/London", 54.6575, -6.2158],
+  ["LBA", "Leeds Bradford", "Leeds", "GB", "Europe/London", 53.8659, -1.6606],
+  ["ORK", "Cork", "Cork", "IE", "Europe/Dublin", 51.8413, -8.4911],
 ];
 
 export const AIRPORTS: Airport[] = ROWS.map(([iata, name, city, country, tz, lat, lon]) => ({
@@ -166,7 +208,7 @@ export function searchAirports(query: string, limit = 8): Airport[] {
   if (!q) return [];
   const scored = AIRPORTS.map((a) => {
     const iata = a.iata.toLowerCase();
-    const cities = [normalizeQuery(a.city), normalizeQuery(CITY_UK[a.city] ?? "")].filter(Boolean);
+    const cities = [a.city, CITY_UK[a.city] ?? "", ...(ALIAS_UK[a.iata] ?? [])].map(normalizeQuery).filter(Boolean);
     const name = normalizeQuery(a.name);
     const countries = [a.country.toLowerCase(), normalizeQuery(COUNTRY_UK[a.country] ?? "")];
     let s = 0;

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/primitives";
  * "Connect Telegram" for one watch. It asks the server for a one-time t.me link and shows it as a
  * plain link (opening a window after an async call would be blocked by popup blockers).
  */
-export function TelegramConnect({ watchId, connected, onChanged }: { watchId: string; connected: boolean; onChanged?: () => void }) {
+export function TelegramConnect({ watchId, connected, onChanged, prominent = false }: { watchId: string; connected: boolean; onChanged?: () => void; prominent?: boolean }) {
   const { t } = useI18n();
   const [url, setUrl] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -52,13 +52,13 @@ export function TelegramConnect({ watchId, connected, onChanged }: { watchId: st
     );
   }
   return (
-    <span className="inline-flex flex-wrap items-center gap-2">
+    <span className={prominent ? "flex flex-col items-center gap-2" : "inline-flex flex-wrap items-center gap-2"}>
       {url ? (
-        <a href={url} target="_blank" rel="noreferrer" className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-accent px-3 text-[13px] font-semibold text-accent-ink hover:bg-accent-strong">
+        <a href={url} target="_blank" rel="noreferrer" className={prominent ? "inline-flex h-10 items-center gap-2 rounded-xl bg-accent px-4 text-sm font-semibold text-accent-ink hover:bg-accent-strong" : "inline-flex h-8 items-center gap-1.5 rounded-lg bg-accent px-3 text-[13px] font-semibold text-accent-ink hover:bg-accent-strong"}>
           <Send className="h-3.5 w-3.5" /> {t.watch.telegramOpen}
         </a>
       ) : (
-        <Button size="sm" variant="ghost" loading={busy} onClick={connect}>
+        <Button size={prominent ? "md" : "sm"} variant={prominent ? "primary" : "ghost"} loading={busy} onClick={connect}>
           <Send className="h-3.5 w-3.5" /> {t.watch.telegramConnect}
         </Button>
       )}

@@ -272,7 +272,7 @@ export class LastminuteProvider implements FlightProvider {
         legs.push(buildLeg(f.departure, f.arrival, req.departDate, parseDuration(f.duration), stops[0] ?? 0, names[0], outCode));
       } else return null;
       return finalize({
-        id: `lastminute-${legs.map((l) => `${l.from}${l.to}${l.departUtc}`).join("|")}-${f.price_amount}`,
+        id: `lastminute-${legs.map((l) => `${l.from}${l.to}${l.departUtc}>${l.arriveUtc}`).join("|")}-${f.price_amount}`,
         provider: this.id,
         providerName: this.name,
         legs,

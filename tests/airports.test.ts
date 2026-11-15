@@ -38,3 +38,20 @@ describe("airport search", () => {
     expect(missing).toEqual([]);
   });
 });
+
+describe("leisure destinations", () => {
+  it("finds Funchal and other islands in both languages", () => {
+    expect(top("фуншал")).toEqual(["FNC"]);
+    expect(top("funchal")).toEqual(["FNC"]);
+    expect(top("fnc")[0]).toBe("FNC");
+    expect(top("тенеріфе")).toEqual(["TFS"]);
+    expect(top("санторіні")).toEqual(["JTR"]);
+    expect(top("хургада")).toEqual(["HRG"]);
+    expect(searchAirports("мадейра", 5).map((a) => a.iata)).toEqual(["FNC"]);
+  });
+
+  it("has no duplicate airport codes", () => {
+    const codes = AIRPORTS.map((a) => a.iata);
+    expect(new Set(codes).size).toBe(codes.length);
+  });
+});
