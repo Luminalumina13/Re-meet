@@ -15,6 +15,7 @@ import { useSessionSnapshot } from "@/lib/useSessionSnapshot";
 import { buildExploreQuery, buildSearchQuery, parseExploreQuery } from "@/lib/share";
 import { ShareButton } from "@/components/ShareButton";
 import { AirportPicker } from "@/components/ui/AirportPicker";
+import { SubmitButton } from "@/components/ui/SubmitButton";
 import { Button, Card, Chip, Field, Input, Segmented, Skeleton, Stepper, Switch } from "@/components/ui/primitives";
 import { Modal } from "@/components/ui/Modal";
 import { WeekendPicker } from "@/components/search/WeekendPicker";
@@ -276,9 +277,7 @@ export function ExplorePage() {
             </div>
             <div className="mt-auto flex items-start justify-end gap-3">
               <ShareButton path="/explore" query={shareQuery} disabled={!origin || !datesOk} />
-              <Button type="submit" variant="primary" size="lg" loading={loading} disabled={!origin || !datesOk}>
-                <Compass className="h-4 w-4" /> {loading ? t.explore.finding : t.explore.find}
-              </Button>
+              <SubmitButton icon={<Compass className="h-4 w-4" />} idle={t.explore.find} busy={t.explore.finding} loading={loading} disabled={!origin || !datesOk} />
             </div>
           </div>
         </form>

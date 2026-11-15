@@ -12,6 +12,7 @@ import { useI18n } from "@/lib/i18n";
 import { postJson } from "@/lib/client";
 import type { SearchRequestInput } from "@/lib/api/schemas";
 import { AirportPicker } from "@/components/ui/AirportPicker";
+import { SubmitButton } from "@/components/ui/SubmitButton";
 import { Button, Card, Field, Input, Segmented, Select, Skeleton, Stepper } from "@/components/ui/primitives";
 import { WeekendPicker } from "./WeekendPicker";
 import { TimeWindows, idealHint } from "./TimeWindows";
@@ -268,9 +269,7 @@ export function SearchPage() {
 
           <div className="flex items-start justify-end gap-3">
             <ShareButton path="/" query={shareQuery} disabled={!origin || !destination} />
-            <Button type="submit" variant="primary" size="lg" loading={loading} disabled={!origin || !destination}>
-              <Search className="h-4 w-4" /> {loading ? t.common.searching : t.common.search}
-            </Button>
+            <SubmitButton icon={<Search className="h-4 w-4" />} idle={t.common.search} busy={t.common.searching} loading={loading} disabled={!origin || !destination} />
           </div>
         </form>
       </Card>
