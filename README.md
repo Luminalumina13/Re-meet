@@ -55,6 +55,10 @@ npm run dev              # http://localhost:3000
 
 API: `POST /api/explore` with `{ origin, departDate, returnDate, maxFlightHours, adults, filters }`.
 
+## Colour schemes
+
+The current look is the *Sun* palette (slate neutrals, sunny yellow accent). All the candidates we compared, with hex codes, comparison pages and a preview tool, are archived in [`docs/palettes`](docs/palettes/README.md).
+
 ## Flight sources
 
 Out of the box the app queries three sources in parallel, with **no API keys**:
