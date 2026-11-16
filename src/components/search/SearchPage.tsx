@@ -184,7 +184,7 @@ export function SearchPage() {
             run();
           }}
         >
-          <div className="grid gap-3 md:grid-cols-[1fr_auto_1fr_auto_auto] md:items-end">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_auto_1fr_auto_auto] md:items-end">
             <Field label={t.common.from}>
               <AirportPicker value={origin} onChange={setOrigin} sample={sampleFrom} onSampleFocus={() => setSampleFrom(false)} placeholder={t.common.airportPlaceholder} exclude={[destination]} />
             </Field>
@@ -243,7 +243,7 @@ export function SearchPage() {
                 }}
               />
             ) : (
-              <div className="grid gap-3 sm:grid-cols-2 sm:max-w-md">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:max-w-md">
                 <Field label={t.common.depart}>
                   <Input type="date" value={departDate} min={todayIso()} onChange={(e) => setDepartDate(e.target.value)} />
                 </Field>

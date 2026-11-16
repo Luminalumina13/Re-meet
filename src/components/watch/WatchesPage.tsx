@@ -90,7 +90,7 @@ export function WatchesPage() {
           {t.watch.empty}
         </Card>
       )}
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {items?.map((w) => {
           const last = w.history[w.history.length - 1];
           const prev = w.history[w.history.length - 2];
