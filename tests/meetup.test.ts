@@ -144,3 +144,30 @@ describe("friend schema", () => {
     expect(friendSchema.safeParse({ id: "x", name: "X", origins: [] }).success).toBe(false);
   });
 });
+
+import { mergeStatus, planMeetupAsync } from "@/lib/meetup/engine";
+import type { ProviderStatus } from "@/lib/domain/types";
+
+describe("meetup robustness", () => {
+  const st = (status: ProviderStatus["status"], count = 0, error?: string): ProviderStatus => ({ id: "kiwi", name: "Kiwi", kind: "aggregator", status, count, ms: 5, error });
+  it("keeps an error even when later requests succeed", () => {
+    const m = new Map<string, ProviderStatus>();
+    mergeStatus(m, st("error", 0, "timeout"));
+    mergeStatus(m, st("ok", 7));
+    expect(m.get("kiwi")).toMatchObject({ status: "error", count: 7, error: "timeout" });
+  });
+  it("async planner returns the same plans as the sync one", async () => {
+    const sets: CandidateSets = {
+      outbound: new Map([
+        ["a", [oneWay("a1", "WAW", "BCN", "2026-11-21T06:00:00.000Z", 180, 100)]],
+        ["b", [oneWay("b1", "BER", "BCN", "2026-11-21T07:00:00.000Z", 150, 90)]],
+      ]),
+      inbound: new Map([
+        ["a", [oneWay("a3", "BCN", "WAW", "2026-11-22T18:00:00.000Z", 180, 80)]],
+        ["b", [oneWay("b2", "BCN", "BER", "2026-11-22T19:00:00.000Z", 150, 70)]],
+      ]),
+    };
+    const r = { ...req, friends: req.friends.slice(0, 2) };
+    expect(await planMeetupAsync(r, "BCN", sets)).toEqual(planMeetup(r, "BCN", sets));
+  });
+});

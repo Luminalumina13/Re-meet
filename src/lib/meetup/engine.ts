@@ -121,12 +121,49 @@ export interface CandidateSets {
 
 const ms = (iso: string) => Date.parse(iso);
 
+type PlanResult = { plans: MeetupPlan[]; unreachable: MeetupResponse["unreachable"] };
+
 /** Pure planner over pre-fetched candidates — easy to unit test. */
-export function planMeetup(
-  req: MeetupRequest,
-  destination: string,
-  sets: CandidateSets,
-): { plans: MeetupPlan[]; unreachable: MeetupResponse["unreachable"] } {
+export function planMeetup(req: MeetupRequest, destination: string, sets: CandidateSets): PlanResult {
+  const g = planSteps(req, destination, sets);
+  let r = g.next();
+  while (!r.done) r = g.next();
+  return r.value;
+}
+
+/** Same planner, but hands the event loop back every few milliseconds so a big grid cannot block the server. */
+export async function planMeetupAsync(req: MeetupRequest, destination: string, sets: CandidateSets): Promise<PlanResult> {
+  const g = planSteps(req, destination, sets);
+  let sliceStart = Date.now();
+  let r = g.next();
+  while (!r.done) {
+    if (Date.now() - sliceStart > 8) {
+      await new Promise<void>((resolve) => setImmediate(resolve));
+      sliceStart = Date.now();
+    }
+    r = g.next();
+  }
+  return r.value;
+}
+
+/** Statuses of repeated requests to one provider are combined, so one failure is not hidden by later successes. */
+export function mergeStatus(map: Map<string, ProviderStatus>, s: ProviderStatus): void {
+  const cur = map.get(s.id);
+  if (!cur) {
+    map.set(s.id, { ...s });
+    return;
+  }
+  const rank = { error: 2, ok: 1, skipped: 0 } as const;
+  map.set(s.id, {
+    ...cur,
+    status: rank[s.status] > rank[cur.status] ? s.status : cur.status,
+    count: cur.count + s.count,
+    ms: Math.max(cur.ms, s.ms),
+    error: cur.error ?? s.error,
+  });
+}
+
+function* planSteps(req: MeetupRequest, destination: string, sets: CandidateSets): Generator<void, PlanResult> {
   const unreachable: MeetupResponse["unreachable"] = [];
   const opts: FriendOptions[] = req.friends.map((friend) => {
     const host = friend.origins.includes(destination);
@@ -157,6 +194,7 @@ export function planMeetup(
   const plans: MeetupPlan[] = [];
 
   for (const ts of starts) {
+    yield;
     for (const te of ends) {
       const together = Math.round((te - ts) / 60000);
       if (together < Math.max(60, minTogether)) continue;
@@ -251,14 +289,14 @@ export async function meetup(req: MeetupRequest, opts: AggregateOptions = {}): P
             const outReq: SearchRequest = { ...base, origin, destination, departDate: req.departDate, filters: oneWayFilters(req.filters, "outbound") };
             const backReq: SearchRequest = { ...base, origin: destination, destination: origin, departDate: req.returnDate, filters: oneWayFilters(req.filters, "inbound") };
             const [o, b] = await Promise.all([fetchRaw(outReq, opts), fetchRaw(backReq, opts)]);
-            for (const s of [...o.providers, ...b.providers]) statuses.set(s.id, s);
+            for (const s of [...o.providers, ...b.providers]) mergeStatus(statuses, s);
             // A friend's airports are searched in parallel; pool the results per friend.
             sets.outbound.set(f.id, [...(sets.outbound.get(f.id) ?? []), ...o.raw.filter((it) => matchesOneWay(it, outReq.filters))]);
             sets.inbound.set(f.id, [...(sets.inbound.get(f.id) ?? []), ...b.raw.filter((it) => matchesOneWay(it, backReq.filters))]);
           }),
         ),
     );
-    const res = planMeetup(req, destination, sets);
+    const res = await planMeetupAsync(req, destination, sets);
     allPlans.push(...res.plans);
     unreachable.push(...res.unreachable);
   }));

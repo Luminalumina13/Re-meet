@@ -21,8 +21,40 @@ export interface AggregateOptions {
   signal?: AbortSignal;
 }
 
+type Result = { raw: Itinerary[]; providers: ProviderStatus[]; cached: boolean };
+const inflight = new Map<string, { promise: Promise<Result>; ctl: AbortController; waiters: number }>();
+
+/**
+ * Identical concurrent requests (date grid, meetup with shared airports) share one upstream fetch.
+ * The shared fetch is aborted only when every caller has gone away.
+ */
+export function fetchRaw(req: SearchRequest, opts: AggregateOptions = {}): Promise<Result> {
+  if (opts.providers) return fetchRawNow(req, opts);
+  const key = `${opts.fresh ? "fresh" : "cached"}:${cacheKey(req)}`;
+  let entry = inflight.get(key);
+  if (!entry) {
+    const ctl = new AbortController();
+    const promise = fetchRawNow(req, { ...opts, signal: ctl.signal }).finally(() => {
+      if (inflight.get(key) === entry) inflight.delete(key);
+    });
+    entry = { promise, ctl, waiters: 0 };
+    inflight.set(key, entry);
+  }
+  const e = entry;
+  e.waiters++;
+  const signal = opts.signal;
+  const leave = () => {
+    if (--e.waiters === 0) e.ctl.abort();
+  };
+  if (signal) {
+    if (signal.aborted) leave();
+    else signal.addEventListener("abort", leave, { once: true });
+  }
+  return e.promise.finally(() => signal?.removeEventListener("abort", leave));
+}
+
 /** Fetch from every configured provider in parallel; never fail the whole search for one vendor. */
-export async function fetchRaw(
+async function fetchRawNow(
   req: SearchRequest,
   opts: AggregateOptions = {},
 ): Promise<{ raw: Itinerary[]; providers: ProviderStatus[]; cached: boolean }> {
