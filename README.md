@@ -55,6 +55,10 @@ npm run dev              # http://localhost:3000
 
 API: `POST /api/explore` with `{ origin, departDate, returnDate, maxFlightHours, adults, filters }`.
 
+## Deploy
+
+Production: **https://remeeet.com**. Pull requests run typecheck, lint, tests and a build in GitHub Actions; every merge to `main` deploys automatically to a DigitalOcean droplet with a health check and automatic rollback. Details, secrets and server files: [`deploy/`](deploy/README.md).
+
 ## Colour schemes
 
 The current look is the *Sun* palette (slate neutrals, sunny yellow accent). All the candidates we compared, with hex codes, comparison pages and a preview tool, are archived in [`docs/palettes`](docs/palettes/README.md).
