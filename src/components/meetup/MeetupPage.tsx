@@ -146,7 +146,7 @@ export function MeetupPage() {
 
       <Card className="-mt-2 p-4 sm:p-6">
         <form
-          className="grid gap-6 lg:grid-cols-[1.1fr_1fr]"
+          className="grid grid-cols-1 gap-6 lg:grid-cols-[1.1fr_1fr]"
           onSubmit={(e) => {
             e.preventDefault();
             run();
@@ -352,7 +352,7 @@ export function MeetupPage() {
             {res.plans.length === 0 ? (
               <Card className="p-8 text-center text-ink-2">{t.meetup.noPlans}</Card>
             ) : (
-              <div className="grid gap-4 lg:grid-cols-[1fr_360px] items-start">
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_360px] items-start">
                 <div className="flex flex-col gap-4">
                   {plans.map((p, i) => (
                     <PlanCard key={p.id} plan={p} rank={res.plans.indexOf(p) + 1} departDate={dates.departDate} returnDate={dates.returnDate} colorIndex={colorIndex} highlight={i === 0} onTrack={i === 0 ? () => setTrack(true) : undefined} />

@@ -43,7 +43,7 @@ export function TimeWindows({
         label={t.filters.ideal}
         hint={idealHint(t, departDate)}
       />
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <fieldset className="rounded-xl border border-border p-3">
           <legend className="px-1 text-[12px] font-semibold uppercase tracking-wide text-ink-3">{t.filters.outboundDepart}</legend>
           <div className="grid grid-cols-2 gap-2">
@@ -69,7 +69,7 @@ export function TimeWindows({
           </fieldset>
         )}
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Field label={t.filters.maxStops}>
           <Select value={value.maxStops ?? ""} onChange={(e) => set({ maxStops: e.target.value === "" ? undefined : Number(e.target.value) })}>
             <option value="">{t.filters.any}</option>

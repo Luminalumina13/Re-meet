@@ -178,7 +178,7 @@ export function ExplorePage() {
 
       <Card className="-mt-2 p-4 sm:p-6">
         <form
-          className="grid gap-6 lg:grid-cols-[1fr_1.2fr]"
+          className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_1.2fr]"
           onSubmit={(e) => {
             e.preventDefault();
             run();
@@ -288,7 +288,7 @@ export function ExplorePage() {
         {loading && (
           <>
             <p className="text-sm text-ink-3">{t.explore.polling}</p>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 6 }, (_, i) => (
                 <Skeleton key={i} className="h-80" />
               ))}
@@ -337,7 +337,7 @@ export function ExplorePage() {
             {shown.length === 0 ? (
               <Card className="p-8 text-center text-ink-2">{t.explore.nothing}</Card>
             ) : (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {shown.map((d) => (
                   <DestinationCard key={d.key} d={d} searchHref={searchHref(d)} onDetails={() => setDetails(d)} />
                 ))}
