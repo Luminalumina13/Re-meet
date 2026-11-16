@@ -119,14 +119,16 @@ export class FileWatchStore extends MemoryWatchStore {
   }
 }
 
-let singleton: WatchStore | null = null;
+// Next.js bundles instrumentation.ts (scheduler, Telegram polling) separately from API routes, so a
+// module-level variable would give each its own copy that overwrites the other's writes. Share via globalThis.
+const g = globalThis as { __watchStore?: WatchStore | null };
 export function watchStore(): WatchStore {
-  if (!singleton) {
+  if (!g.__watchStore) {
     const dir = process.env.DATA_DIR ?? join(process.cwd(), "data");
-    singleton = new FileWatchStore(join(dir, "watches.json"));
+    g.__watchStore = new FileWatchStore(join(dir, "watches.json"));
   }
-  return singleton;
+  return g.__watchStore;
 }
 export function setWatchStore(s: WatchStore | null): void {
-  singleton = s;
+  g.__watchStore = s;
 }

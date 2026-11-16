@@ -10,7 +10,11 @@ export interface Snapshot {
   bestPrice: number | null;
   count: number;
   signatures: string[];
+  /** False when a data source failed: the numbers are then not comparable with earlier checks. */
+  complete?: boolean;
 }
+
+const allOk = (providers: { status: string }[]) => providers.every((p) => p.status !== "error");
 
 /** Re-run the saved query and summarise it. */
 export async function snapshot(watch: Watch): Promise<Snapshot> {
@@ -21,6 +25,7 @@ export async function snapshot(watch: Watch): Promise<Snapshot> {
       bestPrice: prices.length ? Math.min(...prices) : null,
       count: res.itineraries.length,
       signatures: res.itineraries.map((i) => i.signature),
+      complete: allOk(res.providers),
     };
   }
   if (watch.params.kind === "explore") {
@@ -31,6 +36,7 @@ export async function snapshot(watch: Watch): Promise<Snapshot> {
       count: res.destinations.length,
       // A new destination or a new best flight to a known one counts as a new offer.
       signatures: res.destinations.map((d) => `${d.key}|${d.cheapest.signature}`),
+      complete: allOk(res.providers),
     };
   }
   const res = await meetup(watch.params.request, { fresh: true });
@@ -39,17 +45,20 @@ export async function snapshot(watch: Watch): Promise<Snapshot> {
     bestPrice: best,
     count: res.plans.length,
     signatures: res.plans.map((p) => p.id),
+    complete: allOk(res.providers),
   };
 }
 
 /** Pure diff: previous state + new snapshot → alerts. */
 export function diffAlerts(watch: Watch, snap: Snapshot, now = new Date().toISOString()): Alert[] {
   const alerts: Alert[] = [];
+  if (snap.complete === false) return alerts;
   const mk = (a: Omit<Alert, "id" | "at">): Alert => ({ id: randomUUID(), at: now, ...a });
   const cur = watch.currency;
 
   if (snap.bestPrice === null) {
-    if (watch.lastBestPrice !== undefined) {
+    // Once per outage: lastCount drops to 0 after the first report.
+    if ((watch.lastCount ?? 0) > 0) {
       alerts.push(mk({ type: "no_results", message: `No offers match “${watch.label}” any more.` }));
     }
     return alerts;
@@ -104,11 +113,32 @@ export function diffAlerts(watch: Watch, snap: Snapshot, now = new Date().toISOS
   return alerts;
 }
 
-export async function checkWatch(id: string, store: WatchStore = watchStore()): Promise<{ watch: Watch; alerts: Alert[] } | null> {
+// One check per watch at a time: a manual check and the scheduler would otherwise both read the same
+// old state and overwrite each other's history and alerts.
+const gl = globalThis as { __watchLocks?: Map<string, Promise<unknown>> };
+const locks = (gl.__watchLocks ??= new Map());
+
+export function checkWatch(id: string, store: WatchStore = watchStore()): Promise<{ watch: Watch; alerts: Alert[] } | null> {
+  const prev = locks.get(id) ?? Promise.resolve();
+  const run = prev.catch(() => undefined).then(() => checkWatchNow(id, store));
+  locks.set(id, run);
+  const cleanup = () => {
+    if (locks.get(id) === run) locks.delete(id);
+  };
+  run.then(cleanup, cleanup);
+  return run;
+}
+
+async function checkWatchNow(id: string, store: WatchStore): Promise<{ watch: Watch; alerts: Alert[] } | null> {
   const watch = await store.get(id);
   if (!watch) return null;
   const snap = await snapshot(watch);
   const now = new Date().toISOString();
+  if (snap.complete === false) {
+    // A source failed: record that we looked, but keep the baseline and raise nothing.
+    const updated = await store.update(id, { lastCheckedAt: now });
+    return { watch: updated ?? watch, alerts: [] };
+  }
   const alerts = diffAlerts(watch, snap, now);
   const point: PricePoint | null = snap.bestPrice === null ? null : { at: now, bestPrice: snap.bestPrice, count: snap.count };
   const updated = await store.update(id, {

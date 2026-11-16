@@ -5,6 +5,7 @@ import { Check, Send } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { api } from "@/lib/client";
 import { Button } from "@/components/ui/primitives";
+import { errorText } from "@/lib/errorText";
 
 /**
  * "Connect Telegram" for one watch. It asks the server for a one-time t.me link and shows it as a
@@ -22,7 +23,7 @@ export function TelegramConnect({ watchId, connected, onChanged, prominent = fal
     try {
       setUrl((await api<{ url: string }>(`/api/watches/${watchId}/telegram`, { method: "POST" })).url);
     } catch (e) {
-      setErr(e instanceof Error ? e.message : t.common.error);
+      setErr(errorText(e, t));
     } finally {
       setBusy(false);
     }
@@ -35,7 +36,7 @@ export function TelegramConnect({ watchId, connected, onChanged, prominent = fal
       setUrl(null);
       onChanged?.();
     } catch (e) {
-      setErr(e instanceof Error ? e.message : t.common.error);
+      setErr(errorText(e, t));
     } finally {
       setBusy(false);
     }

@@ -9,6 +9,7 @@ import { postJson } from "@/lib/client";
 import { TelegramConnect } from "./TelegramConnect";
 import { Modal } from "@/components/ui/Modal";
 import { Button, Field, Input, Select } from "@/components/ui/primitives";
+import { errorText } from "@/lib/errorText";
 
 export function WatchDialog({
   open,
@@ -45,7 +46,7 @@ export function WatchDialog({
       };
       setDone(await postJson<Watch>("/api/watches", body));
     } catch (e) {
-      setErr(e instanceof Error ? e.message : t.common.error);
+      setErr(errorText(e, t));
     } finally {
       setBusy(false);
     }

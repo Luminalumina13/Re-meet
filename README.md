@@ -89,19 +89,21 @@ Optional sources that need keys:
 
 Adding another source = one file implementing `FlightProvider` (`search(req) → Itinerary[]`) and one line in `providers/registry.ts`.
 
-**Terms of use.** The Kiwi.com and lastminute.com MCP servers are published for AI assistants, and Ryanair's terms restrict automated use of its website by third parties. Fine for personal use and prototyping; for a public or commercial product, agree terms with each company (or use Duffel/partner APIs). Requests are cached for 10 minutes and throttled.
+**Terms of use.** The Kiwi.com and lastminute.com MCP servers are published for AI assistants, and Ryanair's terms restrict automated use of its website by third parties. Fine for personal use and prototyping; for a public or commercial product, agree terms with each company (or use Duffel/partner APIs). Requests are cached for 5 minutes (explore: 10) and throttled.
 
 **Behind a proxy.** Node's built-in `fetch` ignores `HTTPS_PROXY` unless started with `NODE_USE_ENV_PROXY=1` (Node ≥ 22.21).
 
 ## Price tracking
 
-Watches are checked either by the in-process scheduler (`WATCH_POLL_MINUTES=30`) or by an external cron hitting `GET|POST /api/watches/check` (protect with `CRON_SECRET`, send `Authorization: Bearer …`). Example Vercel cron in `vercel.json`:
+Watches are checked either by the in-process scheduler (`WATCH_POLL_MINUTES=30`) or by an external cron hitting `GET|POST /api/watches/check` (protect with `CRON_SECRET`, send `Authorization: Bearer …`; in production the endpoint returns 503 until the secret is set). Example Vercel cron in `vercel.json`:
 
 ```json
 { "crons": [{ "path": "/api/watches/check", "schedule": "*/30 * * * *" }] }
 ```
 
-Notifications: per watch, a webhook URL (JSON `{ text, label, alerts }`) and/or Telegram.
+Notifications: per watch, a webhook URL (JSON `{ text, label, alerts }`) and/or Telegram. Webhooks must be public http(s) addresses: localhost, private ranges and cloud-metadata addresses are rejected, and redirects are not followed. A check where a data source failed raises no alerts and keeps the previous baseline.
+
+**API errors.** Every error response is `{ error, code }` (plus `issues` for validation); the UI maps `code` to localized text in `errors` of the i18n dictionaries and never shows server messages.
 
 ### Telegram bot
 

@@ -1,3 +1,4 @@
+import { isSafeWebhookSyntax } from "@/lib/watch/webhook";
 import { z } from "zod";
 
 const iata = z.string().trim().toUpperCase().regex(/^[A-Z]{3}$/, "IATA code expected");
@@ -117,7 +118,7 @@ export const watchCreateSchema = z.object({
   dropThreshold: z.number().min(0.01).max(0.9).optional(),
   notify: z
     .object({
-      webhookUrl: z.string().url().max(500).optional(),
+      webhookUrl: z.string().url().max(500).refine(isSafeWebhookSyntax, "Webhook must be a public http(s) URL").optional(),
       telegramChatId: z.string().max(40).optional(),
     })
     .optional(),
@@ -130,7 +131,7 @@ export const watchPatchSchema = z.object({
   dropThreshold: z.number().min(0.01).max(0.9).optional(),
   notify: z
     .object({
-      webhookUrl: z.string().url().max(500).optional(),
+      webhookUrl: z.string().url().max(500).refine(isSafeWebhookSyntax, "Webhook must be a public http(s) URL").nullable().optional(),
       telegramChatId: z.string().max(40).optional(),
     })
     .optional(),
