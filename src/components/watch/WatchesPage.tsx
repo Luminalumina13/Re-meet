@@ -48,7 +48,7 @@ export function WatchesPage() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [t]);
 
   // Returning from Telegram: pick up that the chat got connected.
   useEffect(() => {
