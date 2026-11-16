@@ -26,6 +26,7 @@ import { useSessionSnapshot } from "@/lib/useSessionSnapshot";
 import { buildSearchQuery, parseSearchQuery } from "@/lib/share";
 import { ShareButton } from "@/components/ShareButton";
 import { useSearchFilters } from "@/lib/useSearchFilters";
+import { errorText } from "@/lib/errorText";
 
 type Mode = "weekend" | "custom";
 const PAGE = 15;
@@ -91,7 +92,7 @@ export function SearchPage() {
       setAirlines(new Set());
       setVisible(PAGE);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t.common.error);
+      setError(errorText(e, t));
     } finally {
       setLoading(false);
     }

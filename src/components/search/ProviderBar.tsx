@@ -18,7 +18,7 @@ export function ProviderBar({ providers, count, cached }: { providers: ProviderS
         <span>· {t.common.providers}:</span>
         {providers.map((p) => (
           <Badge key={p.id} tone={p.status === "ok" ? (p.demo ? "warn" : "good") : p.status === "error" ? "critical" : "neutral"} className="tabular-nums" >
-            {p.demo ? t.common.demoData : p.name} {p.status === "ok" ? `${p.count} · ${p.ms} ms` : p.status === "error" ? (p.error ?? "error") : "—"}
+            {p.demo ? t.common.demoData : p.name} {p.status === "ok" ? `${p.count} · ${p.ms} ms` : p.status === "error" ? t.errors.sourceDown : "—"}
           </Badge>
         ))}
       </div>

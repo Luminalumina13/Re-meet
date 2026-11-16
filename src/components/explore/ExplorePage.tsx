@@ -24,6 +24,7 @@ import { ProviderBar } from "@/components/search/ProviderBar";
 import { FlightCard } from "@/components/search/FlightCard";
 import { WatchDialog } from "@/components/watch/WatchDialog";
 import { DestinationCard } from "./DestinationCard";
+import { errorText } from "@/lib/errorText";
 
 type SortKey = "best" | "cheapest" | "time" | "short";
 
@@ -106,7 +107,7 @@ export function ExplorePage() {
       setRes(await postJson<ExploreResponse>("/api/explore", request));
       setCountry(null);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t.common.error);
+      setError(errorText(e, t));
     } finally {
       setLoading(false);
     }

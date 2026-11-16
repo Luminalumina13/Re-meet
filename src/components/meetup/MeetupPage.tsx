@@ -23,6 +23,7 @@ import { WatchDialog } from "@/components/watch/WatchDialog";
 import { PlanCard } from "./PlanCard";
 import { Frontier } from "./Frontier";
 import { SERIES } from "./Timeline";
+import { errorText } from "@/lib/errorText";
 
 let seq = 3;
 const uid = () => `f${++seq}`;
@@ -106,7 +107,7 @@ export function MeetupPage() {
       setRes(r);
       setSelected(r.plans[0]?.id);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t.common.error);
+      setError(errorText(e, t));
     } finally {
       setLoading(false);
     }

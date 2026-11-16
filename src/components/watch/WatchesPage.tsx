@@ -10,6 +10,7 @@ import { fmtDateTime, fmtMoney, cx } from "@/lib/format";
 import { Badge, Button, Card, Skeleton } from "@/components/ui/primitives";
 import { Sparkline } from "./Sparkline";
 import { TelegramConnect } from "./TelegramConnect";
+import { errorText } from "@/lib/errorText";
 
 const ICON: Record<Alert["type"], typeof Bell> = {
   price_drop: TrendingDown,
@@ -36,14 +37,14 @@ export function WatchesPage() {
     try {
       setItems(await api<Watch[]>("/api/watches"));
     } catch (e) {
-      setError(e instanceof Error ? e.message : t.common.error);
+      setError(errorText(e, t));
     }
   }, [t]);
   useEffect(() => {
     let alive = true;
     api<Watch[]>("/api/watches")
       .then((list) => alive && setItems(list))
-      .catch((e) => alive && setError(e instanceof Error ? e.message : "error"));
+      .catch((e) => alive && setError(errorText(e, t)));
     return () => {
       alive = false;
     };
@@ -63,7 +64,7 @@ export function WatchesPage() {
       await fn();
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t.common.error);
+      setError(errorText(e, t));
     } finally {
       setBusy(null);
     }

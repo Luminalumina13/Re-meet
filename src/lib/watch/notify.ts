@@ -3,6 +3,7 @@ import { botToken, escapeHtml, realClient } from "@/lib/telegram/api";
 import { alertText, strings } from "@/lib/telegram/text";
 import { unlinkChat } from "@/lib/telegram/bot";
 import { watchStore } from "./store";
+import { postWebhook } from "./webhook";
 
 /** Delivers alerts to the channels configured on a watch. Failures are logged, never thrown. */
 export async function notify(watch: Watch, alerts: Alert[]): Promise<void> {
@@ -13,11 +14,8 @@ export async function notify(watch: Watch, alerts: Alert[]): Promise<void> {
 
   if (watch.notify.webhookUrl) {
     jobs.push(
-      fetch(watch.notify.webhookUrl, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ text: `${title}\n${text}`, watchId: watch.id, label: watch.label, alerts }),
-      }),
+      postWebhook(watch.notify.webhookUrl, { text: `${title}
+${text}`, watchId: watch.id, label: watch.label, alerts }),
     );
   }
   if (watch.notify.telegramChatId && botToken()) jobs.push(sendTelegram(watch, alerts));
