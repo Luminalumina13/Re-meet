@@ -97,7 +97,19 @@ async function onMessage(msg: NonNullable<TgUpdate["message"]>, deps: BotDeps): 
   }
   if (cmd === "/help") return void (await deps.client.sendMessage(chatId, escapeHtml(s.help)));
   if (cmd === "/list" || cmd === "/watches") return await sendList(chatId, lang, deps);
+  if (cmd === "/privacy" || cmd === "/terms") return await sendLegal(chatId, cmd === "/privacy" ? "privacy" : "terms", lang, deps);
   await deps.client.sendMessage(chatId, escapeHtml(s.unknown));
+}
+
+/** Links to the legal documents on the website; without a configured site URL, point to the footer. */
+async function sendLegal(chatId: number, doc: "privacy" | "terms", lang: Lang, deps: BotDeps): Promise<void> {
+  const s = strings(lang);
+  if (!deps.appUrl) return void (await deps.client.sendMessage(chatId, escapeHtml(s.legalNoUrl)));
+  const base = deps.appUrl.replace(/\/$/, "");
+  await deps.client.sendMessage(chatId, `${escapeHtml(doc === "privacy" ? s.privacy : s.terms)}: ${escapeHtml(`${base}/${doc}`)}`, {
+    buttons: [[{ text: doc === "privacy" ? s.privacy : s.terms, url: `${base}/${doc}` }]],
+    disablePreview: false,
+  });
 }
 
 async function linkWithToken(chatId: number, token: string, lang: Lang, deps: BotDeps): Promise<void> {

@@ -40,6 +40,21 @@ await call("setWebhook", {
   secret_token: secret,
   allowed_updates: ["message", "callback_query", "my_chat_member"],
 });
-await call("setMyCommands", { commands: [{ command: "list", description: "Мої відстеження" }, { command: "help", description: "Як це працює" }] });
-await call("setMyCommands", { commands: [{ command: "list", description: "My trackers" }, { command: "help", description: "How it works" }], language_code: "en" });
+await call("setMyCommands", {
+  commands: [
+    { command: "list", description: "Мої відстеження" },
+    { command: "help", description: "Як це працює" },
+    { command: "terms", description: "Умови користування" },
+    { command: "privacy", description: "Політика конфіденційності" },
+  ],
+});
+await call("setMyCommands", {
+  commands: [
+    { command: "list", description: "My trackers" },
+    { command: "help", description: "How it works" },
+    { command: "terms", description: "Terms of Use" },
+    { command: "privacy", description: "Privacy Policy" },
+  ],
+  language_code: "en",
+});
 console.log(`Webhook set to ${arg}/api/telegram/webhook`);

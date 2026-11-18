@@ -7,6 +7,7 @@ export const en: Dict = {
     line: "Distance shouldn't decide how often you meet.",
     cta: "Plan your meet-up",
   },
+  legal: { privacy: "Privacy", terms: "Terms of Use", rights: "All rights reserved.", contents: "Contents" },
   nav: { search: "Search", explore: "Anywhere", meetup: "Meetup", watches: "Tracking" },
   theme: { light: "Light theme", dark: "Dark theme" },
   lang: { uk: "UA", en: "EN" },

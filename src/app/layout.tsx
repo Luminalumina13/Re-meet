@@ -3,6 +3,7 @@ import { Manrope } from "next/font/google";
 import "./globals.css";
 import { I18nProvider } from "@/lib/i18n";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin", "cyrillic"], display: "swap" });
 
@@ -30,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <I18nProvider>
           <Header />
           <main className="flex-1">{children}</main>
-          <footer className="mx-auto w-full max-w-6xl px-4 py-8 text-xs text-ink-3">Re:meeet · Make time together last longer · Kiwi.com · lastminute.com · Ryanair · Duffel</footer>
+          <Footer />
         </I18nProvider>
       </body>
     </html>

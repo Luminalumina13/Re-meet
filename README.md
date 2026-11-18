@@ -63,6 +63,10 @@ Production: **https://remeeet.com**. Pull requests run typecheck, lint, tests an
 
 `mobile/` is the iOS and Android app (Flutter). It talks to the same API as the website, has the same tabs (search with flexible dates, anywhere, meetup planner, price tracking) and the Sun palette. How to run, test and build it, and what is not done yet (push notifications, incoming links, store listings) is in [`mobile/README.md`](mobile/README.md).
 
+## Legal
+
+© 2026 Svitlana Pavlenko (ФОП Павленко Світлана Сергіївна). All rights reserved, see [`LICENSE`](LICENSE). The Privacy Policy (`/privacy`) and Terms of Use (`/terms`) live in [`content/legal`](content/legal) as Markdown (Ukrainian and English), with the company details in `company.json`; what to fill in before publishing, the assumptions made and the open product issues are in [`docs/legal`](docs/legal/README.md).
+
 ## Colour schemes
 
 The current look is the *Sun* palette (slate neutrals, sunny yellow accent). All the candidates we compared, with hex codes, comparison pages and a preview tool, are archived in [`docs/palettes`](docs/palettes/README.md).
