@@ -1,5 +1,6 @@
 "use client";
 
+import { HowLink } from "@/components/info/HowLink";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CalendarRange } from "lucide-react";
 import type { SearchFilters } from "@/lib/domain/types";
@@ -111,6 +112,7 @@ export function FlexDates({ params, onPick }: { params: FlexParams; onPick: (dep
             <CalendarRange className="h-4 w-4 text-accent-text" /> {t.flex.title}
           </h3>
           <p className="mt-0.5 text-xs text-ink-3">{t.flex.subtitle}</p>
+          <HowLink step="flex" className="mt-1" />
         </div>
         <Button variant="secondary" size="sm" loading={pending} onClick={load}>
           {fresh ? t.flex.refresh : t.flex.show}

@@ -1,5 +1,6 @@
 "use client";
 
+import { HowLink } from "@/components/info/HowLink";
 import { useCallback, useEffect, useState } from "react";
 import { Bell, Pause, Play, RefreshCw, Trash2, TrendingDown, TrendingUp, Sparkles, Target, CircleOff } from "lucide-react";
 import type { Alert, Watch } from "@/lib/watch/types";
@@ -76,6 +77,7 @@ export function WatchesPage() {
         <h1 className="max-w-2xl text-3xl font-extrabold tracking-tight sm:text-4xl">{t.watch.title}</h1>
         <p className="mt-3 max-w-xl text-ink-2">{t.watch.subtitle}</p>
         <p className="mt-2 text-xs text-ink-3">{t.watch.scheduleHint}</p>
+        <HowLink step="watch" className="mt-2" />
       </section>
 
       {error && <div className="mb-4 rounded-xl border border-critical/40 bg-critical/10 px-4 py-3 text-sm text-critical">{error}</div>}
@@ -89,6 +91,7 @@ export function WatchesPage() {
         <Card className="p-10 text-center text-ink-2">
           <Bell className="mx-auto mb-3 h-8 w-8 text-ink-3" />
           {t.watch.empty}
+          <div className="mt-3"><HowLink step="watch" label="watchCreate" /></div>
         </Card>
       )}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
