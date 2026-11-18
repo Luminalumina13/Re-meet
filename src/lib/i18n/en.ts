@@ -7,7 +7,7 @@ export const en: Dict = {
     line: "Distance shouldn't decide how often you meet.",
     cta: "Plan your meet-up",
   },
-  legal: { privacy: "Privacy", terms: "Terms of Use", rights: "All rights reserved.", contents: "Contents" },
+  legal: { privacy: "Privacy", terms: "Terms of Use", how: "How it works", faq: "Questions and answers", rights: "All rights reserved.", contents: "Contents" },
   consent: {
     title: "Ads keep Re:meeet free",
     text: "The service is free, and ads and statistics help us improve it. For that Google (Analytics and AdSense) sets cookies. If you decline, nothing changes: everything works as usual. You can change your mind any time in the footer.",
@@ -75,6 +75,7 @@ export const en: Dict = {
     notFound: "Not found. It may have been deleted already.",
     unauthorized: "You don't have access to this action.",
     unavailable: "The service is temporarily unavailable. Try again later.",
+    rateLimited: "Too many messages. Please try again in a few minutes.",
     internal: "Something went wrong on our side. Please try again.",
     sourceDown: "source unavailable",
     unknown: "The request failed. Please try again.",

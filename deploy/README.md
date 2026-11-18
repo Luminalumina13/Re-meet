@@ -36,7 +36,7 @@ Re-run the last deploy: *Actions → CI/CD → Run workflow* on `main`.
 
 | Repo file | Server path |
 |---|---|
-| [`remeeet.service`](remeeet.service) | `/etc/systemd/system/remeeet.service` (env in `/etc/remeeet.env`, mode 600: `DATA_DIR=/var/lib/remeeet`, `CRON_SECRET`, `APP_URL`, `WATCH_POLL_MINUTES=0`) |
+| [`remeeet.service`](remeeet.service) | `/etc/systemd/system/remeeet.service` (env in `/etc/remeeet.env`, mode 600: `DATA_DIR=/var/lib/remeeet`, `CRON_SECRET`, `APP_URL`, `WATCH_POLL_MINUTES=0`; for the question form on `/faq` also `FEEDBACK_CHAT_ID` and, unless the tracker bot is reused, `FEEDBACK_BOT_TOKEN`) |
 | [`Caddyfile`](Caddyfile) | `/etc/caddy/Caddyfile` |
 | [`remeeet-activate.sh`](remeeet-activate.sh) | `/usr/local/bin/remeeet-activate` (sudoers: `deploy ALL=(root) NOPASSWD: /usr/local/bin/remeeet-activate`) |
 | [`remeeet-check-watches.sh`](remeeet-check-watches.sh) | `/usr/local/bin/remeeet-check-watches`, run every 30 min from `/etc/cron.d/remeeet` |

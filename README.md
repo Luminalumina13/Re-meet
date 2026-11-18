@@ -67,6 +67,12 @@ Production: **https://remeeet.com**. Pull requests run typecheck, lint, tests an
 
 © 2026 Svitlana Pavlenko (ФОП Павленко Світлана Сергіївна). All rights reserved, see [`LICENSE`](LICENSE). The Privacy Policy (`/privacy`) and Terms of Use (`/terms`) live in [`content/legal`](content/legal) as Markdown (Ukrainian and English), with the company details in `company.json`; what to fill in before publishing, the assumptions made and the open product issues are in [`docs/legal`](docs/legal/README.md).
 
+## Help pages and the question form
+
+`/how-it-works` (steps with screenshots from `public/how/`, plus tips) and `/faq` (accordion with FAQ structured data, plus a question form) are written in Ukrainian and English in [`src/content/howto.ts`](src/content/howto.ts). `/sitemap.xml` and `/robots.txt` are generated (`APP_URL` sets the host). To refresh a screenshot, capture it from a dev server with `PROVIDERS=mock` in the light theme and replace the file in `public/how/`.
+
+The form posts to `POST /api/feedback` and the message is delivered to a Telegram chat; nothing is stored on the server. It needs `FEEDBACK_CHAT_ID` (the numeric id of the chat or group that should receive questions) and a bot token: `FEEDBACK_BOT_TOKEN`, or the existing `TELEGRAM_BOT_TOKEN`. The bot must be able to write to that chat (for a group, add it as a member or admin). Without them the form answers "service unavailable". Protection: a hidden honeypot field, 3 messages per 10 minutes per address and 100 per day overall.
+
 ## Analytics and ads
 
 Google Analytics 4 and Google AdSense are optional and **off until the visitor presses "Accept"** in the consent banner: nothing from Google is requested before that, and the choice can be changed any time via "Cookie settings" in the footer. With no ids configured no banner is shown and nothing loads.
