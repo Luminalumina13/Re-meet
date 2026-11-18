@@ -43,10 +43,15 @@ IP address, date and time of a request, page address, browser and device type. T
 
 The Share button creates an address that contains your search parameters and, in the meetup planner, the friends' names and airports. This data is visible to anyone you give the link to. Share it with care.
 
+### 3.7. Questions via the form
+
+If you write to us through the form on the “Questions and answers” page, we receive the text of your message and, if you gave them, your contact details (an email or a Telegram username). The message arrives in the Service owner’s Telegram chat and is not stored on our server. Please don’t include unnecessary personal data in it.
+
 ## 4. Why we process data and on what basis
 
 - **To show search results** and run the features of the Service: this is necessary to provide the Service you request (performance of a contract under the [Terms](/terms)).
 - **To run trackers and send notifications:** necessary to fulfil your request. For Telegram, your consent also applies, which you give by opening the connect link and pressing Start in the bot. You can withdraw it at any time.
+- **To answer your question** sent through the form: our legitimate interest in communicating with users, and your consent where you gave a contact.
 - **To protect the Service** from abuse and failures: our legitimate interest in security and stability.
 - **To measure visits and show ads** (Google Analytics, Google AdSense): only with your consent, which you can withdraw.
 - **To comply with legal obligations.**
@@ -54,7 +59,7 @@ The Share button creates an address that contains your search parameters and, in
 ## 5. Who receives data
 
 - **Flight data providers.** To find offers we send the route, dates, number of travellers and cabin to services such as Kiwi.com, lastminute.com and Ryanair, and, where configured, Duffel and Amadeus. Names and contact details are not sent to them. These companies then act under their own policies.
-- **Telegram**, if you connected the bot: to deliver messages.
+- **Telegram**, if you connected the bot (to deliver messages) or sent a question through the form (the message reaches us in Telegram).
 - **Infrastructure providers** (hosting, network) that process data on our behalf.
 - **Public authorities** where there is a lawful request.
 - **Airline and aggregator websites.** When you follow a link to such a site you leave the Service. What happens to your data there is governed by their policies.
@@ -72,6 +77,7 @@ Our providers and Telegram may process data in various countries, including outs
 - **Search responses** are kept temporarily in a server cache for up to 10 minutes.
 - **Trackers** are kept until you delete them (the Delete button on the Tracking page or in the bot).
 - **The Telegram chat ID** is deleted when you disconnect Telegram or block the bot.
+- **Form questions** are kept in Telegram only as long as needed to answer, and then deleted.
 - **Server logs** are kept for up to 30 days.
 - **Data in your browser** (see section 8) stays until you clear it.
 

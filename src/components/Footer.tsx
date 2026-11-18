@@ -11,6 +11,12 @@ export function Footer() {
   return (
     <footer className="mx-auto flex w-full max-w-6xl flex-col gap-2 px-4 py-8 text-xs text-ink-3">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+        <Link href="/how-it-works" className="font-semibold hover:text-accent-text">
+          {t.legal.how}
+        </Link>
+        <Link href="/faq" className="font-semibold hover:text-accent-text">
+          {t.legal.faq}
+        </Link>
         <Link href="/privacy" className="font-semibold hover:text-accent-text">
           {t.legal.privacy}
         </Link>
