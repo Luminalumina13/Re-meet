@@ -148,6 +148,7 @@ export const en: Dict = {
     tickets: "Everyone's tickets",
     trackPlan: "Track this query",
   },
+  howLink: { general: "How does it work?", results: "How to read the results", watchCreate: "How to set up tracking" },
   share: { button: "Share", copied: "Link copied" },
   flex: {
     title: "Flexible dates ±3 days",

@@ -1,5 +1,6 @@
 "use client";
 
+import { HowLink } from "@/components/info/HowLink";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Plus, SlidersHorizontal, Trash2, Users, X } from "lucide-react";
@@ -145,6 +146,7 @@ export function MeetupPage() {
       <section className="hero-glow pb-8 pt-10 sm:pt-14">
         <h1 className="max-w-2xl text-3xl font-extrabold tracking-tight sm:text-4xl">{t.meetup.title}</h1>
         <p className="mt-3 max-w-xl text-ink-2">{t.meetup.subtitle}</p>
+        <HowLink step="meetup" className="mt-2" />
       </section>
 
       <Card className="-mt-2 p-4 sm:p-6">

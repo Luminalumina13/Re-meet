@@ -146,6 +146,7 @@ export const uk = {
     tickets: "Квитки кожного",
     trackPlan: "Відстежувати цей запит",
   },
+  howLink: { general: "Як це працює?", results: "Як читати результати", watchCreate: "Як створити відстеження" },
   share: { button: "Поділитися", copied: "Посилання скопійовано" },
   flex: {
     title: "Гнучкі дати ±3 дні",
