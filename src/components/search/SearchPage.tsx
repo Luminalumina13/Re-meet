@@ -18,6 +18,8 @@ import { WeekendPicker } from "./WeekendPicker";
 import { TimeWindows, idealHint } from "./TimeWindows";
 import { FlightCard } from "./FlightCard";
 import { FlexDates, type FlexParams } from "./FlexDates";
+import { track } from "@/lib/consent";
+import { AdSlot } from "@/components/AdSlot";
 import { ProviderBar } from "./ProviderBar";
 import { AirlineFilter, filterByCarriers } from "./AirlineFilter";
 import { WatchDialog } from "@/components/watch/WatchDialog";
@@ -89,6 +91,7 @@ export function SearchPage() {
     setError(null);
     try {
       setRes(await postJson<SearchResponse>("/api/search", request));
+      track("search", { kind: "flights" });
       setAirlines(new Set());
       setVisible(PAGE);
     } catch (e) {
@@ -311,6 +314,7 @@ export function SearchPage() {
                 )}
               </div>
             )}
+            <AdSlot />
           </>
         )}
       </section>

@@ -10,6 +10,7 @@ import { TelegramConnect } from "./TelegramConnect";
 import { Modal } from "@/components/ui/Modal";
 import { Button, Field, Input, Select } from "@/components/ui/primitives";
 import { errorText } from "@/lib/errorText";
+import { track } from "@/lib/consent";
 
 export function WatchDialog({
   open,
@@ -45,6 +46,7 @@ export function WatchDialog({
         dropThreshold: Number(drop),
       };
       setDone(await postJson<Watch>("/api/watches", body));
+      track("watch_created", { kind: params.kind });
     } catch (e) {
       setErr(errorText(e, t));
     } finally {

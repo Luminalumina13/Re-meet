@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n";
+import { trackingConfigured, useConsent } from "@/lib/consent";
 
 export function Footer() {
   const { t, lang } = useI18n();
+  const [, setConsent] = useConsent();
   const company = lang === "uk" ? "ФОП Павленко С. С." : "Svitlana Pavlenko, sole proprietor";
   return (
     <footer className="mx-auto flex w-full max-w-6xl flex-col gap-2 px-4 py-8 text-xs text-ink-3">
@@ -15,6 +17,11 @@ export function Footer() {
         <Link href="/terms" className="font-semibold hover:text-accent-text">
           {t.legal.terms}
         </Link>
+        {trackingConfigured && (
+          <button type="button" onClick={() => setConsent("unset")} className="font-semibold hover:text-accent-text">
+            {t.consent.settings}
+          </button>
+        )}
         <span>
           © {new Date().getFullYear()} {company}. {t.legal.rights}
         </span>

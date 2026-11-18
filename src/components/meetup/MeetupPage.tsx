@@ -24,6 +24,7 @@ import { PlanCard } from "./PlanCard";
 import { Frontier } from "./Frontier";
 import { SERIES } from "./Timeline";
 import { errorText } from "@/lib/errorText";
+import { track as trackEvent } from "@/lib/consent";
 
 let seq = 3;
 const uid = () => `f${++seq}`;
@@ -106,6 +107,7 @@ export function MeetupPage() {
       const r = await postJson<MeetupResponse>("/api/meetup", request);
       setRes(r);
       setSelected(r.plans[0]?.id);
+      trackEvent("search", { kind: "meetup" });
     } catch (e) {
       setError(errorText(e, t));
     } finally {

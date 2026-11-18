@@ -96,8 +96,10 @@ describe("legal documents", () => {
 
   it("state the facts the product relies on", () => {
     const text = loadLegalSource("privacy", "en");
-    // no tracking, names stay local, providers named, Telegram covered, retention given
-    expect(text).toMatch(/do not use advertising or analytics cookies/);
+    // analytics and ads only with consent, names stay local, providers named, Telegram covered, retention given
+    expect(text).toMatch(/Without your consent we do not set analytics or advertising cookies/);
+    expect(text).toContain("Google Analytics");
+    expect(text).toContain("Google AdSense");
     expect(text).toMatch(/Friends' names are not sent/);
     for (const name of ["Kiwi.com", "lastminute.com", "Ryanair", "Telegram"]) expect(text).toContain(name);
     expect(text).toMatch(/up to 10 minutes/);
