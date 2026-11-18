@@ -163,9 +163,9 @@ input[type="range"] {
   left: 50%;
   width: 100vw;
   transform: translateX(-50%);
-  /* The fade-out is a gradient layer, not a CSS mask: masks on a 100vw pseudo-element render as a black box in some mobile browsers. */
+  /* No CSS mask (it renders as a black box in some mobile browsers) and no opaque fade layer either: this box is painted
+     above the form that follows the hero, so anything but transparent would cover it. The radial gradients fade out on their own. */
   background:
-    linear-gradient(to bottom, transparent 45%, var(--bg)),
     radial-gradient(55% 80% at 20% 0%, color-mix(in oklab, var(--accent) 20%, transparent), transparent 72%),
     radial-gradient(40% 70% at 88% 0%, color-mix(in oklab, var(--e2) 26%, transparent), transparent 72%);
 }
