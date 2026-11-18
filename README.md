@@ -59,6 +59,10 @@ API: `POST /api/explore` with `{ origin, departDate, returnDate, maxFlightHours,
 
 Production: **https://remeeet.com**. Pull requests run typecheck, lint, tests and a build in GitHub Actions; every merge to `main` deploys automatically to a DigitalOcean droplet with a health check and automatic rollback. Details, secrets and server files: [`deploy/`](deploy/README.md).
 
+## Mobile app
+
+`mobile/` is the iOS and Android app (Flutter). It talks to the same API as the website, has the same tabs (search with flexible dates, anywhere, meetup planner, price tracking) and the Sun palette. How to run, test and build it, and what is not done yet (push notifications, incoming links, store listings) is in [`mobile/README.md`](mobile/README.md).
+
 ## Colour schemes
 
 The current look is the *Sun* palette (slate neutrals, sunny yellow accent). All the candidates we compared, with hex codes, comparison pages and a preview tool, are archived in [`docs/palettes`](docs/palettes/README.md).

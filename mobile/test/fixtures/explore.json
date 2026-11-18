@@ -1,0 +1,364 @@
+{
+ "destinations": [
+  {
+   "key": "venice",
+   "city": "Venice",
+   "country": "Italy",
+   "airports": [
+    "VCE"
+   ],
+   "best": {
+    "id": "kiwi-20ef1fb05135000078f93211_0|1fb020ef513c0000f84baa47_0",
+    "provider": "kiwi",
+    "providerName": "Kiwi.com",
+    "legs": [
+     {
+      "from": "WAW",
+      "to": "VCE",
+      "departLocal": "2026-12-02T08:40",
+      "arriveLocal": "2026-12-02T10:40",
+      "departUtc": "2026-12-02T07:40:00.000Z",
+      "arriveUtc": "2026-12-02T09:40:00.000Z",
+      "durationMin": 120,
+      "stops": 0,
+      "segments": [
+       {
+        "from": "WAW",
+        "to": "VCE",
+        "departLocal": "2026-12-02T08:40",
+        "arriveLocal": "2026-12-02T10:40",
+        "departUtc": "2026-12-02T07:40:00.000Z",
+        "arriveUtc": "2026-12-02T09:40:00.000Z",
+        "carrier": "FR",
+        "carrierName": "Ryanair",
+        "flightNumber": "551",
+        "durationMin": 120
+       }
+      ],
+      "toCity": "Venice",
+      "toCountry": "Italy"
+     },
+     {
+      "from": "VCE",
+      "to": "WAW",
+      "departLocal": "2026-12-09T06:15",
+      "arriveLocal": "2026-12-09T08:15",
+      "departUtc": "2026-12-09T05:15:00.000Z",
+      "arriveUtc": "2026-12-09T07:15:00.000Z",
+      "durationMin": 120,
+      "stops": 0,
+      "segments": [
+       {
+        "from": "VCE",
+        "to": "WAW",
+        "departLocal": "2026-12-09T06:15",
+        "arriveLocal": "2026-12-09T08:15",
+        "departUtc": "2026-12-09T05:15:00.000Z",
+        "arriveUtc": "2026-12-09T07:15:00.000Z",
+        "carrier": "FR",
+        "carrierName": "Ryanair",
+        "flightNumber": "550",
+        "durationMin": 120
+       }
+      ],
+      "toCity": "Warsaw",
+      "toCountry": "Poland"
+     }
+    ],
+    "price": {
+     "amount": 36,
+     "currency": "EUR"
+    },
+    "deepLink": "https://kiwi.com/u/hhxn8j",
+    "imageUrl": "https://images.kiwi.com/photos/600x600/venice_it.jpg",
+    "signature": "FR551@2026-12-02T07:40|FR550@2026-12-09T05:15",
+    "comfort": 100,
+    "comfortBreakdown": {
+     "outboundDeparture": 1,
+     "inboundArrival": 1,
+     "directness": 1,
+     "speed": 1
+    },
+    "rank": 100,
+    "badges": [
+     "morning-departure",
+     "direct"
+    ]
+   },
+   "cheapest": {
+    "id": "kiwi-20ef1fb05135000078f93211_0|1fb020ef513c0000f84baa47_0",
+    "provider": "kiwi",
+    "providerName": "Kiwi.com",
+    "legs": [
+     {
+      "from": "WAW",
+      "to": "VCE",
+      "departLocal": "2026-12-02T08:40",
+      "arriveLocal": "2026-12-02T10:40",
+      "departUtc": "2026-12-02T07:40:00.000Z",
+      "arriveUtc": "2026-12-02T09:40:00.000Z",
+      "durationMin": 120,
+      "stops": 0,
+      "segments": [
+       {
+        "from": "WAW",
+        "to": "VCE",
+        "departLocal": "2026-12-02T08:40",
+        "arriveLocal": "2026-12-02T10:40",
+        "departUtc": "2026-12-02T07:40:00.000Z",
+        "arriveUtc": "2026-12-02T09:40:00.000Z",
+        "carrier": "FR",
+        "carrierName": "Ryanair",
+        "flightNumber": "551",
+        "durationMin": 120
+       }
+      ],
+      "toCity": "Venice",
+      "toCountry": "Italy"
+     },
+     {
+      "from": "VCE",
+      "to": "WAW",
+      "departLocal": "2026-12-09T06:15",
+      "arriveLocal": "2026-12-09T08:15",
+      "departUtc": "2026-12-09T05:15:00.000Z",
+      "arriveUtc": "2026-12-09T07:15:00.000Z",
+      "durationMin": 120,
+      "stops": 0,
+      "segments": [
+       {
+        "from": "VCE",
+        "to": "WAW",
+        "departLocal": "2026-12-09T06:15",
+        "arriveLocal": "2026-12-09T08:15",
+        "departUtc": "2026-12-09T05:15:00.000Z",
+        "arriveUtc": "2026-12-09T07:15:00.000Z",
+        "carrier": "FR",
+        "carrierName": "Ryanair",
+        "flightNumber": "550",
+        "durationMin": 120
+       }
+      ],
+      "toCity": "Warsaw",
+      "toCountry": "Poland"
+     }
+    ],
+    "price": {
+     "amount": 36,
+     "currency": "EUR"
+    },
+    "deepLink": "https://kiwi.com/u/hhxn8j",
+    "imageUrl": "https://images.kiwi.com/photos/600x600/venice_it.jpg",
+    "signature": "FR551@2026-12-02T07:40|FR550@2026-12-09T05:15",
+    "comfort": 100,
+    "comfortBreakdown": {
+     "outboundDeparture": 1,
+     "inboundArrival": 1,
+     "directness": 1,
+     "speed": 1
+    },
+    "rank": 100,
+    "badges": [
+     "morning-departure",
+     "direct"
+    ]
+   },
+   "options": 2,
+   "minutesThere": 9815,
+   "imageUrl": "https://images.kiwi.com/photos/600x600/venice_it.jpg"
+  },
+  {
+   "key": "rome",
+   "city": "Rome",
+   "country": "Italy",
+   "airports": [
+    "FCO",
+    "CIA"
+   ],
+   "best": {
+    "id": "kiwi-23b009b2513500002c396621_0|09b223b0513c000070868eaf_0",
+    "provider": "kiwi",
+    "providerName": "Kiwi.com",
+    "legs": [
+     {
+      "from": "WMI",
+      "to": "CIA",
+      "departLocal": "2026-12-02T12:35",
+      "arriveLocal": "2026-12-02T14:55",
+      "departUtc": "2026-12-02T11:35:00.000Z",
+      "arriveUtc": "2026-12-02T13:55:00.000Z",
+      "durationMin": 140,
+      "stops": 0,
+      "segments": [
+       {
+        "from": "WMI",
+        "to": "CIA",
+        "departLocal": "2026-12-02T12:35",
+        "arriveLocal": "2026-12-02T14:55",
+        "departUtc": "2026-12-02T11:35:00.000Z",
+        "arriveUtc": "2026-12-02T13:55:00.000Z",
+        "carrier": "FR",
+        "carrierName": "Ryanair",
+        "flightNumber": "7026",
+        "durationMin": 140
+       }
+      ],
+      "toCity": "Rome",
+      "toCountry": "Italy"
+     },
+     {
+      "from": "CIA",
+      "to": "WMI",
+      "departLocal": "2026-12-09T09:55",
+      "arriveLocal": "2026-12-09T12:10",
+      "departUtc": "2026-12-09T08:55:00.000Z",
+      "arriveUtc": "2026-12-09T11:10:00.000Z",
+      "durationMin": 135,
+      "stops": 0,
+      "segments": [
+       {
+        "from": "CIA",
+        "to": "WMI",
+        "departLocal": "2026-12-09T09:55",
+        "arriveLocal": "2026-12-09T12:10",
+        "departUtc": "2026-12-09T08:55:00.000Z",
+        "arriveUtc": "2026-12-09T11:10:00.000Z",
+        "carrier": "FR",
+        "carrierName": "Ryanair",
+        "flightNumber": "7025",
+        "durationMin": 135
+       }
+      ],
+      "toCity": "Warsaw",
+      "toCountry": "Poland"
+     }
+    ],
+    "price": {
+     "amount": 46,
+     "currency": "EUR"
+    },
+    "deepLink": "https://kiwi.com/u/2x3qbbj",
+    "imageUrl": "https://images.kiwi.com/photos/600x600/rome_it.jpg",
+    "signature": "FR7026@2026-12-02T11:35|FR7025@2026-12-09T08:55",
+    "comfort": 100,
+    "comfortBreakdown": {
+     "outboundDeparture": 1,
+     "inboundArrival": 1,
+     "directness": 1,
+     "speed": 1
+    },
+    "rank": 88,
+    "badges": [
+     "direct"
+    ]
+   },
+   "cheapest": {
+    "id": "kiwi-23b009b2513500002c396621_0|09b223b0513c000070868eaf_0",
+    "provider": "kiwi",
+    "providerName": "Kiwi.com",
+    "legs": [
+     {
+      "from": "WMI",
+      "to": "CIA",
+      "departLocal": "2026-12-02T12:35",
+      "arriveLocal": "2026-12-02T14:55",
+      "departUtc": "2026-12-02T11:35:00.000Z",
+      "arriveUtc": "2026-12-02T13:55:00.000Z",
+      "durationMin": 140,
+      "stops": 0,
+      "segments": [
+       {
+        "from": "WMI",
+        "to": "CIA",
+        "departLocal": "2026-12-02T12:35",
+        "arriveLocal": "2026-12-02T14:55",
+        "departUtc": "2026-12-02T11:35:00.000Z",
+        "arriveUtc": "2026-12-02T13:55:00.000Z",
+        "carrier": "FR",
+        "carrierName": "Ryanair",
+        "flightNumber": "7026",
+        "durationMin": 140
+       }
+      ],
+      "toCity": "Rome",
+      "toCountry": "Italy"
+     },
+     {
+      "from": "CIA",
+      "to": "WMI",
+      "departLocal": "2026-12-09T09:55",
+      "arriveLocal": "2026-12-09T12:10",
+      "departUtc": "2026-12-09T08:55:00.000Z",
+      "arriveUtc": "2026-12-09T11:10:00.000Z",
+      "durationMin": 135,
+      "stops": 0,
+      "segments": [
+       {
+        "from": "CIA",
+        "to": "WMI",
+        "departLocal": "2026-12-09T09:55",
+        "arriveLocal": "2026-12-09T12:10",
+        "departUtc": "2026-12-09T08:55:00.000Z",
+        "arriveUtc": "2026-12-09T11:10:00.000Z",
+        "carrier": "FR",
+        "carrierName": "Ryanair",
+        "flightNumber": "7025",
+        "durationMin": 135
+       }
+      ],
+      "toCity": "Warsaw",
+      "toCountry": "Poland"
+     }
+    ],
+    "price": {
+     "amount": 46,
+     "currency": "EUR"
+    },
+    "deepLink": "https://kiwi.com/u/2x3qbbj",
+    "imageUrl": "https://images.kiwi.com/photos/600x600/rome_it.jpg",
+    "signature": "FR7026@2026-12-02T11:35|FR7025@2026-12-09T08:55",
+    "comfort": 100,
+    "comfortBreakdown": {
+     "outboundDeparture": 1,
+     "inboundArrival": 1,
+     "directness": 1,
+     "speed": 1
+    },
+    "rank": 88,
+    "badges": [
+     "direct"
+    ]
+   },
+   "options": 3,
+   "minutesThere": 9780,
+   "imageUrl": "https://images.kiwi.com/photos/600x600/rome_it.jpg"
+  }
+ ],
+ "providers": [
+  {
+   "id": "kiwi",
+   "name": "Kiwi.com",
+   "kind": "aggregator",
+   "status": "ok",
+   "count": 108,
+   "ms": 4109
+  },
+  {
+   "id": "lastminute",
+   "name": "lastminute.com",
+   "kind": "aggregator",
+   "status": "skipped",
+   "count": 0,
+   "ms": 0
+  },
+  {
+   "id": "ryanair",
+   "name": "Ryanair",
+   "kind": "airline",
+   "status": "skipped",
+   "count": 0,
+   "ms": 0
+  }
+ ],
+ "generatedAt": "2026-11-15T16:08:10.575Z"
+}

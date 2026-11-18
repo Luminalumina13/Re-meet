@@ -1,0 +1,39 @@
+{
+ "options": [
+  {
+   "price": 31.83,
+   "departUtc": "2026-11-28T14:30:00.000Z",
+   "arriveUtc": "2026-11-28T17:35:00.000Z",
+   "departLocal": "2026-11-28T15:30",
+   "providerName": "lastminute.com"
+  },
+  {
+   "price": 63.25,
+   "departUtc": "2026-11-28T14:05:00.000Z",
+   "arriveUtc": "2026-11-28T17:15:00.000Z",
+   "departLocal": "2026-11-28T15:05",
+   "providerName": "lastminute.com"
+  },
+  {
+   "price": 76,
+   "departUtc": "2026-11-28T07:55:00.000Z",
+   "arriveUtc": "2026-11-28T14:00:00.000Z",
+   "departLocal": "2026-11-28T08:55",
+   "providerName": "Kiwi.com"
+  },
+  {
+   "price": 94.99,
+   "departUtc": "2026-11-28T05:20:00.000Z",
+   "arriveUtc": "2026-11-28T08:30:00.000Z",
+   "departLocal": "2026-11-28T06:20",
+   "providerName": "lastminute.com"
+  }
+ ],
+ "date": "2026-11-28",
+ "price": 32,
+ "currency": "EUR",
+ "count": 84,
+ "departLocal": "2026-11-28T15:30",
+ "providerName": "lastminute.com",
+ "partial": false
+}
