@@ -3,14 +3,15 @@ import { watchPatchSchema } from "@/lib/api/schemas";
 import { badRequest, notFound, serverError } from "@/lib/api/respond";
 import { watchStore } from "@/lib/watch/store";
 import { publicWatch } from "@/lib/watch/public";
+import { ownedWatch } from "@/lib/watch/owner";
 
 export const runtime = "nodejs";
 
 type Ctx = { params: Promise<{ id: string }> };
 
-export async function GET(_req: Request, ctx: Ctx) {
+export async function GET(req: Request, ctx: Ctx) {
   const { id } = await ctx.params;
-  const w = await watchStore().get(id);
+  const w = await ownedWatch(req, id);
   return w ? NextResponse.json(publicWatch(w)) : notFound();
 }
 
@@ -26,7 +27,7 @@ export async function PATCH(req: Request, ctx: Ctx) {
   if (!parsed.success) return badRequest(parsed.error);
   try {
     const store = watchStore();
-    const cur = await store.get(id);
+    const cur = await ownedWatch(req, id);
     if (!cur) return notFound();
     const { targetPrice, notify, ...rest } = parsed.data;
     const patch: Partial<typeof cur> = { ...rest, ...(targetPrice === undefined ? {} : { targetPrice: targetPrice ?? undefined }) };
@@ -43,8 +44,8 @@ export async function PATCH(req: Request, ctx: Ctx) {
   }
 }
 
-export async function DELETE(_req: Request, ctx: Ctx) {
+export async function DELETE(req: Request, ctx: Ctx) {
   const { id } = await ctx.params;
-  const ok = await watchStore().delete(id);
+  const ok = (await ownedWatch(req, id)) ? await watchStore().delete(id) : false;
   return ok ? new NextResponse(null, { status: 204 }) : notFound();
 }
