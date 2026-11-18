@@ -1,0 +1,11 @@
+[
+ {
+  "iata": "FNC",
+  "name": "Madeira",
+  "city": "Funchal",
+  "country": "PT",
+  "tz": "Atlantic/Madeira",
+  "lat": 32.6979,
+  "lon": -16.7745
+ }
+]

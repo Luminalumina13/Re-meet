@@ -1,0 +1,295 @@
+{
+ "itineraries": [
+  {
+   "id": "lastminute-WMIBCN2026-11-28T14:30:00.000Z>2026-11-28T17:35:00.000Z|BCNWMI2026-11-29T14:25:00.000Z>2026-11-29T17:35:00.000Z-8111",
+   "provider": "lastminute",
+   "providerName": "lastminute.com",
+   "legs": [
+    {
+     "from": "WMI",
+     "to": "BCN",
+     "departLocal": "2026-11-28T15:30",
+     "arriveLocal": "2026-11-28T18:35",
+     "departUtc": "2026-11-28T14:30:00.000Z",
+     "arriveUtc": "2026-11-28T17:35:00.000Z",
+     "durationMin": 185,
+     "stops": 0,
+     "segments": [
+      {
+       "from": "WMI",
+       "to": "BCN",
+       "departLocal": "2026-11-28T15:30",
+       "arriveLocal": "2026-11-28T18:35",
+       "departUtc": "2026-11-28T14:30:00.000Z",
+       "arriveUtc": "2026-11-28T17:35:00.000Z",
+       "carrier": "FR",
+       "carrierName": "Ryanair",
+       "flightNumber": "4083",
+       "durationMin": 185
+      }
+     ],
+     "toCity": "Barcelona",
+     "toCountry": "Spain"
+    },
+    {
+     "from": "BCN",
+     "to": "WMI",
+     "departLocal": "2026-11-29T15:25",
+     "arriveLocal": "2026-11-29T18:35",
+     "departUtc": "2026-11-29T14:25:00.000Z",
+     "arriveUtc": "2026-11-29T17:35:00.000Z",
+     "durationMin": 190,
+     "stops": 0,
+     "segments": [
+      {
+       "from": "BCN",
+       "to": "WMI",
+       "departLocal": "2026-11-29T15:25",
+       "arriveLocal": "2026-11-29T18:35",
+       "departUtc": "2026-11-29T14:25:00.000Z",
+       "arriveUtc": "2026-11-29T17:35:00.000Z",
+       "carrier": "W6",
+       "carrierName": "Wizz Air",
+       "flightNumber": "1412",
+       "durationMin": 190
+      }
+     ],
+     "toCity": "Warsaw",
+     "toCountry": "Poland"
+    }
+   ],
+   "price": {
+    "amount": 81.11,
+    "currency": "EUR"
+   },
+   "deepLink": "https://www.lastminute.ie/msr/route/searching.do?departureAirport=WAW&arrivalAirport=BCN&outboundDay=28&outboundMonthYear=112026&returnDay=29&returnMonthYear=112026&adults=1&childs=0&infants=0&COBRANDED=LMNEN_LLMPROJECTEN&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=841342801475487744&mac=841342801475487744SCHv012128018947&acntb=flight&utm_term=WAWBCN&utm_campaign=results&utm_medium=meta_search&utm_source=LMNEN_LLMPROJECTEN&bf_subsource=-----WS0S02RS01&j=81110&jC=81110_EUR&cp=1",
+   "signature": "FR4083@2026-11-28T14:30|W61412@2026-11-29T14:25",
+   "otherOffers": [
+    {
+     "provider": "kiwi",
+     "providerName": "Kiwi.com",
+     "price": {
+      "amount": 83,
+      "currency": "EUR"
+     },
+     "deepLink": "https://kiwi.com/u/chfrqss"
+    }
+   ],
+   "comfort": 100,
+   "comfortBreakdown": {
+    "outboundDeparture": 1,
+    "inboundArrival": 1,
+    "directness": 1,
+    "speed": 1
+   },
+   "rank": 99,
+   "badges": [
+    "evening-return",
+    "direct"
+   ]
+  },
+  {
+   "id": "lastminute-WAWBCN2026-11-28T14:05:00.000Z>2026-11-28T17:15:00.000Z|BCNWMI2026-11-29T14:25:00.000Z>2026-11-29T17:35:00.000Z-10924",
+   "provider": "lastminute",
+   "providerName": "lastminute.com",
+   "legs": [
+    {
+     "from": "WAW",
+     "to": "BCN",
+     "departLocal": "2026-11-28T15:05",
+     "arriveLocal": "2026-11-28T18:15",
+     "departUtc": "2026-11-28T14:05:00.000Z",
+     "arriveUtc": "2026-11-28T17:15:00.000Z",
+     "durationMin": 190,
+     "stops": 0,
+     "segments": [
+      {
+       "from": "WAW",
+       "to": "BCN",
+       "departLocal": "2026-11-28T15:05",
+       "arriveLocal": "2026-11-28T18:15",
+       "departUtc": "2026-11-28T14:05:00.000Z",
+       "arriveUtc": "2026-11-28T17:15:00.000Z",
+       "carrier": "W6",
+       "carrierName": "Wizz Air",
+       "flightNumber": "1477",
+       "durationMin": 190
+      }
+     ],
+     "toCity": "Barcelona",
+     "toCountry": "Spain"
+    },
+    {
+     "from": "BCN",
+     "to": "WMI",
+     "departLocal": "2026-11-29T15:25",
+     "arriveLocal": "2026-11-29T18:35",
+     "departUtc": "2026-11-29T14:25:00.000Z",
+     "arriveUtc": "2026-11-29T17:35:00.000Z",
+     "durationMin": 190,
+     "stops": 0,
+     "segments": [
+      {
+       "from": "BCN",
+       "to": "WMI",
+       "departLocal": "2026-11-29T15:25",
+       "arriveLocal": "2026-11-29T18:35",
+       "departUtc": "2026-11-29T14:25:00.000Z",
+       "arriveUtc": "2026-11-29T17:35:00.000Z",
+       "carrier": "W6",
+       "carrierName": "Wizz Air",
+       "flightNumber": "1412",
+       "durationMin": 190
+      }
+     ],
+     "toCity": "Warsaw",
+     "toCountry": "Poland"
+    }
+   ],
+   "price": {
+    "amount": 109.24,
+    "currency": "EUR"
+   },
+   "deepLink": "https://www.lastminute.ie/msr/route/searching.do?departureAirport=WAW&arrivalAirport=BCN&outboundDay=28&outboundMonthYear=112026&returnDay=29&returnMonthYear=112026&adults=1&childs=0&infants=0&COBRANDED=LMNEN_LLMPROJECTEN&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=841342801475487744&mac=841342801475487744SCHv01-1797768188&acntb=flight&utm_term=WAWBCN&utm_campaign=results&utm_medium=meta_search&utm_source=LMNEN_LLMPROJECTEN&bf_subsource=-----WS0S02RS01&j=109240&jC=109240_EUR&cp=2",
+   "signature": "W61477@2026-11-28T14:05|W61412@2026-11-29T14:25",
+   "otherOffers": [
+    {
+     "provider": "kiwi",
+     "providerName": "Kiwi.com",
+     "price": {
+      "amount": 114,
+      "currency": "EUR"
+     },
+     "deepLink": "https://kiwi.com/u/2pvsxv"
+    }
+   ],
+   "comfort": 100,
+   "comfortBreakdown": {
+    "outboundDeparture": 1,
+    "inboundArrival": 1,
+    "directness": 1,
+    "speed": 1
+   },
+   "rank": 83,
+   "badges": [
+    "evening-return",
+    "direct"
+   ]
+  },
+  {
+   "id": "lastminute-WMIBCN2026-11-28T14:30:00.000Z>2026-11-28T17:35:00.000Z|BCNWMI2026-11-29T09:00:00.000Z>2026-11-29T12:00:00.000Z-7955",
+   "provider": "lastminute",
+   "providerName": "lastminute.com",
+   "legs": [
+    {
+     "from": "WMI",
+     "to": "BCN",
+     "departLocal": "2026-11-28T15:30",
+     "arriveLocal": "2026-11-28T18:35",
+     "departUtc": "2026-11-28T14:30:00.000Z",
+     "arriveUtc": "2026-11-28T17:35:00.000Z",
+     "durationMin": 185,
+     "stops": 0,
+     "segments": [
+      {
+       "from": "WMI",
+       "to": "BCN",
+       "departLocal": "2026-11-28T15:30",
+       "arriveLocal": "2026-11-28T18:35",
+       "departUtc": "2026-11-28T14:30:00.000Z",
+       "arriveUtc": "2026-11-28T17:35:00.000Z",
+       "carrier": "FR",
+       "carrierName": "Ryanair",
+       "flightNumber": "4083",
+       "durationMin": 185
+      }
+     ],
+     "toCity": "Barcelona",
+     "toCountry": "Spain"
+    },
+    {
+     "from": "BCN",
+     "to": "WMI",
+     "departLocal": "2026-11-29T10:00",
+     "arriveLocal": "2026-11-29T13:00",
+     "departUtc": "2026-11-29T09:00:00.000Z",
+     "arriveUtc": "2026-11-29T12:00:00.000Z",
+     "durationMin": 180,
+     "stops": 0,
+     "segments": [
+      {
+       "from": "BCN",
+       "to": "WMI",
+       "departLocal": "2026-11-29T10:00",
+       "arriveLocal": "2026-11-29T13:00",
+       "departUtc": "2026-11-29T09:00:00.000Z",
+       "arriveUtc": "2026-11-29T12:00:00.000Z",
+       "carrier": "FR",
+       "carrierName": "Ryanair",
+       "flightNumber": "4084",
+       "durationMin": 180
+      }
+     ],
+     "toCity": "Warsaw",
+     "toCountry": "Poland"
+    }
+   ],
+   "price": {
+    "amount": 79.55,
+    "currency": "EUR"
+   },
+   "deepLink": "https://www.lastminute.ie/msr/route/searching.do?departureAirport=WAW&arrivalAirport=BCN&outboundDay=28&outboundMonthYear=112026&returnDay=29&returnMonthYear=112026&adults=1&childs=0&infants=0&COBRANDED=LMNEN_LLMPROJECTEN&currency=EUR&url=search3.do&roundtrip=true&fareType=&requestId=841342801475487744&mac=841342801475487744SCHv01-1691690472&acntb=flight&utm_term=WAWBCN&utm_campaign=results&utm_medium=meta_search&utm_source=LMNEN_LLMPROJECTEN&bf_subsource=-----WS0S02RS01&j=79550&jC=79550_EUR&cp=0",
+   "signature": "FR4083@2026-11-28T14:30|FR4084@2026-11-29T09:00",
+   "otherOffers": [
+    {
+     "provider": "kiwi",
+     "providerName": "Kiwi.com",
+     "price": {
+      "amount": 84,
+      "currency": "EUR"
+     },
+     "deepLink": "https://kiwi.com/u/jz6kmsu"
+    }
+   ],
+   "comfort": 65,
+   "comfortBreakdown": {
+    "outboundDeparture": 1,
+    "inboundArrival": 0,
+    "directness": 1,
+    "speed": 1
+   },
+   "rank": 81,
+   "badges": [
+    "direct"
+   ]
+  }
+ ],
+ "providers": [
+  {
+   "id": "kiwi",
+   "name": "Kiwi.com",
+   "kind": "aggregator",
+   "status": "ok",
+   "count": 60,
+   "ms": 1321
+  },
+  {
+   "id": "lastminute",
+   "name": "lastminute.com",
+   "kind": "aggregator",
+   "status": "ok",
+   "count": 63,
+   "ms": 754
+  },
+  {
+   "id": "ryanair",
+   "name": "Ryanair",
+   "kind": "airline",
+   "status": "ok",
+   "count": 0,
+   "ms": 258
+  }
+ ],
+ "cached": false,
+ "generatedAt": "2026-11-15T16:08:06.442Z"
+}

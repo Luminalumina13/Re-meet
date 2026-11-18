@@ -1,0 +1,619 @@
+{
+ "plans": [
+  {
+   "id": "FNC-1xzu2tq",
+   "destination": "FNC",
+   "togetherMinutes": 1575,
+   "totalPrice": 614,
+   "currency": "EUR",
+   "meetStartUtc": "2026-11-28T18:40:00.000Z",
+   "meetEndUtc": "2026-11-29T20:55:00.000Z",
+   "meetStartLocal": "2026-11-28T18:40",
+   "meetEndLocal": "2026-11-29T20:55",
+   "friends": [
+    {
+     "friend": {
+      "id": "a",
+      "name": "Ann",
+      "origins": [
+       "KRK"
+      ]
+     },
+     "outbound": {
+      "id": "kiwi-13d40a2b51310000c2fcd4a2_0|0a2b0355513100007354391b_0",
+      "provider": "kiwi",
+      "providerName": "Kiwi.com",
+      "legs": [
+       {
+        "from": "KRK",
+        "to": "FNC",
+        "departLocal": "2026-11-28T11:00",
+        "arriveLocal": "2026-11-28T18:40",
+        "departUtc": "2026-11-28T10:00:00.000Z",
+        "arriveUtc": "2026-11-28T18:40:00.000Z",
+        "durationMin": 520,
+        "stops": 1,
+        "segments": [
+         {
+          "from": "KRK",
+          "to": "MAN",
+          "departLocal": "2026-11-28T11:00",
+          "arriveLocal": "2026-11-28T12:50",
+          "departUtc": "2026-11-28T10:00:00.000Z",
+          "arriveUtc": "2026-11-28T12:50:00.000Z",
+          "carrier": "U2",
+          "carrierName": "easyJet",
+          "flightNumber": "2264",
+          "durationMin": 170
+         },
+         {
+          "from": "MAN",
+          "to": "FNC",
+          "departLocal": "2026-11-28T14:35",
+          "arriveLocal": "2026-11-28T18:40",
+          "departUtc": "2026-11-28T14:35:00.000Z",
+          "arriveUtc": "2026-11-28T18:40:00.000Z",
+          "carrier": "LS",
+          "carrierName": "Jet2",
+          "flightNumber": "851",
+          "durationMin": 245
+         }
+        ],
+        "toCity": "Funchal",
+        "toCountry": "Portugal"
+       }
+      ],
+      "price": {
+       "amount": 83,
+       "currency": "EUR"
+      },
+      "deepLink": "https://kiwi.com/u/v874yu",
+      "imageUrl": "https://images.kiwi.com/photos/600x600/funchal_pt.jpg",
+      "signature": "U22264@2026-11-28T10:00>LS851@2026-11-28T14:35"
+     },
+     "inbound": {
+      "id": "kiwi-0355093e51320000624f6ed6_0|093e255851330000c5ed8c92_0|255813d451330000603edd9b_0",
+      "provider": "kiwi",
+      "providerName": "Kiwi.com",
+      "legs": [
+       {
+        "from": "FNC",
+        "to": "KRK",
+        "departLocal": "2026-11-29T20:55",
+        "arriveLocal": "2026-11-30T15:30",
+        "departUtc": "2026-11-29T20:55:00.000Z",
+        "arriveUtc": "2026-11-30T14:30:00.000Z",
+        "durationMin": 1055,
+        "stops": 2,
+        "segments": [
+         {
+          "from": "FNC",
+          "to": "OPO",
+          "departLocal": "2026-11-29T20:55",
+          "arriveLocal": "2026-11-29T22:50",
+          "departUtc": "2026-11-29T20:55:00.000Z",
+          "arriveUtc": "2026-11-29T22:50:00.000Z",
+          "carrier": "U2",
+          "carrierName": "easyJet",
+          "flightNumber": "6836",
+          "durationMin": 115
+         },
+         {
+          "from": "OPO",
+          "to": "BGY",
+          "departLocal": "2026-11-30T07:00",
+          "arriveLocal": "2026-11-30T10:35",
+          "departUtc": "2026-11-30T07:00:00.000Z",
+          "arriveUtc": "2026-11-30T09:35:00.000Z",
+          "carrier": "FR",
+          "carrierName": "Ryanair",
+          "flightNumber": "4637",
+          "durationMin": 155
+         },
+         {
+          "from": "BGY",
+          "to": "KRK",
+          "departLocal": "2026-11-30T13:45",
+          "arriveLocal": "2026-11-30T15:30",
+          "departUtc": "2026-11-30T12:45:00.000Z",
+          "arriveUtc": "2026-11-30T14:30:00.000Z",
+          "carrier": "FR",
+          "carrierName": "Ryanair",
+          "flightNumber": "3504",
+          "durationMin": 105
+         }
+        ],
+        "toCity": "Kraków",
+        "toCountry": "Poland"
+       }
+      ],
+      "price": {
+       "amount": 222,
+       "currency": "EUR"
+      },
+      "deepLink": "https://kiwi.com/u/vvkfyzk",
+      "imageUrl": "https://images.kiwi.com/photos/600x600/krakow_pl.jpg",
+      "signature": "U26836@2026-11-29T20:55>FR4637@2026-11-30T07:00>FR3504@2026-11-30T12:45"
+     },
+     "arriveUtc": "2026-11-28T18:40:00.000Z",
+     "departUtc": "2026-11-29T20:55:00.000Z",
+     "price": 305
+    },
+    {
+     "friend": {
+      "id": "b",
+      "name": "Bo",
+      "origins": [
+       "BER"
+      ]
+     },
+     "outbound": {
+      "id": "kiwi-00420a2b51310000e32c7c11_0|0a2b0355513100007354391b_0",
+      "provider": "kiwi",
+      "providerName": "Kiwi.com",
+      "legs": [
+       {
+        "from": "BER",
+        "to": "FNC",
+        "departLocal": "2026-11-28T11:45",
+        "arriveLocal": "2026-11-28T18:40",
+        "departUtc": "2026-11-28T10:45:00.000Z",
+        "arriveUtc": "2026-11-28T18:40:00.000Z",
+        "durationMin": 475,
+        "stops": 1,
+        "segments": [
+         {
+          "from": "BER",
+          "to": "MAN",
+          "departLocal": "2026-11-28T11:45",
+          "arriveLocal": "2026-11-28T12:55",
+          "departUtc": "2026-11-28T10:45:00.000Z",
+          "arriveUtc": "2026-11-28T12:55:00.000Z",
+          "carrier": "U2",
+          "carrierName": "easyJet",
+          "flightNumber": "2202",
+          "durationMin": 130
+         },
+         {
+          "from": "MAN",
+          "to": "FNC",
+          "departLocal": "2026-11-28T14:35",
+          "arriveLocal": "2026-11-28T18:40",
+          "departUtc": "2026-11-28T14:35:00.000Z",
+          "arriveUtc": "2026-11-28T18:40:00.000Z",
+          "carrier": "LS",
+          "carrierName": "Jet2",
+          "flightNumber": "851",
+          "durationMin": 245
+         }
+        ],
+        "toCity": "Funchal",
+        "toCountry": "Portugal"
+       }
+      ],
+      "price": {
+       "amount": 103,
+       "currency": "EUR"
+      },
+      "deepLink": "https://kiwi.com/u/2k5hdb",
+      "imageUrl": "https://images.kiwi.com/photos/600x600/funchal_pt.jpg",
+      "signature": "U22202@2026-11-28T10:45>LS851@2026-11-28T14:35"
+     },
+     "inbound": {
+      "id": "kiwi-0355004251320000e195621f_0|0355004251320000e195621f_1",
+      "provider": "kiwi",
+      "providerName": "Kiwi.com",
+      "legs": [
+       {
+        "from": "FNC",
+        "to": "BER",
+        "departLocal": "2026-11-29T21:15",
+        "arriveLocal": "2026-11-30T12:00",
+        "departUtc": "2026-11-29T21:15:00.000Z",
+        "arriveUtc": "2026-11-30T11:00:00.000Z",
+        "durationMin": 825,
+        "stops": 1,
+        "segments": [
+         {
+          "from": "FNC",
+          "to": "LIS",
+          "departLocal": "2026-11-29T21:15",
+          "arriveLocal": "2026-11-29T23:00",
+          "departUtc": "2026-11-29T21:15:00.000Z",
+          "arriveUtc": "2026-11-29T23:00:00.000Z",
+          "carrier": "TP",
+          "carrierName": "TAP Portugal",
+          "flightNumber": "1694",
+          "durationMin": 105
+         },
+         {
+          "from": "LIS",
+          "to": "BER",
+          "departLocal": "2026-11-30T07:25",
+          "arriveLocal": "2026-11-30T12:00",
+          "departUtc": "2026-11-30T07:25:00.000Z",
+          "arriveUtc": "2026-11-30T11:00:00.000Z",
+          "carrier": "TP",
+          "carrierName": "TAP Portugal",
+          "flightNumber": "530",
+          "durationMin": 215
+         }
+        ],
+        "toCity": "Berlin",
+        "toCountry": "Germany"
+       }
+      ],
+      "price": {
+       "amount": 206,
+       "currency": "EUR"
+      },
+      "deepLink": "https://kiwi.com/u/6736hv",
+      "imageUrl": "https://images.kiwi.com/photos/600x600/berlin_de.jpg",
+      "signature": "TP1694@2026-11-29T21:15>TP530@2026-11-30T07:25",
+      "otherOffers": [
+       {
+        "provider": "lastminute",
+        "providerName": "lastminute.com",
+        "price": {
+         "amount": 212.17,
+         "currency": "EUR"
+        },
+        "deepLink": "https://www.lastminute.ie/msr/route/searching.do?departureAirport=FNC&arrivalAirport=BER&outboundDay=29&outboundMonthYear=112026&adults=1&childs=0&infants=0&COBRANDED=LMNEN_LLMPROJECTEN&currency=EUR&url=search3.do&roundtrip=false&fareType=&requestId=841342891803392000&mac=841342891803392000SCHv011454163459&acntb=flight&utm_term=FNCBER&utm_campaign=results&utm_medium=meta_search&utm_source=LMNEN_LLMPROJECTEN&bf_subsource=-----WS0S02RS01&j=212170&jC=212170_EUR&cp=1"
+       }
+      ]
+     },
+     "arriveUtc": "2026-11-28T18:40:00.000Z",
+     "departUtc": "2026-11-29T21:15:00.000Z",
+     "price": 309
+    }
+   ],
+   "score": -220
+  },
+  {
+   "id": "FNC-cfxa8c",
+   "destination": "FNC",
+   "togetherMinutes": 1125,
+   "totalPrice": 503,
+   "currency": "EUR",
+   "meetStartUtc": "2026-11-28T16:50:00.000Z",
+   "meetEndUtc": "2026-11-29T11:35:00.000Z",
+   "meetStartLocal": "2026-11-28T16:50",
+   "meetEndLocal": "2026-11-29T11:35",
+   "friends": [
+    {
+     "friend": {
+      "id": "a",
+      "name": "Ann",
+      "origins": [
+       "KRK"
+      ]
+     },
+     "outbound": {
+      "id": "lastminute-KTWFNC2026-11-28T10:50:00.000Z>2026-11-28T16:35:00.000Z-11285",
+      "provider": "lastminute",
+      "providerName": "lastminute.com",
+      "legs": [
+       {
+        "from": "KTW",
+        "to": "FNC",
+        "departLocal": "2026-11-28T11:50",
+        "arriveLocal": "2026-11-28T16:35",
+        "departUtc": "2026-11-28T10:50:00.000Z",
+        "arriveUtc": "2026-11-28T16:35:00.000Z",
+        "durationMin": 345,
+        "stops": 0,
+        "segments": [
+         {
+          "from": "KTW",
+          "to": "FNC",
+          "departLocal": "2026-11-28T11:50",
+          "arriveLocal": "2026-11-28T16:35",
+          "departUtc": "2026-11-28T10:50:00.000Z",
+          "arriveUtc": "2026-11-28T16:35:00.000Z",
+          "carrier": "E4",
+          "carrierName": "Enter Air",
+          "flightNumber": "",
+          "durationMin": 345
+         }
+        ]
+       }
+      ],
+      "price": {
+       "amount": 112.85,
+       "currency": "EUR"
+      },
+      "deepLink": "https://www.lastminute.ie/msr/route/searching.do?departureAirport=KRK&arrivalAirport=FNC&outboundDay=28&outboundMonthYear=112026&adults=1&childs=0&infants=0&COBRANDED=LMNEN_LLMPROJECTEN&currency=EUR&url=search3.do&roundtrip=false&fareType=&requestId=841342873990203392&mac=841342873990203392SCHv01-1888536170&acntb=flight&utm_term=KRKFNC&utm_campaign=results&utm_medium=meta_search&utm_source=LMNEN_LLMPROJECTEN&bf_subsource=-----WS0S02RS01&j=112850&jC=112850_EUR&cp=0",
+      "signature": "E4:KTWFNC@2026-11-28T10:50>2026-11-28T16:35/0"
+     },
+     "inbound": {
+      "id": "lastminute-FNCKTW2026-11-29T11:35:00.000Z>2026-11-29T16:30:00.000Z-10999",
+      "provider": "lastminute",
+      "providerName": "lastminute.com",
+      "legs": [
+       {
+        "from": "FNC",
+        "to": "KTW",
+        "departLocal": "2026-11-29T11:35",
+        "arriveLocal": "2026-11-29T17:30",
+        "departUtc": "2026-11-29T11:35:00.000Z",
+        "arriveUtc": "2026-11-29T16:30:00.000Z",
+        "durationMin": 295,
+        "stops": 0,
+        "segments": [
+         {
+          "from": "FNC",
+          "to": "KTW",
+          "departLocal": "2026-11-29T11:35",
+          "arriveLocal": "2026-11-29T17:30",
+          "departUtc": "2026-11-29T11:35:00.000Z",
+          "arriveUtc": "2026-11-29T16:30:00.000Z",
+          "carrier": "W6",
+          "carrierName": "Wizzair",
+          "flightNumber": "",
+          "durationMin": 295
+         }
+        ]
+       }
+      ],
+      "price": {
+       "amount": 109.99,
+       "currency": "EUR"
+      },
+      "deepLink": "https://www.lastminute.ie/msr/route/searching.do?departureAirport=FNC&arrivalAirport=KRK&outboundDay=29&outboundMonthYear=112026&adults=1&childs=0&infants=0&COBRANDED=LMNEN_LLMPROJECTEN&currency=EUR&url=search3.do&roundtrip=false&fareType=&requestId=841342874951219200&mac=841342874951219200SCHv01-1173447138&acntb=flight&utm_term=FNCKRK&utm_campaign=results&utm_medium=meta_search&utm_source=LMNEN_LLMPROJECTEN&bf_subsource=-----WS0S02RS01&j=109990&jC=109990_EUR&cp=0",
+      "signature": "W6:FNCKTW@2026-11-29T11:35>2026-11-29T16:30/0"
+     },
+     "arriveUtc": "2026-11-28T16:35:00.000Z",
+     "departUtc": "2026-11-29T11:35:00.000Z",
+     "price": 222.84
+    },
+    {
+     "friend": {
+      "id": "b",
+      "name": "Bo",
+      "origins": [
+       "BER"
+      ]
+     },
+     "outbound": {
+      "id": "lastminute-BERFNC2026-11-28T11:55:00.000Z>2026-11-28T16:50:00.000Z-11878",
+      "provider": "lastminute",
+      "providerName": "lastminute.com",
+      "legs": [
+       {
+        "from": "BER",
+        "to": "FNC",
+        "departLocal": "2026-11-28T12:55",
+        "arriveLocal": "2026-11-28T16:50",
+        "departUtc": "2026-11-28T11:55:00.000Z",
+        "arriveUtc": "2026-11-28T16:50:00.000Z",
+        "durationMin": 295,
+        "stops": 0,
+        "segments": [
+         {
+          "from": "BER",
+          "to": "FNC",
+          "departLocal": "2026-11-28T12:55",
+          "arriveLocal": "2026-11-28T16:50",
+          "departUtc": "2026-11-28T11:55:00.000Z",
+          "arriveUtc": "2026-11-28T16:50:00.000Z",
+          "carrier": "U2",
+          "carrierName": "easyJet",
+          "flightNumber": "5333",
+          "durationMin": 295
+         }
+        ],
+        "toCity": "Funchal",
+        "toCountry": "Portugal"
+       }
+      ],
+      "price": {
+       "amount": 118.78,
+       "currency": "EUR"
+      },
+      "deepLink": "https://www.lastminute.ie/msr/route/searching.do?departureAirport=BER&arrivalAirport=FNC&outboundDay=28&outboundMonthYear=112026&adults=1&childs=0&infants=0&COBRANDED=LMNEN_LLMPROJECTEN&currency=EUR&url=search3.do&roundtrip=false&fareType=&requestId=841342883759417344&mac=841342883759417344SCHv01758149836&acntb=flight&utm_term=BERFNC&utm_campaign=results&utm_medium=meta_search&utm_source=LMNEN_LLMPROJECTEN&bf_subsource=-----WS0S02RS01&j=118780&jC=118780_EUR&cp=0",
+      "signature": "U25333@2026-11-28T11:55",
+      "otherOffers": [
+       {
+        "provider": "kiwi",
+        "providerName": "Kiwi.com",
+        "price": {
+         "amount": 124,
+         "currency": "EUR"
+        },
+        "deepLink": "https://kiwi.com/u/bdg52v"
+       }
+      ]
+     },
+     "inbound": {
+      "id": "kiwi-035511da5132000045f8923b_0|11da004251330000146d9332_0",
+      "provider": "kiwi",
+      "providerName": "Kiwi.com",
+      "legs": [
+       {
+        "from": "FNC",
+        "to": "BER",
+        "departLocal": "2026-11-29T11:40",
+        "arriveLocal": "2026-11-30T18:25",
+        "departUtc": "2026-11-29T11:40:00.000Z",
+        "arriveUtc": "2026-11-30T17:25:00.000Z",
+        "durationMin": 1785,
+        "stops": 1,
+        "segments": [
+         {
+          "from": "FNC",
+          "to": "LBA",
+          "departLocal": "2026-11-29T11:40",
+          "arriveLocal": "2026-11-29T15:40",
+          "departUtc": "2026-11-29T11:40:00.000Z",
+          "arriveUtc": "2026-11-29T15:40:00.000Z",
+          "carrier": "LS",
+          "carrierName": "Jet2",
+          "flightNumber": "426",
+          "durationMin": 240
+         },
+         {
+          "from": "LBA",
+          "to": "BER",
+          "departLocal": "2026-11-30T15:20",
+          "arriveLocal": "2026-11-30T18:25",
+          "departUtc": "2026-11-30T15:20:00.000Z",
+          "arriveUtc": "2026-11-30T17:25:00.000Z",
+          "carrier": "LS",
+          "carrierName": "Jet2",
+          "flightNumber": "471",
+          "durationMin": 125
+         }
+        ],
+        "toCity": "Berlin",
+        "toCountry": "Germany"
+       }
+      ],
+      "price": {
+       "amount": 161,
+       "currency": "EUR"
+      },
+      "deepLink": "https://kiwi.com/u/ggdcwmj",
+      "imageUrl": "https://images.kiwi.com/photos/600x600/berlin_de.jpg",
+      "signature": "LS426@2026-11-29T11:40>LS471@2026-11-30T15:20"
+     },
+     "arriveUtc": "2026-11-28T16:50:00.000Z",
+     "departUtc": "2026-11-29T11:40:00.000Z",
+     "price": 279.78
+    }
+   ],
+   "score": -221
+  }
+ ],
+ "frontier": [
+  {
+   "planId": "FNC-5dtdhk",
+   "destination": "FNC",
+   "togetherMinutes": 1015,
+   "totalPrice": 487
+  },
+  {
+   "planId": "FNC-cfxa8c",
+   "destination": "FNC",
+   "togetherMinutes": 1125,
+   "totalPrice": 503
+  },
+  {
+   "planId": "FNC-141smw0",
+   "destination": "FNC",
+   "togetherMinutes": 1140,
+   "totalPrice": 559
+  },
+  {
+   "planId": "FNC-1buj7tb",
+   "destination": "FNC",
+   "togetherMinutes": 1245,
+   "totalPrice": 561
+  },
+  {
+   "planId": "FNC-1kt48vy",
+   "destination": "FNC",
+   "togetherMinutes": 1325,
+   "totalPrice": 595
+  },
+  {
+   "planId": "FNC-1xzu2tq",
+   "destination": "FNC",
+   "togetherMinutes": 1575,
+   "totalPrice": 614
+  },
+  {
+   "planId": "FNC-1eeewj6",
+   "destination": "FNC",
+   "togetherMinutes": 1595,
+   "totalPrice": 663
+  },
+  {
+   "planId": "FNC-1v48g7j",
+   "destination": "FNC",
+   "togetherMinutes": 1685,
+   "totalPrice": 730
+  },
+  {
+   "planId": "FNC-a7f9ir",
+   "destination": "FNC",
+   "togetherMinutes": 1705,
+   "totalPrice": 779
+  },
+  {
+   "planId": "FNC-1krgaqr",
+   "destination": "FNC",
+   "togetherMinutes": 1805,
+   "totalPrice": 786
+  },
+  {
+   "planId": "FNC-1chl3yq",
+   "destination": "FNC",
+   "togetherMinutes": 1885,
+   "totalPrice": 819
+  },
+  {
+   "planId": "FNC-rsvtti",
+   "destination": "FNC",
+   "togetherMinutes": 1905,
+   "totalPrice": 868
+  },
+  {
+   "planId": "FNC-1khv303",
+   "destination": "FNC",
+   "togetherMinutes": 1935,
+   "totalPrice": 991
+  },
+  {
+   "planId": "FNC-prjvdz",
+   "destination": "FNC",
+   "togetherMinutes": 1950,
+   "totalPrice": 1000
+  },
+  {
+   "planId": "FNC-nkq4ej",
+   "destination": "FNC",
+   "togetherMinutes": 1985,
+   "totalPrice": 1007
+  },
+  {
+   "planId": "FNC-1iv5vui",
+   "destination": "FNC",
+   "togetherMinutes": 2065,
+   "totalPrice": 1041
+  },
+  {
+   "planId": "FNC-5f05n3",
+   "destination": "FNC",
+   "togetherMinutes": 2130,
+   "totalPrice": 1222
+  }
+ ],
+ "providers": [
+  {
+   "id": "kiwi",
+   "name": "Kiwi.com",
+   "kind": "aggregator",
+   "status": "ok",
+   "count": 60,
+   "ms": 3649
+  },
+  {
+   "id": "lastminute",
+   "name": "lastminute.com",
+   "kind": "aggregator",
+   "status": "ok",
+   "count": 65,
+   "ms": 525
+  },
+  {
+   "id": "ryanair",
+   "name": "Ryanair",
+   "kind": "airline",
+   "status": "ok",
+   "count": 0,
+   "ms": 197
+  }
+ ],
+ "unreachable": [],
+ "generatedAt": "2026-11-15T16:08:14.251Z"
+}
