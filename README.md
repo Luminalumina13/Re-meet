@@ -65,7 +65,7 @@ Production: **https://remeeet.com**. Pull requests run typecheck, lint, tests an
 
 ## Legal
 
-© 2026 ТОВ «Міндра» (LLC “Mindra”). All rights reserved, see [`LICENSE`](LICENSE). The Privacy Policy (`/privacy`) and Terms of Use (`/terms`) live in [`content/legal`](content/legal) as Markdown (Ukrainian and English), with the company details in `company.json`; what to fill in before publishing, the assumptions made and the open product issues are in [`docs/legal`](docs/legal/README.md).
+© 2026 Svitlana Pavlenko (ФОП Павленко Світлана Сергіївна). All rights reserved, see [`LICENSE`](LICENSE). The Privacy Policy (`/privacy`) and Terms of Use (`/terms`) live in [`content/legal`](content/legal) as Markdown (Ukrainian and English), with the company details in `company.json`; what to fill in before publishing, the assumptions made and the open product issues are in [`docs/legal`](docs/legal/README.md).
 
 ## Colour schemes
 
