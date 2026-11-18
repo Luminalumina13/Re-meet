@@ -12,7 +12,7 @@ This Policy explains what data we process, why, who receives it and how you can 
 
 - You do not need to register or create an account to use the Service.
 - We do not sell tickets or take payments. We do not collect payment details, passport data or precise location.
-- We do not use advertising or analytics cookies or trackers.
+- We turn on Google Analytics and Google AdSense only after you agree. Without your consent their cookies are not set.
 - We send your search parameters (airports, dates, number of travellers, cabin) to flight data providers to obtain offers. Friends' names are not sent to them.
 - If you create a price tracker or connect Telegram, we store the related data until you delete it.
 - We do not sell personal data.
@@ -48,6 +48,7 @@ The Share button creates an address that contains your search parameters and, in
 - **To show search results** and run the features of the Service: this is necessary to provide the Service you request (performance of a contract under the [Terms](/terms)).
 - **To run trackers and send notifications:** necessary to fulfil your request. For Telegram, your consent also applies, which you give by opening the connect link and pressing Start in the bot. You can withdraw it at any time.
 - **To protect the Service** from abuse and failures: our legitimate interest in security and stability.
+- **To measure visits and show ads** (Google Analytics, Google AdSense): only with your consent, which you can withdraw.
 - **To comply with legal obligations.**
 
 ## 5. Who receives data
@@ -58,7 +59,9 @@ The Share button creates an address that contains your search parameters and, in
 - **Public authorities** where there is a lawful request.
 - **Airline and aggregator websites.** When you follow a link to such a site you leave the Service. What happens to your data there is governed by their policies.
 
-We do not sell personal data and do not share it for advertising.
+- **Google** (Google Ireland Limited and Google LLC), if you agreed to analytics and ads: Google Analytics measures visits and Google AdSense shows ads. Google receives your cookie identifier, IP address, device data and what you do on the site, and may process them under its own policy (https://policies.google.com/privacy).
+
+We do not sell personal data. Data for advertising goes to Google only with your consent.
 
 ## 6. International transfers
 
@@ -76,7 +79,9 @@ After these periods we delete the data or anonymise it, unless the law requires 
 
 ## 8. Cookies and browser storage
 
-We do not set advertising or analytics cookies and do not use third-party trackers. To work, the Service stores the following in your browser (localStorage and sessionStorage): your chosen language and theme, and the filled-in form and search results within an open tab so they do not disappear when you return from an airline's site. These are necessary settings that live only on your device. You can clear them in your browser settings. If we ever add analytics or advertising we will update this Policy and ask for your consent.
+Without your consent we do not set analytics or advertising cookies. To work, the Service stores in your browser (localStorage and sessionStorage) your chosen language and theme, your consent answer, and the filled form and search results within the open tab so they do not disappear when you return from a carrier site. For price trackers, the `remeeet_owner` cookie (httpOnly, up to two years) holds a secret token proving the trackers are yours. This data is necessary for the Service and works only for its operation.
+
+If you press “Accept”, Google Analytics and Google AdSense may set their own cookies and identifiers (for example `_ga`) for statistics and ad serving. You can withdraw consent any time via “Cookie settings” in the footer and delete cookies in your browser settings. Declining does not limit the Service’s features.
 
 ## 9. Your rights
 

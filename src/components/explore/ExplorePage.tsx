@@ -20,6 +20,8 @@ import { Button, Card, Chip, Field, Input, Segmented, Skeleton, Stepper, Switch 
 import { Modal } from "@/components/ui/Modal";
 import { WeekendPicker } from "@/components/search/WeekendPicker";
 import { TimeWindows, idealHint } from "@/components/search/TimeWindows";
+import { track as trackEvent } from "@/lib/consent";
+import { AdSlot } from "@/components/AdSlot";
 import { ProviderBar } from "@/components/search/ProviderBar";
 import { FlightCard } from "@/components/search/FlightCard";
 import { WatchDialog } from "@/components/watch/WatchDialog";
@@ -106,6 +108,7 @@ export function ExplorePage() {
     try {
       setRes(await postJson<ExploreResponse>("/api/explore", request));
       setCountry(null);
+      trackEvent("search", { kind: "explore" });
     } catch (e) {
       setError(errorText(e, t));
     } finally {
@@ -344,6 +347,7 @@ export function ExplorePage() {
                 ))}
               </div>
             )}
+            <AdSlot />
           </>
         )}
       </section>

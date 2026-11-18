@@ -67,6 +67,14 @@ Production: **https://remeeet.com**. Pull requests run typecheck, lint, tests an
 
 © 2026 Svitlana Pavlenko (ФОП Павленко Світлана Сергіївна). All rights reserved, see [`LICENSE`](LICENSE). The Privacy Policy (`/privacy`) and Terms of Use (`/terms`) live in [`content/legal`](content/legal) as Markdown (Ukrainian and English), with the company details in `company.json`; what to fill in before publishing, the assumptions made and the open product issues are in [`docs/legal`](docs/legal/README.md).
 
+## Analytics and ads
+
+Google Analytics 4 and Google AdSense are optional and **off until the visitor presses "Accept"** in the consent banner: nothing from Google is requested before that, and the choice can be changed any time via "Cookie settings" in the footer. With no ids configured no banner is shown and nothing loads.
+
+The ids are inlined by `next build`, so they are **GitHub Actions variables** (Settings > Secrets and variables > Actions > Variables), not entries in `/etc/remeeet.env`: `NEXT_PUBLIC_GA_ID` (`G-XXXXXXXXXX`), `NEXT_PUBLIC_ADSENSE_CLIENT` (`ca-pub-…`), `NEXT_PUBLIC_ADSENSE_SLOT` (ad unit id). `/ads.txt` is generated from the AdSense client id. Events sent after consent: `search` (flights, explore, meetup), `watch_created`, `booking_click`. The ad block sits under the results on the search and Anywhere pages and is labelled as an ad. The Privacy Policy (section on cookies and recipients) describes this.
+
+Not covered: AdSense for visitors from the EEA, the UK and Switzerland requires a Google-certified consent platform (TCF); this banner alone is not one. Configure Google's own "Privacy & messaging" consent message in AdSense before relying on ad revenue there.
+
 ## Colour schemes
 
 The current look is the *Sun* palette (slate neutrals, sunny yellow accent). All the candidates we compared, with hex codes, comparison pages and a preview tool, are archived in [`docs/palettes`](docs/palettes/README.md).

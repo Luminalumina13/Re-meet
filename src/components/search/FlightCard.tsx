@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@/lib/consent";
 import { ArrowRight, Bell, ExternalLink } from "lucide-react";
 import type { Leg, ScoredItinerary } from "@/lib/domain/types";
 import { getAirport } from "@/lib/data/airports";
@@ -103,7 +104,7 @@ export function FlightCard({ it, onTrack, adults = 1 }: { it: ScoredItinerary; o
               </Button>
             )}
             {it.deepLink ? (
-              <a href={it.deepLink} target="_blank" rel="noreferrer" className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-accent px-3 text-[13px] font-semibold text-accent-ink hover:bg-accent-hover">
+              <a href={it.deepLink} target="_blank" rel="noreferrer" onClick={() => track("booking_click", { provider: it.provider ?? "" })} className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-accent px-3 text-[13px] font-semibold text-accent-ink hover:bg-accent-hover">
                 {t.common.open} <ExternalLink className="h-3.5 w-3.5" />
               </a>
             ) : (
