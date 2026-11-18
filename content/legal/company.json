@@ -1,0 +1,14 @@
+{
+  "name": "ТОВ «Міндра»",
+  "nameEn": "LLC “Mindra” (ТОВ «Міндра»)",
+  "edrpou": "[вкажіть код ЄДРПОУ / provide company code]",
+  "address": "[вкажіть юридичну адресу / provide registered address]",
+  "email": "[вкажіть контактну пошту / provide contact email]",
+  "site": "[вкажіть адресу сайту / provide website]",
+  "version": "1.0",
+  "effective": {
+    "uk": "15 листопада 2026 р.",
+    "en": "15 November 2026"
+  },
+  "year": "2026"
+}

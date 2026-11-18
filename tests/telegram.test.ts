@@ -162,6 +162,25 @@ describe("buttons", () => {
   });
 });
 
+describe("legal commands", () => {
+  it("send the document links when the site URL is known", async () => {
+    await handleUpdate(msg(1, "/privacy"), { ...deps, appUrl: "https://remeeet.example/" });
+    await handleUpdate(msg(1, "/terms"), { ...deps, appUrl: "https://remeeet.example" });
+    expect(sent[0].text).toContain("https://remeeet.example/privacy");
+    expect(sent[1].text).toContain("https://remeeet.example/terms");
+    expect(sent[0].opts?.buttons?.[0][0].url).toBe("https://remeeet.example/privacy");
+  });
+
+  it("point to the website footer otherwise, and the welcome mentions both", async () => {
+    await handleUpdate(msg(1, "/terms"), deps);
+    expect(sent[0].text).toContain("внизу сторінки");
+    sent.length = 0;
+    await handleUpdate(msg(1, "/start"), deps);
+    expect(sent[0].text).toContain("/terms");
+    expect(sent[0].text).toContain("/privacy");
+  });
+});
+
 describe("texts", () => {
   it("escapes HTML in labels", async () => {
     const w = await store.create(newWatch("<b>&</b>"));

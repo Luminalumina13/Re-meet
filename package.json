@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "description": "Smart weekend flight search and multi-city friend meetup planner",
+  "author": "ТОВ «Міндра»",
+  "license": "UNLICENSED",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
