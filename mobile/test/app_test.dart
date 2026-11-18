@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +39,9 @@ class FakeApi extends RemeetApi {
   }
 
   @override
+  Future<List<Watch>> watches() async => stored == null ? const [] : [stored!];
+
+  @override
   Future<Watch?> getWatch(String id) async => stored;
 
   @override
@@ -49,7 +51,10 @@ class FakeApi extends RemeetApi {
   }
 
   @override
-  Future<void> deleteWatch(String id) async => deleted.add(id);
+  Future<void> deleteWatch(String id) async {
+    deleted.add(id);
+    if (stored?.id == id) stored = null;
+  }
 }
 
 Future<ProviderContainer> pumpApp(WidgetTester t, {FakeApi? api, Map<String, Object> prefs = const {}}) async {
@@ -123,7 +128,7 @@ void main() {
     expect(c.read(searchPrefillProvider), isNull, reason: 'the hand-over is consumed');
   });
 
-  testWidgets('tracking a result creates a tracker and remembers its id', (t) async {
+  testWidgets('tracking a result creates a tracker', (t) async {
     final api = FakeApi();
     final c = await pumpApp(t, api: api);
     c.read(searchPrefillProvider.notifier).request(waw2bcn());
@@ -138,7 +143,6 @@ void main() {
     expect((body['params'] as Map)['kind'], 'search');
     expect(((body['params'] as Map)['request'] as Map)['origin'], 'WAW');
     expect(body['targetPrice'], greaterThan(0));
-    expect(c.read(myWatchIdsProvider), ['new-watch']);
     expect(find.text('Відстеження створено'), findsOneWidget);
   });
 
@@ -160,9 +164,9 @@ void main() {
     expect(find.text('Tickets that respect your weekend'), findsOneWidget);
   });
 
-  testWidgets('trackers on this device are listed and can be deleted', (t) async {
+  testWidgets('the owner’s trackers are listed and can be deleted', (t) async {
     final api = FakeApi()..stored = Watch.fromJson({...fixture('watch.json'), 'id': 'w1'});
-    final c = await pumpApp(t, api: api, prefs: {'my_watch_ids': jsonEncode(['w1'])});
+    await pumpApp(t, api: api);
     await t.tap(find.text('Відстеження').last);
     await t.pumpAndSettle();
     expect(find.text('fixture'), findsOneWidget);
@@ -173,7 +177,7 @@ void main() {
     await t.tap(find.text('Видалити').last);
     await t.pumpAndSettle();
     expect(api.deleted, ['w1']);
-    expect(c.read(myWatchIdsProvider), isEmpty);
+    expect(find.text('fixture'), findsNothing);
   });
 
   testWidgets('the tracking tab explains itself when there is nothing yet', (t) async {

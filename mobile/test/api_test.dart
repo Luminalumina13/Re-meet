@@ -33,6 +33,14 @@ ResponseBody json(Object? data, [int status = 200]) => ResponseBody.fromString(j
 RemeetApi apiWith(FakeAdapter a) => RemeetApi(Dio(BaseOptions(baseUrl: 'http://test'))..httpClientAdapter = a);
 
 void main() {
+  test('watches lists the caller’s trackers', () async {
+    final a = FakeAdapter((o) => json([fixture('watch.json')]));
+    final list = await apiWith(a).watches();
+    expect(list, hasLength(1));
+    expect(a.seen.single.path, '/api/watches');
+    expect(a.seen.single.method, 'GET');
+  });
+
   test('search posts the request body and parses the answer', () async {
     final a = FakeAdapter((o) => json(fixture('search.json')));
     final r = await apiWith(a).search(searchRequest(from: 'WAW', to: 'BCN', range: const DateRange('2026-11-28', '2026-11-29'), party: const Party(adults: 2)));

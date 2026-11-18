@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'config.dart';
+import 'owner_token.dart';
 import 'models.dart';
 
 /// A readable failure from the backend or the network.
@@ -67,6 +68,9 @@ class RemeetApi {
 
   Future<Watch> createWatch(Json body) => _call(() => _dio.post('/api/watches', data: body), (d) => Watch.fromJson(d as Json));
 
+  /// The caller's own trackers (the server filters by the owner token).
+  Future<List<Watch>> watches() => _call(() => _dio.get('/api/watches'), (d) => (d as List).map((e) => Watch.fromJson(e as Json)).toList());
+
   Future<Watch?> getWatch(String id) async {
     try {
       final res = await _dio.get('/api/watches/$id');
@@ -88,7 +92,7 @@ class RemeetApi {
 }
 
 final dioProvider = Provider<Dio>((ref) {
-  return Dio(BaseOptions(
+  final dio = Dio(BaseOptions(
     baseUrl: apiBaseUrl,
     connectTimeout: const Duration(seconds: 15),
     // A search asks several airlines and can take up to a minute.
@@ -96,6 +100,8 @@ final dioProvider = Provider<Dio>((ref) {
     headers: {'accept': 'application/json'},
     contentType: Headers.jsonContentType,
   ));
+  dio.interceptors.add(OwnerTokenInterceptor(ref.watch(ownerTokenProvider)));
+  return dio;
 });
 
 final apiProvider = Provider<RemeetApi>((ref) => RemeetApi(ref.watch(dioProvider)));
