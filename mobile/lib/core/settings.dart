@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -45,33 +44,3 @@ class SettingsNotifier extends Notifier<AppSettings> {
 }
 
 final settingsProvider = NotifierProvider<SettingsNotifier, AppSettings>(SettingsNotifier.new);
-
-/// Ids of trackers created on this device. The backend has no accounts yet, so the app shows only
-/// its own trackers instead of listing everyone's.
-class MyWatchIds extends Notifier<List<String>> {
-  static const _key = 'my_watch_ids';
-
-  @override
-  List<String> build() {
-    final raw = ref.read(sharedPrefsProvider).getString(_key);
-    if (raw == null) return const [];
-    try {
-      return (jsonDecode(raw) as List).cast<String>();
-    } catch (_) {
-      return const [];
-    }
-  }
-
-  void _save(List<String> ids) {
-    ref.read(sharedPrefsProvider).setString(_key, jsonEncode(ids));
-    state = ids;
-  }
-
-  void add(String id) {
-    if (!state.contains(id)) _save([id, ...state]);
-  }
-
-  void remove(String id) => _save(state.where((x) => x != id).toList());
-}
-
-final myWatchIdsProvider = NotifierProvider<MyWatchIds, List<String>>(MyWatchIds.new);

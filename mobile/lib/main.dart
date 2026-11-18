@@ -4,11 +4,13 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app/app.dart';
+import 'core/owner_token.dart';
 import 'core/settings.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting();
   final prefs = await SharedPreferences.getInstance();
-  runApp(ProviderScope(overrides: [sharedPrefsProvider.overrideWithValue(prefs)], child: const RemeetApp()));
+  final ownerToken = await loadOrCreateOwnerToken(const SecureTokenStorage());
+  runApp(ProviderScope(overrides: [sharedPrefsProvider.overrideWithValue(prefs), ownerTokenProvider.overrideWithValue(ownerToken)], child: const RemeetApp()));
 }

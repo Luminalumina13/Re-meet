@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/api.dart';
 import '../core/models.dart';
-import '../core/settings.dart';
 import '../core/strings.dart';
+import '../features/watches/watches_screen.dart' show watchesProvider;
 import 'common.dart';
 
 /// Creates a price tracker for a search, an "anywhere" query or a meetup. The id is remembered on
@@ -48,13 +48,13 @@ class _TrackSheetState extends ConsumerState<_TrackSheet> {
     });
     try {
       final target = double.tryParse(_target.text.replaceAll(',', '.'));
-      final w = await ref.read(apiProvider).createWatch({
+      await ref.read(apiProvider).createWatch({
         'label': _label.text.trim(),
         'params': widget.params,
         if (target != null && target > 0) 'targetPrice': target,
         'dropThreshold': 0.05,
       });
-      ref.read(myWatchIdsProvider.notifier).add(w.id);
+      ref.invalidate(watchesProvider);
       if (!mounted) return;
       final messenger = ScaffoldMessenger.of(context);
       Navigator.of(context).pop();

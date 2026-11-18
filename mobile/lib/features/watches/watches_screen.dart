@@ -5,27 +5,12 @@ import '../../app/theme.dart';
 import '../../core/api.dart';
 import '../../core/format.dart';
 import '../../core/models.dart';
-import '../../core/settings.dart';
 import '../../core/strings.dart';
 import '../../ui/common.dart';
 import '../../ui/links.dart';
 
-/// Trackers created on this device (the backend has no accounts yet, so it cannot list "mine").
-final watchesProvider = FutureProvider.autoDispose<List<Watch>>((ref) async {
-  final ids = ref.watch(myWatchIdsProvider);
-  if (ids.isEmpty) return const [];
-  final api = ref.watch(apiProvider);
-  final results = await Future.wait(ids.map((id) async {
-    try {
-      return await api.getWatch(id);
-    } on ApiException catch (e) {
-      return e;
-    }
-  }));
-  // Every request failed (offline, server down): surface the error instead of an empty list.
-  if (results.every((r) => r is ApiException)) throw results.first! as ApiException;
-  return results.whereType<Watch>().toList();
-});
+/// The caller's trackers, as the server sees them (ownership is the secret token, see owner_token.dart).
+final watchesProvider = FutureProvider.autoDispose<List<Watch>>((ref) => ref.watch(apiProvider).watches());
 
 class WatchesScreen extends ConsumerStatefulWidget {
   const WatchesScreen({super.key});
@@ -78,10 +63,7 @@ class _WatchesScreenState extends ConsumerState<WatchesScreen> with WidgetsBindi
       ),
     );
     if (ok != true) return;
-    await _act(w.id, (api) async {
-      await api.deleteWatch(w.id);
-      ref.read(myWatchIdsProvider.notifier).remove(w.id);
-    });
+    await _act(w.id, (api) => api.deleteWatch(w.id));
   }
 
   Future<void> _connectTelegram(Watch w) async {
