@@ -4,14 +4,18 @@ import "./globals.css";
 import { I18nProvider } from "@/lib/i18n";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { adsenseMeta } from "@/lib/adsenseMeta";
 import { Analytics } from "@/components/Analytics";
 import { ConsentBanner } from "@/components/ConsentBanner";
 
 const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin", "cyrillic"], display: "swap" });
 
+// Lets AdSense verify site ownership without loading any Google script (that only happens after consent, see Analytics.tsx).
+
 export const metadata: Metadata = {
   title: "Re:meeet — make time together last longer",
   description: "Flights for weekends and meet-ups: find a place and a time that works for everyone, wherever your people live.",
+  ...adsenseMeta(process.env.NEXT_PUBLIC_ADSENSE_CLIENT),
 };
 
 export const viewport: Viewport = {
