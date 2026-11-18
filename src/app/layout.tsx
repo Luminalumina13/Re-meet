@@ -15,6 +15,14 @@ const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin", "cyrill
 export const metadata: Metadata = {
   title: "Re:meeet — make time together last longer",
   description: "Flights for weekends and meet-ups: find a place and a time that works for everyone, wherever your people live.",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
   ...adsenseMeta(process.env.NEXT_PUBLIC_ADSENSE_CLIENT),
 };
 
