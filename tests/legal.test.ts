@@ -40,11 +40,11 @@ describe("legal documents", () => {
   const company = loadCompany();
   const keys = new Set(Object.keys(company).concat("effective"));
 
-  it("belong to ТОВ «Міндра»", () => {
-    expect(company.name).toBe("ТОВ «Міндра»");
+  it("belong to the sole proprietor", () => {
+    expect(company.name).toBe("ФОП Павленко Світлана Сергіївна");
     for (const doc of DOCS) {
-      expect(loadLegalSource(doc, "uk")).toContain("ТОВ «Міндра»");
-      expect(loadLegalSource(doc, "en")).toContain("Mindra");
+      expect(loadLegalSource(doc, "uk")).toContain("ФОП Павленко Світлана Сергіївна");
+      expect(loadLegalSource(doc, "en")).toContain("Pavlenko");
     }
     expect(loadLegalSource("terms", "uk")).toContain("Усі права захищено");
     expect(loadLegalSource("terms", "en")).toContain("All rights reserved");

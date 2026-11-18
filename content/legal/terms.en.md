@@ -4,7 +4,7 @@ Re:meeet service · Public offer · Version {{version}} · Effective: {{effectiv
 
 ## 1. General
 
-These Terms of Use (the “Terms”) govern the use of the Re:meeet service (the “Service”), which is owned by {{nameEn}} (company code {{edrpou}}, address: {{address}}; “the Company”, “we”).
+These Terms of Use (the “Terms”) govern the use of the Re:meeet service (the “Service”), which is owned by {{nameEn}} (tax ID (RNOKPP) {{edrpou}}, address: {{address}}; “the Company”, “we”).
 
 These Terms are a public offer to enter into an agreement on the use of the Service on the terms set out here. You accept them when you start using the Service: open its pages, run a search, create a tracker or connect the Telegram bot. If you do not agree with the Terms, do not use the Service.
 
@@ -77,6 +77,6 @@ These Terms are governed by the laws of Ukraine. We try to resolve disputes by n
 
 ## 14. Details and contacts
 
-{{nameEn}}, company code {{edrpou}}, {{address}}. Email: {{email}}. Website: {{site}}.
+{{nameEn}}, tax ID (RNOKPP) {{edrpou}}, {{address}}. Email: {{email}}. Website: {{site}}.
 
 © {{year}} {{nameEn}}. All rights reserved.

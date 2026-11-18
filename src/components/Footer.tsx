@@ -5,7 +5,7 @@ import { useI18n } from "@/lib/i18n";
 
 export function Footer() {
   const { t, lang } = useI18n();
-  const company = lang === "uk" ? "ТОВ «Міндра»" : "LLC “Mindra”";
+  const company = lang === "uk" ? "ФОП Павленко С. С." : "Svitlana Pavlenko, sole proprietor";
   return (
     <footer className="mx-auto flex w-full max-w-6xl flex-col gap-2 px-4 py-8 text-xs text-ink-3">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1">

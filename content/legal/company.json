@@ -1,10 +1,10 @@
 {
-  "name": "ТОВ «Міндра»",
-  "nameEn": "LLC “Mindra” (ТОВ «Міндра»)",
-  "edrpou": "[вкажіть код ЄДРПОУ / provide company code]",
+  "name": "ФОП Павленко Світлана Сергіївна",
+  "nameEn": "Sole proprietor Svitlana Pavlenko (ФОП Павленко Світлана Сергіївна)",
+  "edrpou": "3154407742",
   "address": "[вкажіть юридичну адресу / provide registered address]",
   "email": "[вкажіть контактну пошту / provide contact email]",
-  "site": "[вкажіть адресу сайту / provide website]",
+  "site": "https://remeeet.com",
   "version": "1.0",
   "effective": {
     "uk": "15 листопада 2026 р.",

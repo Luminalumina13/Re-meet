@@ -4,7 +4,7 @@ Re:meeet service · Version {{version}} · Effective: {{effective}}
 
 ## 1. Who we are
 
-The Re:meeet service (the “Service”) is owned and operated by {{nameEn}} (company code {{edrpou}}, address: {{address}}; “the Company”, “we”). We are the controller of the personal data we process through the Service. For any privacy question write to {{email}}.
+The Re:meeet service (the “Service”) is owned and operated by {{nameEn}} (tax ID (RNOKPP) {{edrpou}}, address: {{address}}; “the Company”, “we”). We are the controller of the personal data we process through the Service. For any privacy question write to {{email}}.
 
 This Policy explains what data we process, why, who receives it and how you can control it. It applies together with the [Terms of Use](/terms).
 
@@ -100,4 +100,4 @@ We may update this Policy. We publish the new version on this page with a new da
 
 ## 13. Contact
 
-{{nameEn}}, company code {{edrpou}}, {{address}}. Email: {{email}}. Website: {{site}}.
+{{nameEn}}, tax ID (RNOKPP) {{edrpou}}, {{address}}. Email: {{email}}. Website: {{site}}.
