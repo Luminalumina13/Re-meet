@@ -101,6 +101,8 @@ Watches are checked either by the in-process scheduler (`WATCH_POLL_MINUTES=30`)
 { "crons": [{ "path": "/api/watches/check", "schedule": "*/30 * * * *" }] }
 ```
 
+**Who can see a tracker.** There are no accounts. Creating a tracker issues a secret owner token: the website keeps it in an httpOnly cookie (`remeeet_owner`), the mobile app sends it as `Authorization: Bearer <token>` (32+ URL-safe characters it generates itself). Only its SHA-256 is stored. `GET /api/watches` returns just the caller's trackers, and every other call on someone else's tracker answers 404. Trackers created before this change have no owner and are not reachable through the API (the Telegram bot and the scheduler still use them).
+
 Notifications: per watch, a webhook URL (JSON `{ text, label, alerts }`) and/or Telegram. Webhooks must be public http(s) addresses: localhost, private ranges and cloud-metadata addresses are rejected, and redirects are not followed. A check where a data source failed raises no alerts and keeps the previous baseline.
 
 **API errors.** Every error response is `{ error, code }` (plus `issues` for validation); the UI maps `code` to localized text in `errors` of the i18n dictionaries and never shows server messages.

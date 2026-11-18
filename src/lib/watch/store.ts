@@ -16,6 +16,7 @@ function fresh(w: NewWatch): Watch {
     targetPrice: w.targetPrice,
     dropThreshold: w.dropThreshold ?? 0.05,
     notify: w.notify ?? {},
+    ownerHash: w.ownerHash,
     active: true,
     createdAt: now,
     updatedAt: now,

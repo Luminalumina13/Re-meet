@@ -54,6 +54,8 @@ export interface Watch {
   dropThreshold: number;
   notify: NotifyConfig;
   telegramLink?: TelegramLink;
+  /** SHA-256 of the owner token (see owner.ts). Never sent to clients. */
+  ownerHash?: string;
   active: boolean;
   createdAt: string;
   updatedAt: string;
@@ -67,7 +69,7 @@ export interface Watch {
 }
 
 export type NewWatch = Pick<Watch, "label" | "params" | "currency"> &
-  Partial<Pick<Watch, "targetPrice" | "dropThreshold" | "notify">>;
+  Partial<Pick<Watch, "targetPrice" | "dropThreshold" | "notify" | "ownerHash">>;
 
 export interface WatchStore {
   list(): Promise<Watch[]>;
