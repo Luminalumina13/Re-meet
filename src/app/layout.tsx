@@ -13,16 +13,19 @@ const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin", "cyrill
 
 // Lets AdSense verify site ownership without loading any Google script (that only happens after consent, see Analytics.tsx).
 
+// Browsers keep their own favicon cache, separate from HTTP caching: bump this when the icon files change so they fetch the new ones.
+const ICON_VERSION = 2;
+
 export const metadata: Metadata = {
   title: "Re:meeet — make time together last longer",
   description: "Flights for weekends and meet-ups: find a place and a time that works for everyone, wherever your people live.",
   icons: {
     icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/favicon.ico", sizes: "48x48" },
-      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: `/favicon.svg?v=${ICON_VERSION}`, type: "image/svg+xml" },
+      { url: `/favicon.ico?v=${ICON_VERSION}`, sizes: "48x48" },
+      { url: `/icon-192.png?v=${ICON_VERSION}`, sizes: "192x192", type: "image/png" },
     ],
-    apple: "/apple-touch-icon.png",
+    apple: `/apple-touch-icon.png?v=${ICON_VERSION}`,
   },
   ...adsenseMeta(process.env.NEXT_PUBLIC_ADSENSE_CLIENT),
 };
