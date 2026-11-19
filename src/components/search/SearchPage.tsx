@@ -14,7 +14,7 @@ import { postJson } from "@/lib/client";
 import type { SearchRequestInput } from "@/lib/api/schemas";
 import { AirportPicker } from "@/components/ui/AirportPicker";
 import { SubmitButton } from "@/components/ui/SubmitButton";
-import { Button, Card, Field, Input, Segmented, Select, Skeleton, Stepper } from "@/components/ui/primitives";
+import { Button, Card, Field, Input, Segmented, Select, Skeleton, Stepper, Switch } from "@/components/ui/primitives";
 import { WeekendPicker } from "./WeekendPicker";
 import { TimeWindows, idealHint } from "./TimeWindows";
 import { FlightCard } from "./FlightCard";
@@ -273,9 +273,12 @@ export function SearchPage() {
             )}
           </div>
 
-          <div className="flex items-start justify-end gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+            <Switch checked={filters.maxStops === 0} onChange={(on) => setFilters({ ...filters, maxStops: on ? 0 : undefined })} label={t.filters.directOnly} />
+            <div className="ml-auto flex items-start gap-3">
             <ShareButton path="/" query={shareQuery} disabled={!origin || !destination} />
             <SubmitButton icon={<Search className="h-4 w-4" />} idle={t.common.search} busy={t.common.searching} loading={loading} disabled={!origin || !destination} />
+            </div>
           </div>
         </form>
       </Card>
