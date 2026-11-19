@@ -1,6 +1,6 @@
 # Logo
 
-Three streams (blue `#4F73FF`, yellow `#FFC41F`, green `#12B5A3`) converge on a four-point star: people from different places meeting. The star is dark (`#0B1220`) on light backgrounds and white on dark ones, and on dark the chevrons use lighter tints so they do not turn muddy.
+Three streams (indigo `#4A4BEF`, yellow `#FFAE00`, teal `#0FB5A5`) converge on a four-point star: people from different places meeting. The star is dark (`#0B1220`) on light backgrounds and white on dark ones. The three colours are the same in both themes and in the word mark (CSS variables `--lm-*` in `globals.css`; `--accent` and the chart series follow them).
 
 | Where | File | Version |
 | --- | --- | --- |

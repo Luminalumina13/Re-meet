@@ -4,16 +4,16 @@
 
 :root {
   /* logo mark (components/LogoMark.tsx): three streams and a star */
-  --lm-b: #3d62f0;
-  --lm-y: #f0a500;
-  --lm-g: #0c9d8c;
+  --lm-b: #4a4bef;
+  --lm-y: #ffae00;
+  --lm-g: #0fb5a5;
   --lm-o0: 0.55;
   --lm-o1: 0.85;
   --lm-o2: 1;
   --lm-star: #0b1220;
   color-scheme: light;
   /* Re:meeet palette "Sun": slate neutrals with a sunny yellow accent (dark ink on yellow fills). Other candidates: docs/palettes. */
-  /* wordmark letters share the logo colours, so mark and text always match in both themes */
+  /* brand colours: sunny yellow, indigo, teal. One set for both themes; the wordmark letters use them too, so mark and text always match */
   --e1: var(--lm-y);
   --e2: var(--lm-b);
   --e3: var(--lm-g);
@@ -25,18 +25,18 @@
   --text: #1e293b;
   --text-2: #475569;
   --text-3: #627288;
-  --accent: #facc15;
-  --accent-hover: #eab908;
-  --accent-strong: #8a5a00;
-  --accent-text: #8a5a00;
-  --accent-soft: #fef3c7;
+  --accent: #ffae00;
+  --accent-hover: #f09d00;
+  --accent-strong: #8a5200;
+  --accent-text: #8a5200;
+  --accent-soft: #fff0cf;
   --accent-ink: #1e293b;
   --good: #15803d;
   --warn: #b45309;
   --critical: #c0392b;
-  --series-1: #3b5bdb;
+  --series-1: #4a4bef;
   --series-2: #f59e0b;
-  --series-3: #0b7a70;
+  --series-3: #0b8a7d;
   --series-4: #9333ea;
   --series-5: #db2777;
   --series-6: #64748b;
@@ -51,9 +51,9 @@
 }
 
 :root[data-theme="dark"] {
-  --lm-b: #7692ff;
-  --lm-y: #ffd150;
-  --lm-g: #46c5b7;
+  --lm-b: #4a4bef;
+  --lm-y: #ffae00;
+  --lm-g: #0fb5a5;
   --lm-o0: 0.64;
   --lm-o1: 0.85;
   --lm-star: #ffffff;
@@ -66,18 +66,18 @@
   --text: #f1f5f9;
   --text-2: #c3ccda;
   --text-3: #8d9ab3;
-  --accent: #facc15;
-  --accent-hover: #fde047;
-  --accent-strong: #fde047;
-  --accent-text: #fde047;
-  --accent-soft: #3a3210;
+  --accent: #ffae00;
+  --accent-hover: #ffc02e;
+  --accent-strong: #ffc247;
+  --accent-text: #ffc247;
+  --accent-soft: #3b2a0a;
   --accent-ink: #0f172a;
   --good: #4ade80;
   --warn: #fbbf24;
   --critical: #f87171;
-  --series-1: #facc15;
-  --series-2: #60a5fa;
-  --series-3: #2dd4bf;
+  --series-1: #ffae00;
+  --series-2: #8083ff;
+  --series-3: #2ccfbf;
   --series-4: #c084fc;
   --series-5: #f472b6;
   --series-6: #94a3b8;
