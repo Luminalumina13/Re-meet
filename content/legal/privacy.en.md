@@ -35,6 +35,8 @@ When you create a tracker we store its name, the query parameters (including fri
 
 If you connect Telegram we receive your chat ID, the language code of your Telegram app, and the commands and button presses you send to the bot. Messages are carried by Telegram, which processes data under its own privacy policy.
 
+If you press “Open on the website” in the bot (or send the /site command), the bot creates a one-time link valid for 10 minutes. It opens the website in the browser you choose with access to the trackers connected to your chat. A technical access cookie is set in that browser (see the section on cookies), and only its irreversible hash is stored with the tracker. Do not forward the link: whoever opens it first gets access to those trackers.
+
 ### 3.5. Technical data
 
 IP address, date and time of a request, page address, browser and device type. They end up in server logs so we can keep the Service secure, detect abuse and fix faults.

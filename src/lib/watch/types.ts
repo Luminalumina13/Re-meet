@@ -56,6 +56,8 @@ export interface Watch {
   telegramLink?: TelegramLink;
   /** SHA-256 of the owner token (see owner.ts). Never sent to clients. */
   ownerHash?: string;
+  /** Extra owner keys, one per browser that opened the tracker through the Telegram link (see telegram/claim.ts). */
+  ownerHashes?: string[];
   active: boolean;
   createdAt: string;
   updatedAt: string;

@@ -16,7 +16,7 @@ const T = {
     welcome:
       "Привіт! Я стежу за цінами на квитки з Re:meeet і пишу, коли ціна падає або з'являються нові пропозиції.\n\nЩоб підключити відстеження, створіть його на сайті й натисніть «Підключити Telegram». Мої відстеження: /list\n\nКористуючись ботом, ви погоджуєтесь з Умовами користування (/terms) та Політикою конфіденційності (/privacy).",
     help:
-      "Як це працює:\n1. На сайті натисніть «Відстежувати» біля пошуку, плану зустрічі чи напрямку.\n2. На сторінці «Відстеження» натисніть «Підключити Telegram» і відкрийте посилання.\n3. Я надсилатиму повідомлення про зміни ціни.\n\n/list — ваші відстеження з кнопками: перевірити зараз, пауза, видалити.",
+      "Як це працює:\n1. На сайті натисніть «Відстежувати» біля пошуку, плану зустрічі чи напрямку.\n2. На сторінці «Відстеження» натисніть «Підключити Telegram» і відкрийте посилання.\n3. Я надсилатиму повідомлення про зміни ціни.\n\n/list — ваші відстеження з кнопками: перевірити зараз, пауза, видалити.\n/site — відкрити їх на сайті в будь-якому браузері.",
     linked: "Підключено! Надсилатиму сповіщення про «{label}».",
     badLink: "Посилання недійсне або застаріло. Створіть нове на сторінці «Відстеження» на сайті.",
     none: "У вас ще немає підключених відстежень. Створіть його на сайті й натисніть «Підключити Telegram».",
@@ -43,6 +43,7 @@ const T = {
     checkFailed: "Не вдалося перевірити. Спробуйте пізніше.",
     noNews: "Нових подій немає.",
     openSite: "Відкрити на сайті",
+    siteLink: "Натисніть кнопку, щоб відкрити свої відстеження на сайті в будь-якому браузері. Посилання діє 10 хвилин і спрацює один раз. Нікому його не пересилайте.",
     unknown: "Не розумію. Спробуйте /list або /help.",
     privacy: "Політика конфіденційності",
     terms: "Умови користування",
@@ -54,7 +55,7 @@ const T = {
     welcome:
       "Hi! I watch flight prices for Re:meeet and message you when a price drops or new offers appear.\n\nCreate a tracker on the website and press “Connect Telegram”. Your trackers: /list\n\nBy using the bot you agree to the Terms of Use (/terms) and the Privacy Policy (/privacy).",
     help:
-      "How it works:\n1. On the website press “Track” next to a search, a meetup plan or a destination.\n2. On the “Price tracking” page press “Connect Telegram” and open the link.\n3. I will message you when the price changes.\n\n/list — your trackers with buttons: check now, pause, delete.",
+      "How it works:\n1. On the website press “Track” next to a search, a meetup plan or a destination.\n2. On the “Price tracking” page press “Connect Telegram” and open the link.\n3. I will message you when the price changes.\n\n/list — your trackers with buttons: check now, pause, delete.\n/site — open them on the website in any browser.",
     linked: "Connected! I will send alerts for “{label}”.",
     badLink: "This link is invalid or has expired. Create a new one on the Price tracking page.",
     none: "You have no connected trackers yet. Create one on the website and press “Connect Telegram”.",
@@ -81,6 +82,7 @@ const T = {
     checkFailed: "Could not check. Try again later.",
     noNews: "No new events.",
     openSite: "Open on the website",
+    siteLink: "Press the button to open your trackers on the website in any browser. The link works for 10 minutes and only once. Do not forward it.",
     unknown: "I did not get that. Try /list or /help.",
     privacy: "Privacy Policy",
     terms: "Terms of Use",
