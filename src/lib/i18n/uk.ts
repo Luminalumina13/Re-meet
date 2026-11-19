@@ -223,6 +223,13 @@ export const uk = {
       target_reached: "Цільова ціна",
       no_results: "Пропозиції зникли",
     },
+    alertMsg: {
+      drop: "Ціна впала на {pct} %: {prev} → {price} {cur}",
+      rise: "Ціна зросла на {pct} %: {prev} → {price} {cur}",
+      target: "Досягнуто цільову ціну: {price} {cur} (ціль {target} {cur})",
+      newOffers: "Нових пропозицій: {count} (усього {total})",
+      gone: "Підходящих пропозицій більше немає",
+    },
     scheduleHint: "Ми регулярно перевіряємо ціну й напишемо, коли вона зміниться.",
   },
   explore: {
