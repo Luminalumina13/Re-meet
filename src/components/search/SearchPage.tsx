@@ -5,8 +5,8 @@ import { HowLink } from "@/components/info/HowLink";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeftRight, Search, SlidersHorizontal } from "lucide-react";
-import type { SearchResponse, ScoredItinerary } from "@/lib/domain/types";
-import { sortItineraries, type SortKey } from "@/lib/domain/filters";
+import type { SearchResponse, ScoredItinerary, SearchFilters } from "@/lib/domain/types";
+import { sortItineraries, idealFiltersFor, type SortKey } from "@/lib/domain/filters";
 import { todayIso, nextSaturday, weekendFromSaturday, type WeekendShape } from "@/lib/domain/dates";
 import { getAirport } from "@/lib/data/airports";
 import { useI18n } from "@/lib/i18n";
@@ -19,6 +19,8 @@ import { WeekendPicker } from "./WeekendPicker";
 import { TimeWindows, idealHint } from "./TimeWindows";
 import { FlightCard } from "./FlightCard";
 import { FlexDates, type FlexParams } from "./FlexDates";
+import { CheapPicker, CheapestWeekends } from "./CheapestWeekends";
+import type { RankedTrip } from "@/lib/flex/weekends";
 import { track } from "@/lib/consent";
 import { AdSlot } from "@/components/AdSlot";
 import { ProviderBar } from "./ProviderBar";
@@ -31,10 +33,11 @@ import { ShareButton } from "@/components/ShareButton";
 import { useSearchFilters } from "@/lib/useSearchFilters";
 import { errorText } from "@/lib/errorText";
 
-type Mode = "weekend" | "custom";
+type Mode = "weekend" | "cheap" | "custom";
 const PAGE = 15;
 
 const SHAPES: WeekendShape[] = ["sat-sun", "fri-sun", "sat-mon", "fri-mon", "thu-sun"];
+const MODES: Mode[] = ["weekend", "cheap", "custom"];
 export function SearchPage() {
   const { t } = useI18n();
   const params = useSearchParams();
@@ -48,6 +51,10 @@ export function SearchPage() {
   const [mode, setMode] = useState<Mode>(seed.mode ?? "weekend");
   const [saturday, setSaturday] = useState(() => (seed.saturday && seed.saturday >= todayIso() ? seed.saturday : nextSaturday(todayIso())));
   const [shape, setShape] = useState<WeekendShape>(seed.shape ?? "sat-sun");
+  // "Cheapest weekends": which formats are acceptable, how many weeks to look ahead, and a counter the search button bumps.
+  const [cheapShapes, setCheapShapes] = useState<WeekendShape[]>(["sat-sun", "fri-sun", "sat-mon", "fri-mon"]);
+  const [cheapWeeks, setCheapWeeks] = useState(8);
+  const [cheapTick, setCheapTick] = useState(0);
   const [departDate, setDepartDate] = useState(() => (seed.departDate && seed.departDate >= todayIso() ? seed.departDate : nextSaturday(todayIso())));
   const [returnDate, setReturnDate] = useState<string>(() => {
     if (seed.mode === "custom") return seed.returnDate && seed.returnDate >= (seed.departDate ?? "") ? seed.returnDate : "";
@@ -72,7 +79,7 @@ export function SearchPage() {
   };
 
   const dates = useMemo(() => {
-    if (mode === "weekend") {
+    if (mode === "weekend" || mode === "cheap") {
       const w = weekendFromSaturday(saturday, shape);
       return { departDate: w.departDate, returnDate: w.returnDate as string | undefined };
     }
@@ -88,6 +95,10 @@ export function SearchPage() {
 
   const run = useCallback(async () => {
     if (!origin || !destination) return;
+    if (mode === "cheap") {
+      setCheapTick((n) => n + 1);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -100,11 +111,11 @@ export function SearchPage() {
     } finally {
       setLoading(false);
     }
-  }, [origin, destination, request, t]);
+  }, [origin, destination, mode, request, t]);
 
   const snapshot = useMemo(
-    () => ({ origin, destination, sampleFrom, sampleTo, mode, saturday, shape, departDate, returnDate, adults, children, infants, cabin, filterState, sort, res }),
-    [origin, destination, sampleFrom, sampleTo, mode, saturday, shape, departDate, returnDate, adults, children, infants, cabin, filterState, sort, res],
+    () => ({ origin, destination, sampleFrom, sampleTo, mode, saturday, shape, cheapShapes, cheapWeeks, departDate, returnDate, adults, children, infants, cabin, filterState, sort, res }),
+    [origin, destination, sampleFrom, sampleTo, mode, saturday, shape, cheapShapes, cheapWeeks, departDate, returnDate, adults, children, infants, cabin, filterState, sort, res],
   );
   // A search arriving via the URL (destination card) wins over whatever was stored.
   useSessionSnapshot("remeet:search", snapshot, (s) => {
@@ -113,7 +124,9 @@ export function SearchPage() {
     if (s.destination) setDestination(s.destination);
     if (s.sampleFrom !== undefined) setSampleFrom(s.sampleFrom);
     if (s.sampleTo !== undefined) setSampleTo(s.sampleTo);
-    if (s.mode) setMode(s.mode);
+    if (s.mode && MODES.includes(s.mode)) setMode(s.mode);
+    if (Array.isArray(s.cheapShapes)) setCheapShapes(s.cheapShapes.filter((x: WeekendShape) => SHAPES.includes(x)));
+    if (s.cheapWeeks) setCheapWeeks(s.cheapWeeks);
     if (s.saturday && s.saturday >= today) setSaturday(s.saturday);
     if (s.shape && SHAPES.includes(s.shape)) setShape(s.shape);
     if (s.departDate && s.departDate >= today) setDepartDate(s.departDate);
@@ -129,7 +142,7 @@ export function SearchPage() {
   }, Boolean(params.get("to")));
 
   const shareQuery = useMemo(
-    () => buildSearchQuery({ origin, destination, mode, saturday, shape, departDate, returnDate: returnDate || undefined, adults, children, infants, cabin: cabin ?? "economy" }),
+    () => buildSearchQuery({ origin, destination, mode: mode === "custom" ? "custom" : "weekend", saturday, shape, departDate, returnDate: returnDate || undefined, adults, children, infants, cabin: cabin ?? "economy" }),
     [origin, destination, mode, saturday, shape, departDate, returnDate, adults, children, infants, cabin],
   );
   const flexParams = useMemo<FlexParams>(
@@ -148,6 +161,15 @@ export function SearchPage() {
     setReturnDate(ret ?? "");
     setSearchTick((n) => n + 1);
   };
+  // A trip picked from the cheapest-weekends list becomes the ordinary weekend search for those dates.
+  const pickTrip = (trip: RankedTrip) => {
+    setMode("weekend");
+    setSaturday(trip.saturday);
+    setShape(trip.shape);
+    setSearchTick((n) => n + 1);
+  };
+  // Time windows per day: the user's own if they edited them, otherwise the ideal ones for that weekday (afternoon on Fridays).
+  const filtersFor = useCallback((day: string): SearchFilters => (filterState.times ? filters : { ...filters, ...idealFiltersFor(day) }), [filters, filterState.times]);
   // Runs after the new dates are rendered, so the search uses them.
   useEffect(() => {
     if (searchTick > 0) void runRef.current();
@@ -232,10 +254,13 @@ export function SearchPage() {
               onChange={setMode}
               options={[
                 { value: "weekend", label: t.common.weekend },
+                { value: "cheap", label: t.common.cheapWeekends },
                 { value: "custom", label: t.common.customDates },
               ]}
             />
-            {mode === "weekend" ? (
+            {mode === "cheap" ? (
+              <CheapPicker shapes={cheapShapes} onShapes={setCheapShapes} weeks={cheapWeeks} onWeeks={setCheapWeeks} />
+            ) : mode === "weekend" ? (
               <WeekendPicker
                 saturday={saturday}
                 shape={shape}
@@ -272,15 +297,25 @@ export function SearchPage() {
           <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
             <Switch checked={filters.maxStops === 0} onChange={(on) => setFilters({ ...filters, maxStops: on ? 0 : undefined })} label={t.filters.directOnly} />
             <div className="ml-auto flex items-start gap-3">
-            <ShareButton path="/" query={shareQuery} disabled={!origin || !destination} />
-            <SubmitButton icon={<Search className="h-4 w-4" />} idle={t.common.search} busy={t.common.searching} loading={loading} disabled={!origin || !destination} />
+            {mode !== "cheap" && <ShareButton path="/" query={shareQuery} disabled={!origin || !destination} />}
+            <SubmitButton icon={<Search className="h-4 w-4" />} idle={t.common.search} busy={t.common.searching} loading={loading} disabled={!origin || !destination || (mode === "cheap" && cheapShapes.length === 0)} />
             </div>
           </div>
         </form>
       </Card>
 
       <section className="mt-8 flex flex-col gap-4">
-        {origin && destination && <FlexDates params={flexParams} onPick={pickDates} />}
+        {origin && destination && mode === "cheap" && (
+          <CheapestWeekends
+            params={{ origin, destination, adults, children, infants, cabin: cabin ?? "economy", currency: "EUR" }}
+            shapes={cheapShapes}
+            weeks={cheapWeeks}
+            filtersFor={filtersFor}
+            tick={cheapTick}
+            onPick={pickTrip}
+          />
+        )}
+        {origin && destination && mode !== "cheap" && <FlexDates params={flexParams} onPick={pickDates} />}
         {error && <div className="rounded-xl border border-critical/40 bg-critical/10 px-4 py-3 text-sm text-critical">{error}</div>}
         {loading && (
           <div className="flex flex-col gap-3">
