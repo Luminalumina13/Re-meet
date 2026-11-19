@@ -73,6 +73,8 @@ Production: **https://remeeet.com**. Pull requests run typecheck, lint, tests an
 
 The form posts to `POST /api/feedback` and the message is delivered to a Telegram chat; nothing is stored on the server. It needs `FEEDBACK_CHAT_ID` (the numeric id of the chat or group that should receive questions) and a bot token: `FEEDBACK_BOT_TOKEN`, or the existing `TELEGRAM_BOT_TOKEN`. The bot must be able to write to that chat (for a group, add it as a member or admin). Without them the form answers "service unavailable". Protection: a hidden honeypot field, 3 messages per 10 minutes per address and 100 per day overall.
 
+**Error alerts.** The same bot and chat also receive critical server errors (an API request that failed with 500, a tracker check or scheduler tick that threw, a Telegram update the bot could not handle), in production only (`ERROR_REPORTS=1` forces it elsewhere, `ERROR_REPORTS=0` turns it off). Messages carry the place, the error text and the top of the stack, with tokens, keys, e-mail addresses and long opaque strings redacted; the same error is sent at most once per 15 minutes and at most 20 per hour. See `src/lib/errorReport.ts`.
+
 ## Analytics and ads
 
 Google Analytics 4 and Google AdSense are optional and **off until the visitor presses "Accept"** in the consent banner: nothing from Google is requested before that, and the choice can be changed any time via "Cookie settings" in the footer. With no ids configured no banner is shown and nothing loads.
@@ -136,7 +138,7 @@ Notifications: per watch, a webhook URL (JSON `{ text, label, alerts }`) and/or 
 Users follow their trackers in Telegram: alerts arrive as messages (in the language of the chat), and `/list` shows their trackers with buttons to check now, pause/resume and delete.
 
 1. Create a bot with @BotFather and put the token in `.env.local` as `TELEGRAM_BOT_TOKEN`.
-2. **Local development:** set `TELEGRAM_MODE=polling` (long polling, no public URL needed) and run `npm run dev`. Run only one poller per bot, and not next to a webhook.
+2. **Local development:** use a **separate bot** (create a second one in @BotFather), put its token in `.env.local` and set `TELEGRAM_MODE=polling` (long polling, no public URL needed), then run `npm run dev`. Polling deletes the bot's webhook, so sharing a bot with production silences production: the poller therefore refuses to start when the bot has a webhook (set `TELEGRAM_POLLING_TAKEOVER=1` only if you really mean to take it over, then register the webhook again with `npm run telegram:webhook`). Run only one poller per bot.
 3. **Production:** set `TELEGRAM_WEBHOOK_SECRET` (16+ chars of `A-Za-z0-9_-`), deploy, then register the webhook: `npm run telegram:webhook -- https://your.domain`. The endpoint `/api/telegram/webhook` stays closed (503) until the secret is set and rejects requests without it. Optional `APP_URL` adds an "open on the website" button.
 4. In the app, open **Price tracking → Connect Telegram** on a tracker and press *Start* in the bot. The link is one-time and valid for 15 minutes.
 

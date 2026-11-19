@@ -4,6 +4,7 @@ import { meetup } from "@/lib/meetup/engine";
 import { explore } from "@/lib/explore/engine";
 import type { Alert, PricePoint, Watch, WatchStore } from "./types";
 import { notify } from "./notify";
+import { reportError } from "@/lib/errorReport";
 import { watchStore } from "./store";
 
 export interface Snapshot {
@@ -168,6 +169,7 @@ export async function checkDue(minIntervalMin: number, store: WatchStore = watch
       alertCount += r?.alerts.length ?? 0;
     } catch (e) {
       console.warn(`[watch:${w.id}] check failed`, e);
+      void reportError("watch check", e);
     }
   }
   return { checked, alerts: alertCount };

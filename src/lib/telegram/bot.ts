@@ -4,6 +4,7 @@ import type { InlineButton, TgClient } from "./api";
 import { escapeHtml } from "./api";
 import { fill, langOf, strings, watchCard, type Lang } from "./text";
 import { claimSecret, makeClaimToken } from "./claim";
+import { reportError } from "@/lib/errorReport";
 
 /** The slice of a Telegram update the bot understands. */
 export interface TgUpdate {
@@ -82,6 +83,7 @@ export async function handleUpdate(update: TgUpdate, deps: BotDeps): Promise<voi
     if (update.message?.text) return await onMessage(update.message, deps);
   } catch (e) {
     console.warn("[telegram] update failed", e);
+    void reportError("telegram bot", e);
   }
 }
 
