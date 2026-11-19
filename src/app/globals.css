@@ -98,6 +98,11 @@
   --shadow-card: var(--shadow);
 }
 
+/* The sticky header must not cover the target of an in-page link (#anchor). */
+html {
+  scroll-padding-top: 5rem;
+}
+
 html,
 body {
   overflow-x: clip; /* the full-width glow must not add a horizontal scrollbar */

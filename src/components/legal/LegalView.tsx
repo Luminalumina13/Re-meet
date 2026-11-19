@@ -45,7 +45,7 @@ export function LegalView({ docs }: { docs: Record<"uk" | "en", Block[]> }) {
             );
           case "h2":
             return (
-              <h2 key={i} id={b.id} className="mt-10 scroll-mt-20 text-xl font-extrabold tracking-tight">
+              <h2 key={i} id={b.id} className="mt-10 text-xl font-extrabold tracking-tight">
                 {b.text}
               </h2>
             );
