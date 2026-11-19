@@ -255,3 +255,16 @@ export const howto: Record<Lang, HowToContent> = {
     },
   },
 };
+
+/**
+ * Intrinsic sizes of the screenshots. Without them the lazy images have no height until they load, the page grows
+ * after an in-page link jumped to a step and the browser ends up a step or two too high.
+ */
+export const imageSize: Record<string, [number, number]> = {
+  "/how/search.jpg": [1200, 594],
+  "/how/results.jpg": [1200, 612],
+  "/how/flex.jpg": [1200, 541],
+  "/how/explore.jpg": [1200, 838],
+  "/how/meetup.jpg": [1200, 767],
+  "/how/watch.jpg": [960, 906],
+};

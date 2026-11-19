@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Bell, Pause, Play, RefreshCw, Trash2, TrendingDown, TrendingUp, Sparkles, Target, CircleOff } from "lucide-react";
 import type { Alert, Watch } from "@/lib/watch/types";
 import { describeWatch } from "@/lib/watch/describe";
+import { alertText } from "@/lib/watch/alertText";
 import { useI18n } from "@/lib/i18n";
 import { api } from "@/lib/client";
 import { fmtDateTime, fmtMoney, cx } from "@/lib/format";
@@ -113,7 +114,7 @@ export function WatchesPage() {
                     {!w.active && <Badge tone="warn">{t.watch.paused}</Badge>}
                   </div>
                   <h3 className="mt-1 truncate text-lg font-bold">{w.label}</h3>
-                  <p className="truncate text-xs text-ink-3">{describeWatch(w)}</p>
+                  <p className="truncate text-xs text-ink-3">{describeWatch(w, t.meetup.hours)}</p>
                 </div>
                 <div className="text-right shrink-0">
                   <div className="text-2xl font-extrabold tabular-nums tracking-tight">
@@ -141,7 +142,7 @@ export function WatchesPage() {
                           <Badge tone={TONE[a.type]} className="mt-0.5 shrink-0">
                             <Icon className="h-3 w-3" /> {t.watch.alertType[a.type]}
                           </Badge>
-                          <span className="min-w-0 truncate text-ink-2">{a.message}</span>
+                          <span className="min-w-0 truncate text-ink-2">{alertText(a, w, t.watch.alertMsg)}</span>
                           <span className="ml-auto shrink-0 text-xs text-ink-3 tabular-nums">{fmtDateTime(a.at, locale)}</span>
                         </li>
                       );

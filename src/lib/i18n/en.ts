@@ -225,6 +225,13 @@ export const en: Dict = {
       target_reached: "Target price",
       no_results: "Offers vanished",
     },
+    alertMsg: {
+      drop: "Price dropped {pct} %: {prev} → {price} {cur}",
+      rise: "Price rose {pct} %: {prev} → {price} {cur}",
+      target: "Target price reached: {price} {cur} (target {target} {cur})",
+      newOffers: "New offers: {count} ({total} total)",
+      gone: "No matching offers any more",
+    },
     scheduleHint: "We check the price regularly and will message you when it changes.",
   },
   explore: {

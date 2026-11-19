@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { howto } from "@/content/howto";
+import { howto, imageSize } from "@/content/howto";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/primitives";
 
@@ -21,7 +21,7 @@ export function HowItWorks() {
             <p className="mt-2 leading-relaxed text-ink-2">{s.text}</p>
             {s.image && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={s.image} alt={s.alt} loading="lazy" decoding="async" className="mt-4 w-full rounded-2xl border border-border shadow-sm" />
+              <img src={s.image} alt={s.alt} width={imageSize[s.image]?.[0]} height={imageSize[s.image]?.[1]} loading="lazy" decoding="async" className="mt-4 h-auto w-full rounded-2xl border border-border shadow-sm" />
             )}
           </li>
         ))}
