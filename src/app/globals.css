@@ -100,7 +100,13 @@
 
 /* The sticky header must not cover the target of an in-page link (#anchor). */
 html {
-  scroll-padding-top: 5rem;
+  scroll-padding-top: 7.5rem; /* on phones the header wraps into two rows (about 97px) */
+}
+
+@media (min-width: 640px) {
+  html {
+    scroll-padding-top: 5rem;
+  }
 }
 
 html,
