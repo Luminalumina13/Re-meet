@@ -3,6 +3,7 @@ import type { Alert, Watch, WatchStore } from "@/lib/watch/types";
 import type { InlineButton, TgClient } from "./api";
 import { escapeHtml } from "./api";
 import { fill, langOf, strings, watchCard, type Lang } from "./text";
+import { claimSecret, makeClaimToken } from "./claim";
 
 /** The slice of a Telegram update the bot understands. */
 export interface TgUpdate {
@@ -64,7 +65,8 @@ function keyboard(w: Watch, lang: Lang, appUrl?: string): InlineButton[][] {
     ],
     [{ text: `🗑 ${s.del}`, callback_data: `d:${w.id}` }],
   ];
-  if (appUrl) rows.push([{ text: s.openSite, url: `${appUrl.replace(/\/$/, "")}/watches` }]);
+  // A callback, not a plain link: the sign-in link is made fresh when pressed, so an old message never holds an expired one.
+  if (appUrl) rows.push([{ text: `🌐 ${s.openSite}`, callback_data: `o:${w.id}` }]);
   return rows;
 }
 
@@ -97,6 +99,7 @@ async function onMessage(msg: NonNullable<TgUpdate["message"]>, deps: BotDeps): 
   }
   if (cmd === "/help") return void (await deps.client.sendMessage(chatId, escapeHtml(s.help)));
   if (cmd === "/list" || cmd === "/watches") return await sendList(chatId, lang, deps);
+  if (cmd === "/site") return await sendSiteLink(chatId, lang, deps);
   if (cmd === "/privacy" || cmd === "/terms") return await sendLegal(chatId, cmd === "/privacy" ? "privacy" : "terms", lang, deps);
   await deps.client.sendMessage(chatId, escapeHtml(s.unknown));
 }
@@ -123,6 +126,16 @@ async function linkWithToken(chatId: number, token: string, lang: Lang, deps: Bo
   });
   if (!updated) return void (await deps.client.sendMessage(chatId, escapeHtml(s.badLink)));
   await deps.client.sendMessage(chatId, `${escapeHtml(fill(s.linked, { label: updated.label }))}\n\n${watchCard(updated, lang)}`, { buttons: keyboard(updated, lang, deps.appUrl) });
+}
+
+/** A one-time link that opens the website with access to every tracker connected to this chat. */
+async function sendSiteLink(chatId: number, lang: Lang, deps: BotDeps): Promise<void> {
+  const s = strings(lang);
+  const secret = claimSecret();
+  if (!deps.appUrl || !secret) return void (await deps.client.sendMessage(chatId, escapeHtml(s.legalNoUrl)));
+  if (!(await deps.store.list()).some((w) => ownedBy(w, chatId))) return void (await deps.client.sendMessage(chatId, escapeHtml(s.none)));
+  const url = `${deps.appUrl.replace(/\/$/, "")}/watches/claim?c=${makeClaimToken(String(chatId), secret, (deps.now ?? Date.now)())}`;
+  await deps.client.sendMessage(chatId, escapeHtml(s.siteLink), { buttons: [[{ text: `🌐 ${s.openSite}`, url }]] });
 }
 
 async function sendList(chatId: number, lang: Lang, deps: BotDeps): Promise<void> {
@@ -177,6 +190,10 @@ async function onCallback(cb: NonNullable<TgUpdate["callback_query"]>, deps: Bot
     case "n":
       await deps.client.answerCallback(cb.id);
       await show(w);
+      return;
+    case "o":
+      await deps.client.answerCallback(cb.id);
+      await sendSiteLink(chatId, lang, deps);
       return;
     case "c": {
       const now = (deps.now ?? Date.now)();

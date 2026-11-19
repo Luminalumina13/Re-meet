@@ -32,11 +32,27 @@ export function ownerToken(req: Request): string | null {
   return token && TOKEN_RE.test(token) ? token : null;
 }
 
+const MAX_OWNER_KEYS = 20;
+
+const sameHash = (stored: string, given: Buffer) => {
+  const a = Buffer.from(stored, "hex");
+  return a.length === given.length && timingSafeEqual(a, given);
+};
+
 export function ownsWatch(w: Watch, token: string | null): boolean {
-  if (!token || !w.ownerHash) return false;
-  const a = Buffer.from(w.ownerHash, "hex");
+  if (!token) return false;
   const b = Buffer.from(hashOwner(token), "hex");
-  return a.length === b.length && timingSafeEqual(a, b);
+  // No early exit between keys, so the time does not reveal which one matched.
+  let ok = false;
+  for (const h of [w.ownerHash, ...(w.ownerHashes ?? [])]) if (h && sameHash(h, b)) ok = true;
+  return ok;
+}
+
+/** The owner keys of `w` plus the key of `token` (capped; the oldest extra keys drop first). */
+export function withOwner(w: Watch, token: string): Pick<Watch, "ownerHashes"> {
+  const h = hashOwner(token);
+  const extra = [...(w.ownerHashes ?? []), h].slice(-MAX_OWNER_KEYS);
+  return { ownerHashes: [...new Set(extra)] };
 }
 
 /** The watch if it exists and belongs to the caller; otherwise undefined (callers answer 404, so ids cannot be probed). */

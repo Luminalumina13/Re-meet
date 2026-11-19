@@ -74,12 +74,14 @@ export async function botUsername(): Promise<string | undefined> {
 export const BOT_COMMANDS = {
   uk: [
     { command: "list", description: "Мої відстеження" },
+    { command: "site", description: "Відкрити мої відстеження на сайті" },
     { command: "help", description: "Як це працює" },
     { command: "terms", description: "Умови користування" },
     { command: "privacy", description: "Політика конфіденційності" },
   ],
   en: [
     { command: "list", description: "My trackers" },
+    { command: "site", description: "Open my trackers on the website" },
     { command: "help", description: "How it works" },
     { command: "terms", description: "Terms of Use" },
     { command: "privacy", description: "Privacy Policy" },

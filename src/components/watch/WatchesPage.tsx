@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { HowLink } from "@/components/info/HowLink";
 import { useCallback, useEffect, useState } from "react";
 import { Bell, Pause, Play, RefreshCw, Trash2, TrendingDown, TrendingUp, Sparkles, Target, CircleOff } from "lucide-react";
@@ -32,6 +33,7 @@ const TONE: Record<Alert["type"], "good" | "critical" | "accent" | "warn" | "neu
 
 export function WatchesPage() {
   const { t, locale } = useI18n();
+  const claim = useSearchParams().get("claim");
   const [items, setItems] = useState<Watch[] | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -82,6 +84,8 @@ export function WatchesPage() {
         <HowLink step="watch" className="mt-2" />
       </section>
 
+      {claim === "ok" && <div className="mb-4 rounded-xl border border-good/40 bg-good/10 px-4 py-3 text-sm text-ink" role="status">{t.watch.claimOk}</div>}
+      {claim === "bad" && <div className="mb-4 rounded-xl border border-critical/40 bg-critical/10 px-4 py-3 text-sm text-critical" role="status">{t.watch.claimBad}</div>}
       {error && <div className="mb-4 rounded-xl border border-critical/40 bg-critical/10 px-4 py-3 text-sm text-critical">{error}</div>}
       {!items && (
         <div className="flex flex-col gap-3">
@@ -93,6 +97,7 @@ export function WatchesPage() {
         <Card className="p-10 text-center text-ink-2">
           <Bell className="mx-auto mb-3 h-8 w-8 text-ink-3" />
           {t.watch.empty}
+          <p className="mx-auto mt-3 max-w-xl text-sm text-ink-3">{t.watch.emptyDevice}</p>
           <div className="mt-4 flex flex-wrap justify-center gap-3">
             <Link href="/" className="inline-flex h-10 items-center rounded-xl bg-accent px-4 text-sm font-semibold text-accent-ink transition hover:bg-accent-hover">{t.watch.emptyFind}</Link>
             <Link href="/meetup" className="inline-flex h-10 items-center rounded-xl border border-border bg-surface px-4 text-sm font-semibold transition hover:border-accent">{t.watch.emptyMeetup}</Link>
