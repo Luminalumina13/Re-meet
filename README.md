@@ -153,3 +153,5 @@ The chat id is the user's identity in the bot, and only chats that linked throug
 ## How the meetup engine works
 
 Time together = `min(return departures) − max(arrivals)`. For a fixed pair of probe times *(T_start, T_end)*, every friend independently takes the cheapest outbound arriving ≤ T_start and the cheapest return departing ≥ T_end, so the problem decomposes: candidate T values are just the actual arrival/departure times in the data, prefix/suffix minima make each lookup O(log n), and the objective `hours × valuePerHour − total price` is evaluated exactly over all pairs. Results are de-duplicated, ranked, and the Pareto frontier (more time ↔ less money) is surfaced so the user can slide between "cheapest" and "longest".
+
+Airports: a curated core list plus about 3,700 imported airports (OurAirports, Wikidata); see [docs/airports.md](docs/airports.md).

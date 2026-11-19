@@ -1,5 +1,6 @@
 import type { Airport } from "@/lib/domain/types";
 import { ALIAS_UK, CITY_UK, COUNTRY_UK, normalizeQuery } from "./airportsUk";
+import type * as ExtraModule from "./airportsExtra";
 
 type Row = [iata: string, name: string, city: string, country: string, tz: string, lat: number, lon: number];
 
@@ -182,17 +183,36 @@ const ROWS: Row[] = [
   ["ORK", "Cork", "Cork", "IE", "Europe/Dublin", 51.8413, -8.4911],
 ];
 
-export const AIRPORTS: Airport[] = ROWS.map(([iata, name, city, country, tz, lat, lon]) => ({
-  iata,
-  name,
-  city,
-  country,
-  tz,
-  lat,
-  lon,
-}));
+const CORE: Airport[] = ROWS.map(([iata, name, city, country, tz, lat, lon]): Airport => ({ iata, name, city, country, tz, lat, lon }));
 
-const BY_IATA = new Map(AIRPORTS.map((a) => [a.iata, a]));
+/**
+ * Every airport. The curated rows come first and win ties in search; the imported ones (src/lib/data/airportsExtra.ts,
+ * about 3,700 airports) follow, big airports first. On the server they are there from the start. In the browser they are a
+ * separate chunk fetched after the page loads (loadExtraAirports), so the first load stays small.
+ */
+export let AIRPORTS: Airport[] = CORE;
+let BY_IATA = new Map(AIRPORTS.map((a) => [a.iata, a]));
+let extraLoaded = false;
+
+function addExtra(m: typeof ExtraModule): void {
+  if (extraLoaded) return;
+  extraLoaded = true;
+  const extra = m.ROWS_EXTRA.map(([iata, name, city, country, tz, lat, lon, size]): Airport => ({ iata, name, city, country, tz, lat, lon, size: m.SIZE[size] }));
+  AIRPORTS = [...CORE, ...extra];
+  BY_IATA = new Map(AIRPORTS.map((a) => [a.iata, a]));
+  for (const [city, uk] of Object.entries(m.CITY_UK_EXTRA)) CITY_UK[city] ??= uk;
+}
+
+// `typeof window` is replaced at build time, so on the client this branch is dropped (the chunk is fetched by loadExtraAirports instead).
+if (typeof window === "undefined") addExtra(await import("./airportsExtra"));
+
+/** Browser: fetch the imported airports (a separate chunk). Resolves at once when they are already there. */
+export function loadExtraAirports(): Promise<void> {
+  return extraLoaded ? Promise.resolve() : import("./airportsExtra").then(addExtra);
+}
+
+/** Airports a demo "anywhere" search may suggest: the curated list and large airports, not every regional strip. */
+export const isMajor = (a: Airport) => a.size === undefined || a.size === "large";
 
 export function getAirport(iata: string): Airport | undefined {
   return BY_IATA.get(iata.toUpperCase());
@@ -206,7 +226,7 @@ export function airportTz(iata: string): string {
 export function searchAirports(query: string, limit = 8): Airport[] {
   const q = normalizeQuery(query);
   if (!q) return [];
-  const scored = AIRPORTS.map((a) => {
+  const scored = AIRPORTS.map((a, i) => {
     const iata = a.iata.toLowerCase();
     const cities = [a.city, CITY_UK[a.city] ?? "", ...(ALIAS_UK[a.iata] ?? [])].map(normalizeQuery).filter(Boolean);
     const name = normalizeQuery(a.name);
@@ -218,10 +238,10 @@ export function searchAirports(query: string, limit = 8): Airport[] {
     else if (cities.some((c) => c.includes(q))) s = 50;
     else if (name.includes(q)) s = 40;
     else if (countries.some((c) => c === q || (q.length >= 3 && c.startsWith(q)))) s = 20;
-    return { a, s };
+    return { a, s, i };
   })
     .filter((x) => x.s > 0)
-    .sort((x, y) => y.s - x.s || x.a.city.localeCompare(y.a.city));
+    .sort((x, y) => y.s - x.s || x.i - y.i);
   return scored.slice(0, limit).map((x) => x.a);
 }
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { PlaneTakeoff } from "lucide-react";
-import { getAirport, searchAirports } from "@/lib/data/airports";
+import { getAirport, loadExtraAirports, searchAirports } from "@/lib/data/airports";
 import { inputCls } from "./primitives";
 import { cx } from "@/lib/format";
 import type { Airport } from "@/lib/domain/types";
@@ -40,6 +40,21 @@ export function AirportPicker({
     const a = value ? getAirport(value) : undefined;
     setText(a ? `${a.city} (${a.iata})` : "");
   }
+
+  // The imported airports arrive as a separate chunk after the page loaded: fill in the name of an airport that came from a
+  // shared link. Suggestions typed before that only cover the main list and widen with the next keystroke.
+  useEffect(() => {
+    let alive = true;
+    void loadExtraAirports().then(() => {
+      if (!alive) return;
+      const a = value ? getAirport(value) : undefined;
+      if (a) setText((t) => t || `${a.city} (${a.iata})`);
+    });
+    return () => {
+      alive = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {

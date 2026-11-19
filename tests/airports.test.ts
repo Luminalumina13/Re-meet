@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AIRPORTS, searchAirports } from "@/lib/data/airports";
+import { AIRPORTS, getAirport, isMajor, searchAirports } from "@/lib/data/airports";
 import { CITY_UK } from "@/lib/data/airportsUk";
 
 const top = (q: string) => searchAirports(q, 5).map((a) => a.iata);
@@ -7,7 +7,7 @@ const top = (q: string) => searchAirports(q, 5).map((a) => a.iata);
 describe("airport search", () => {
   it("understands Ukrainian city names", () => {
     expect(top("варш")).toContain("WAW");
-    expect(top("Барселона")).toEqual(["BCN"]);
+    expect(top("Барселона")[0]).toBe("BCN");
     expect(top("лон")).toEqual(expect.arrayContaining(["LHR", "STN"]));
     expect(top("скоп’є")).toEqual(["SKP"]);
   });
@@ -33,9 +33,34 @@ describe("airport search", () => {
     expect(top("barcel")).toContain("BCN");
   });
 
-  it("has a Ukrainian name for every city in the table", () => {
-    const missing = [...new Set(AIRPORTS.map((a) => a.city))].filter((c) => !CITY_UK[c]);
+  it("has a Ukrainian name for every city in the curated list", () => {
+    const missing = [...new Set(AIRPORTS.filter((a) => a.size === undefined).map((a) => a.city))].filter((c) => !CITY_UK[c]);
     expect(missing).toEqual([]);
+  });
+
+  it("knows thousands of airports with unique codes and sane data", () => {
+    expect(AIRPORTS.length).toBeGreaterThan(3000);
+    expect(new Set(AIRPORTS.map((a) => a.iata)).size).toBe(AIRPORTS.length);
+    for (const a of AIRPORTS) {
+      expect(a.iata).toMatch(/^[A-Z]{3}$/);
+      expect(Math.abs(a.lat)).toBeLessThanOrEqual(90);
+      expect(Math.abs(a.lon)).toBeLessThanOrEqual(180);
+      expect(a.tz).toContain("/");
+    }
+  });
+
+  it("offers both Tenerife airports", () => {
+    expect(top("tenerife")).toEqual(expect.arrayContaining(["TFS", "TFN"]));
+    expect(top("тенеріфе")).toEqual(expect.arrayContaining(["TFS", "TFN"]));
+    expect(getAirport("TFN")?.city).toBe(getAirport("TFS")?.city);
+  });
+
+  it("keeps big, familiar airports first and finds small ones too", () => {
+    expect(top("lon")[0]).toBe("LHR");
+    expect(top("paris")).toContain("CDG");
+    expect(top("sao paulo")).toContain("GRU");
+    expect(top("tokyo")).toEqual(expect.arrayContaining(["HND", "NRT"]));
+    expect(isMajor(getAirport("WAW")!)).toBe(true);
   });
 });
 
@@ -44,7 +69,7 @@ describe("leisure destinations", () => {
     expect(top("фуншал")).toEqual(["FNC"]);
     expect(top("funchal")).toEqual(["FNC"]);
     expect(top("fnc")[0]).toBe("FNC");
-    expect(top("тенеріфе")).toEqual(["TFS"]);
+    expect(top("тенеріфе")).toEqual(["TFS", "TFN"]);
     expect(top("санторіні")).toEqual(["JTR"]);
     expect(top("хургада")).toEqual(["HRG"]);
     expect(searchAirports("мадейра", 5).map((a) => a.iata)).toEqual(["FNC"]);

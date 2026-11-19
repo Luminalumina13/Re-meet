@@ -1,5 +1,5 @@
 /** Ukrainian names for the cities and countries in the airport table, used by autocomplete. */
-export const CITY_UK: Record<string, string> = {
+const CITY_UK_CORE: Record<string, string> = {
   Kyiv: "Київ", Lviv: "Львів", Odesa: "Одеса", Warsaw: "Варшава", Kraków: "Краків", Katowice: "Катовіце",
   Rzeszów: "Жешув", Gdańsk: "Гданськ", Wrocław: "Вроцлав", Poznań: "Познань", Chișinău: "Кишинів",
   Iași: "Яси", Bucharest: "Бухарест", "Cluj-Napoca": "Клуж-Напока", Budapest: "Будапешт", Košice: "Кошиці",
@@ -25,6 +25,9 @@ export const CITY_UK: Record<string, string> = {
   Funchal: "Фуншал", "Ponta Delgada": "Понта-Делгада", Tenerife: "Тенеріфе", "Las Palmas": "Лас-Пальмас", Lanzarote: "Лансароте", Fuerteventura: "Фуертевентура", Ibiza: "Ібіца", Menorca: "Менорка", Bilbao: "Більбао", "Santiago de Compostela": "Сантьяго-де-Компостела", Rhodes: "Родос", Corfu: "Корфу", Chania: "Ханья", Santorini: "Санторіні", Mykonos: "Міконос", Zakynthos: "Закінф", Kos: "Кос", Pula: "Пула", Zadar: "Задар", Pisa: "Піза", Turin: "Турин", Verona: "Верона", Cagliari: "Кальярі", Olbia: "Ольбія", Burgas: "Бургас", Tivat: "Тіват", Dalaman: "Даламан", Bodrum: "Бодрум", Hurghada: "Хургада", "Sharm el-Sheikh": "Шарм-ель-Шейх", Marrakech: "Марракеш", Szczecin: "Щецин", Brno: "Брно", Stavanger: "Ставангер", Malmö: "Мальме", Billund: "Біллунн", Liverpool: "Ліверпуль", Newcastle: "Ньюкасл", Belfast: "Белфаст", Leeds: "Лідс", Cork: "Корк",
   Toronto: "Торонто", Montréal: "Монреаль", Vancouver: "Ванкувер",
 };
+
+/** Core names; the names of the imported airports are added when those load (see airports.ts). */
+export const CITY_UK: Record<string, string> = { ...CITY_UK_CORE };
 
 /** Other names people type: islands and regions that are not the airport's city. */
 export const ALIAS_UK: Record<string, string[]> = {
