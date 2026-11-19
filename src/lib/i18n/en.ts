@@ -16,6 +16,30 @@ export const en: Dict = {
     settings: "Cookie settings",
     ad: "Ad",
   },
+  home: {
+    entries: [
+      { title: "I know where I'm going", text: "Pick a weekend or your own dates and we find flights at civilised hours.", cta: "Find flights" },
+      { title: "Anywhere", text: "Tell us how long you're willing to travel and see where you can get, and for how much.", cta: "See destinations" },
+      { title: "Meet friends", text: "Add who flies from where and a few cities to choose from. We compare them and suggest the best place to meet.", cta: "Plan a meet-up" },
+    ],
+    featuresTitle: "What Re:meeet can do",
+    featuresLead: "Everything to plan less and be together more.",
+    features: [
+      { title: "Flights for your dates", text: "Weekends or any dates: no 6 a.m. departures or midnight returns." },
+      { title: "Flexible dates ±3 days", text: "See the cheapest day nearby and jump to it in one tap." },
+      { title: "Anywhere", text: "Destinations by travel time and budget, with city cards." },
+      { title: "Meet friends", text: "We compare the cities you name by everyone's ticket price and time together." },
+      { title: "Price tracking", text: "We tell you when a fare drops: on the site and, if you like, in Telegram." },
+      { title: "Links for friends", text: "Share a search in one click, no explaining needed." },
+    ],
+    stepsTitle: "How it works",
+    steps: [
+      { title: "Pick a city and dates", text: "Or add friends and a few cities to meet in." },
+      { title: "Compare the options", text: "Price, travel time and convenience, not just the cheapest." },
+      { title: "Book with a partner", text: "You continue on the airline's or service's own site." },
+    ],
+    app: { title: "We're building a phone app", tag: "soon", text: "Meanwhile the site works well in a mobile browser.", link: "How it works in detail" },
+  },
   nav: { search: "Search", explore: "Anywhere", meetup: "Meetup", watches: "Tracking" },
   theme: { light: "Light theme", dark: "Dark theme" },
   lang: { uk: "UA", en: "EN" },
@@ -109,8 +133,8 @@ export const en: Dict = {
   },
   badges: { "morning-departure": "Morning departure", "evening-return": "Evening return", direct: "Direct", comfort: "Comfort" },
   search: {
-    title: "Flights that respect your weekend",
-    subtitle: "No 6 a.m. departures, no midnight returns. Pick a weekend — we find flights at civilised hours.",
+    title: "Flights that respect your time",
+    subtitle: "Flights for weekends or any dates, a shared meeting place for friends and price tracking in one place. Free.",
   },
   meetup: {
     title: "Friends meeting from different cities",

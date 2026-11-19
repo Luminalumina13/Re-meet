@@ -53,8 +53,8 @@ export function Spinner({ className }: { className?: string }) {
   );
 }
 
-export function Card({ className, children }: { className?: string; children: ReactNode }) {
-  return <div className={cx("bg-surface border border-border rounded-[var(--radius)] shadow-card", className)}>{children}</div>;
+export function Card({ className, children, id }: { className?: string; children: ReactNode; id?: string }) {
+  return <div id={id} className={cx("bg-surface border border-border rounded-[var(--radius)] shadow-card", className)}>{children}</div>;
 }
 
 export function Field({ label, hint, children, className }: { label: ReactNode; hint?: ReactNode; children: ReactNode; className?: string }) {
