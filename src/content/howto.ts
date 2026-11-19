@@ -266,5 +266,5 @@ export const imageSize: Record<string, [number, number]> = {
   "/how/flex.jpg": [1200, 541],
   "/how/explore.jpg": [1200, 838],
   "/how/meetup.jpg": [1200, 767],
-  "/how/watch.jpg": [960, 906],
+  "/how/watch.jpg": [840, 540],
 };
