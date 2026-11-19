@@ -20,7 +20,7 @@ export interface FlexCell {
 /** Buffer between landing and the return take-off for a pair to count as a trip (not a wish about trip length). */
 export const MIN_STAY_MIN = 3 * 60;
 
-interface Timed {
+export interface Timed {
   price: number;
   departUtc: string;
   arriveUtc: string;
