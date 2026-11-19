@@ -5,7 +5,7 @@ Three chevron streams (blue, yellow, green) converge on a four-point star. The s
 and the fading chevrons use lighter tints on dark. `full` is the header mark, `icon` the simplified one (two chevrons per stream) for
 the favicon and app icons. See docs/logo.md.
 
-usage: python3 scripts/logo/generate.py                 (run from the repository root; rewrites the site files)
+usage: python3 scripts/logo/generate.py                 (run from the repository root with node on PATH; rewrites the site files)
        python3 scripts/logo/generate.py --avatars DIR   (square 640 px avatars for bots and chats, dark and light)
 """
 import math, os, subprocess, sys, tempfile
@@ -89,7 +89,8 @@ def tile_svg():
     cfg = CFG["icon"]
     chevrons, vb = geometry(cfg)
     s = 46 / vb[2]
-    body = "".join(f'<path d="{d}" stroke="{DARK[k]}" opacity="{dark_op(cfg["ops"][i])}"/>' for k, i, d in chevrons)
+    # fill="none" on every path: ImageMagick's SVG renderer ignores it on the group and fills the open chevrons black.
+    body = "".join(f'<path d="{d}" fill="none" stroke="{DARK[k]}" opacity="{dark_op(cfg["ops"][i])}"/>' for k, i, d in chevrons)
     return (f'<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="{NAVY}"/>'
             f'<g transform="translate(9 9) scale({s:.5f}) translate({-vb[0]} {-vb[1]})" fill="none" stroke-width="{cfg["w"]}" stroke-linecap="round" stroke-linejoin="round">'
             f'{body}{star_el(cfg, "#fff")}</g></svg>\n')
@@ -107,14 +108,16 @@ def avatar_svg(theme):
     s = 560 / vb[2]  # 1024 canvas, mark about 55 % of it
     off = (1024 - 560) / 2
     body = "".join(
-        f'<path d="{d}" stroke="{DARK[k] if dark else BASE[k]}" opacity="{dark_op(cfg["ops"][i]) if dark else cfg["ops"][i]}"/>' for k, i, d in chevrons
+        f'<path d="{d}" fill="none" stroke="{DARK[k] if dark else BASE[k]}" opacity="{dark_op(cfg["ops"][i]) if dark else cfg["ops"][i]}"/>' for k, i, d in chevrons
     )
     return (f'<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><rect width="1024" height="1024" fill="{bg}"/>'
             f'<g transform="translate({off} {off}) scale({s:.5f}) translate({-vb[0]} {-vb[1]})" fill="none" stroke-width="{cfg["w"]}" stroke-linecap="round" stroke-linejoin="round">'
             f'{body}{star_el(cfg, star)}</g></svg>\n')
 
 def raster(src, out, size):
-    subprocess.run(["magick", "-background", "none", "-density", "1200", src, "-resize", f"{size}x{size}", out], check=True)
+    """SVG to PNG with sharp (librsvg), which is in node_modules. ImageMagick's own SVG renderer fills open paths black."""
+    js = "require('sharp')(process.argv[1],{density:384}).resize(+process.argv[3],+process.argv[3]).png().toFile(process.argv[2]).then(()=>{},e=>{console.error(e);process.exit(1)})"
+    subprocess.run(["node", "-e", js, src, out, str(size)], check=True)
 
 def main():
     if "--avatars" in sys.argv:

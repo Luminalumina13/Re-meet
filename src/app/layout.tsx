@@ -14,7 +14,7 @@ const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin", "cyrill
 // Lets AdSense verify site ownership without loading any Google script (that only happens after consent, see Analytics.tsx).
 
 // Browsers keep their own favicon cache, separate from HTTP caching: bump this when the icon files change so they fetch the new ones.
-const ICON_VERSION = 2;
+const ICON_VERSION = 3;
 
 export const metadata: Metadata = {
   title: "Re:meeet — make time together last longer",
