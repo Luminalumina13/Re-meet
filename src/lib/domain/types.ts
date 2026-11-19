@@ -11,6 +11,8 @@ export interface Airport {
   tz: string;
   lat: number;
   lon: number;
+  /** Absent for the curated core list (treated as large); set for the airports imported from OurAirports. */
+  size?: "large" | "medium" | "small";
 }
 
 export interface Money {

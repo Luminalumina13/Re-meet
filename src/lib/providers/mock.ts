@@ -1,5 +1,5 @@
 import type { Itinerary, Leg, SearchRequest, Segment } from "@/lib/domain/types";
-import { AIRPORTS, distanceKm, getAirport } from "@/lib/data/airports";
+import { AIRPORTS, distanceKm, getAirport, isMajor } from "@/lib/data/airports";
 import type { ExploreRequest } from "@/lib/explore/types";
 import type { Airport } from "@/lib/domain/types";
 import { localToUtc, utcToLocal, minutesToHhmm, weekday } from "@/lib/domain/time";
@@ -127,7 +127,7 @@ export class MockProvider implements FlightProvider {
     const from = getAirport(req.origin);
     if (!from) return [];
     const reach = req.maxFlightHours * 60;
-    const targets = AIRPORTS.filter((a) => a.city !== from.city)
+    const targets = AIRPORTS.filter((a) => isMajor(a) && a.city !== from.city)
       .map((a) => ({ a, km: distanceKm(from, a) }))
       .filter((x) => 35 + (x.km / 780) * 60 <= reach + 15)
       .sort((x, y) => x.km - y.km)
