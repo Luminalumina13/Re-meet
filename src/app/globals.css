@@ -3,6 +3,14 @@
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 :root {
+  /* logo mark (components/LogoMark.tsx): three streams and a star */
+  --lm-b: #4f73ff;
+  --lm-y: #ffc41f;
+  --lm-g: #12b5a3;
+  --lm-o0: 0.42;
+  --lm-o1: 0.72;
+  --lm-o2: 1;
+  --lm-star: #0b1220;
   color-scheme: light;
   /* Re:meeet palette "Sun": slate neutrals with a sunny yellow accent (dark ink on yellow fills). Other candidates: docs/palettes. */
   --e1: #f5b50a;
@@ -42,6 +50,12 @@
 }
 
 :root[data-theme="dark"] {
+  --lm-b: #7692ff;
+  --lm-y: #ffd150;
+  --lm-g: #46c5b7;
+  --lm-o0: 0.64;
+  --lm-o1: 0.85;
+  --lm-star: #ffffff;
   color-scheme: dark;
   --bg: #0f172a;
   --surface: #172033;
