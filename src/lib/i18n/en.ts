@@ -173,7 +173,7 @@ export const en: Dict = {
     tickets: "Everyone's tickets",
     trackPlan: "Track this query",
   },
-  howLink: { general: "How does it work?", results: "How to read the results", watchCreate: "How to set up tracking" },
+  howLink: { general: "How does it work?", results: "How to read the results", watchCreate: "How tracking works" },
   share: { button: "Share", copied: "Link copied" },
   flex: {
     title: "Flexible dates ±3 days",
@@ -189,7 +189,9 @@ export const en: Dict = {
   watch: {
     title: "Price tracking",
     subtitle: "We periodically re-run saved queries and alert you on price drops, new offers and target prices.",
-    empty: "No watches yet. Press “Track” next to a search result or a meetup plan.",
+    empty: "No watches yet. Search for flights or plan a meet-up and press “Track” next to a result.",
+    emptyFind: "Find flights",
+    emptyMeetup: "Plan a meet-up",
     label: "Label",
     targetPrice: "Target price",
     dropThreshold: "Alert on a drop of",

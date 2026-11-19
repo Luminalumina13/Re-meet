@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { HowLink } from "@/components/info/HowLink";
 import { useCallback, useEffect, useState } from "react";
 import { Bell, Pause, Play, RefreshCw, Trash2, TrendingDown, TrendingUp, Sparkles, Target, CircleOff } from "lucide-react";
@@ -91,6 +92,10 @@ export function WatchesPage() {
         <Card className="p-10 text-center text-ink-2">
           <Bell className="mx-auto mb-3 h-8 w-8 text-ink-3" />
           {t.watch.empty}
+          <div className="mt-4 flex flex-wrap justify-center gap-3">
+            <Link href="/" className="inline-flex h-10 items-center rounded-xl bg-accent px-4 text-sm font-semibold text-accent-ink transition hover:bg-accent-hover">{t.watch.emptyFind}</Link>
+            <Link href="/meetup" className="inline-flex h-10 items-center rounded-xl border border-border bg-surface px-4 text-sm font-semibold transition hover:border-accent">{t.watch.emptyMeetup}</Link>
+          </div>
           <div className="mt-3"><HowLink step="watch" label="watchCreate" /></div>
         </Card>
       )}
