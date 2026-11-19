@@ -4,18 +4,19 @@
 
 :root {
   /* logo mark (components/LogoMark.tsx): three streams and a star */
-  --lm-b: #4f73ff;
-  --lm-y: #ffc41f;
-  --lm-g: #12b5a3;
-  --lm-o0: 0.42;
-  --lm-o1: 0.72;
+  --lm-b: #3d62f0;
+  --lm-y: #f0a500;
+  --lm-g: #0c9d8c;
+  --lm-o0: 0.55;
+  --lm-o1: 0.85;
   --lm-o2: 1;
   --lm-star: #0b1220;
   color-scheme: light;
   /* Re:meeet palette "Sun": slate neutrals with a sunny yellow accent (dark ink on yellow fills). Other candidates: docs/palettes. */
-  --e1: #f5b50a;
-  --e2: #3b5bdb;
-  --e3: #0d9488;
+  /* wordmark letters share the logo colours, so mark and text always match in both themes */
+  --e1: var(--lm-y);
+  --e2: var(--lm-b);
+  --e3: var(--lm-g);
   --bg: #f5f6f8;
   --surface: #ffffff;
   --surface-2: #e9ecf1;
