@@ -8,6 +8,7 @@ import { adsenseMeta } from "@/lib/adsenseMeta";
 import { Analytics } from "@/components/Analytics";
 import { ExtraAirports } from "@/components/ExtraAirports";
 import { ConsentBanner } from "@/components/ConsentBanner";
+import { siteUrl } from "./sitemap";
 
 const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin", "cyrillic"], display: "swap" });
 
@@ -16,9 +17,23 @@ const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin", "cyrill
 // Browsers keep their own favicon cache, separate from HTTP caching: bump this when the icon files change so they fetch the new ones.
 const ICON_VERSION = 3;
 
+const DESCRIPTION =
+  "Квитки на вихідні й зустрічі з друзями: знайдіть місце і час, що підходять усім, де б ви не жили. Weekend flights and meet-ups: find a place and a time that works for everyone.";
+
 export const metadata: Metadata = {
-  title: "Re:meeet — make time together last longer",
-  description: "Flights for weekends and meet-ups: find a place and a time that works for everyone, wherever your people live.",
+  metadataBase: new URL(siteUrl),
+  title: "Re:meeet — зробіть час разом довшим · Make time together last longer",
+  description: DESCRIPTION,
+  applicationName: "Re:meeet",
+  openGraph: {
+    type: "website",
+    siteName: "Re:meeet",
+    title: "Re:meeet — make time together last longer",
+    description: DESCRIPTION,
+    locale: "uk_UA",
+    alternateLocale: ["en_US"],
+  },
+  twitter: { card: "summary_large_image", title: "Re:meeet — make time together last longer", description: DESCRIPTION },
   icons: {
     icon: [
       { url: `/favicon.svg?v=${ICON_VERSION}`, type: "image/svg+xml" },

@@ -75,6 +75,10 @@ The form posts to `POST /api/feedback` and the message is delivered to a Telegra
 
 **Error alerts.** The same bot and chat also receive critical server errors (an API request that failed with 500, a tracker check or scheduler tick that threw, a Telegram update the bot could not handle), in production only (`ERROR_REPORTS=1` forces it elsewhere, `ERROR_REPORTS=0` turns it off). Messages carry the place, the error text and the top of the stack, with tokens, keys, e-mail addresses and long opaque strings redacted; the same error is sent at most once per 15 minutes and at most 20 per hour. See `src/lib/errorReport.ts`.
 
+## SEO
+
+Every page sets its own bilingual `title`/`description` and canonical address in its `page.tsx`. Next.js replaces (does not merge) `openGraph` and `alternates` of the layout, so a page that sets them must repeat what it needs. The home page adds `Organization`, `WebSite` and `WebApplication` JSON-LD. The link preview (1200×630) is drawn in code by `src/app/opengraph-image.tsx`. After a deploy, submit `https://remeeet.com/sitemap.xml` in Google Search Console. Wordmark colours come from the logo variables (`--lm-*`), so mark and text always match in both themes.
+
 ## Analytics and ads
 
 Google Analytics 4 and Google AdSense are optional and **off until the visitor presses "Accept"** in the consent banner: nothing from Google is requested before that, and the choice can be changed any time via "Cookie settings" in the footer. With no ids configured no banner is shown and nothing loads.
