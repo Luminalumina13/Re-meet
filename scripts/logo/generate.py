@@ -10,7 +10,7 @@ usage: python3 scripts/logo/generate.py                 (run from the repository
 """
 import math, os, subprocess, sys, tempfile
 
-BASE = {"b": "#4F73FF", "y": "#FFC41F", "g": "#12B5A3"}
+BASE = {"b": "#4A4BEF", "y": "#FFAE00", "g": "#0FB5A5"}
 ARM = {"b": 180, "y": 300, "g": 60}  # where each stream comes from (screen degrees)
 STAR = "M0-10C.55-2.7 2.7-.55 10 0C2.7.55.55 2.7 0 10C-.55 2.7-2.7.55-10 0C-2.7-.55-.55-2.7 0-10Z"
 NAVY = "#0F172A"
@@ -23,7 +23,7 @@ def tint(hex_, t):
     n = int(hex_[1:], 16)
     return "#%02X%02X%02X" % tuple(round(v + (255 - v) * t) for v in ((n >> 16) & 255, (n >> 8) & 255, n & 255))
 
-DARK = {k: tint(v, 0.22) for k, v in BASE.items()}
+DARK = dict(BASE)  # the brand colours are strong enough on the dark tile, no lighter tints
 
 def dark_op(o):
     return round(min(1, 0.45 + 0.55 * o), 2)
