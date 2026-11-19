@@ -22,6 +22,8 @@ export async function register() {
       if (r.checked) console.log(`[watch] checked ${r.checked} watch(es), ${r.alerts} alert(s)`);
     } catch (e) {
       console.warn("[watch] scheduler tick failed", e);
+      const { reportError } = await import("@/lib/errorReport");
+      void reportError("scheduler", e);
     }
   };
   setTimeout(tick, 15_000);
