@@ -12,7 +12,7 @@ This Policy explains what data we process, why, who receives it and how you can 
 
 - You do not need to register or create an account to use the Service.
 - We do not sell tickets or take payments. We do not collect payment details, passport data or precise location.
-- We turn on Google Analytics and Google AdSense only after you agree. Without your consent their cookies are not set.
+- We turn on analytics (Google Analytics via Google Tag Manager) and Google AdSense only after you agree. Without your consent their cookies are not set.
 - We send your search parameters (airports, dates, number of travellers, cabin) to flight data providers to obtain offers. Friends' names are not sent to them.
 - If you create a price tracker or connect Telegram, we store the related data until you delete it.
 - We do not sell personal data.
@@ -53,7 +53,7 @@ If you write to us through the form on the “Questions and answers” page, we 
 - **To run trackers and send notifications:** necessary to fulfil your request. For Telegram, your consent also applies, which you give by opening the connect link and pressing Start in the bot. You can withdraw it at any time.
 - **To answer your question** sent through the form: our legitimate interest in communicating with users, and your consent where you gave a contact.
 - **To protect the Service** from abuse and failures: our legitimate interest in security and stability.
-- **To measure visits and show ads** (Google Analytics, Google AdSense): only with your consent, which you can withdraw.
+- **To measure visits and show ads** (Google Analytics via Google Tag Manager, Google AdSense): only with your consent, which you can withdraw.
 - **To comply with legal obligations.**
 
 ## 5. Who receives data
@@ -64,7 +64,7 @@ If you write to us through the form on the “Questions and answers” page, we 
 - **Public authorities** where there is a lawful request.
 - **Airline and aggregator websites.** When you follow a link to such a site you leave the Service. What happens to your data there is governed by their policies.
 
-- **Google** (Google Ireland Limited and Google LLC), if you agreed to analytics and ads: Google Analytics measures visits and Google AdSense shows ads. Google receives your cookie identifier, IP address, device data and what you do on the site, and may process them under its own policy (https://policies.google.com/privacy).
+- **Google** (Google Ireland Limited and Google LLC), if you agreed to analytics and ads: Google Tag Manager loads the measurement tag, Google Analytics measures visits and Google AdSense shows ads. Google receives your cookie identifier, IP address, device data and what you do on the site, and may process them under its own policy (https://policies.google.com/privacy).
 
 We do not sell personal data. Data for advertising goes to Google only with your consent.
 
@@ -87,7 +87,7 @@ After these periods we delete the data or anonymise it, unless the law requires 
 
 Without your consent we do not set analytics or advertising cookies. To work, the Service stores in your browser (localStorage and sessionStorage) your chosen language and theme, your consent answer, and the filled form and search results within the open tab so they do not disappear when you return from a carrier site. For price trackers, the `remeeet_owner` cookie (httpOnly, up to two years) holds a secret token proving the trackers are yours. This data is necessary for the Service and works only for its operation.
 
-If you press “Accept”, Google Analytics and Google AdSense may set their own cookies and identifiers (for example `_ga`) for statistics and ad serving. You can withdraw consent any time via “Cookie settings” in the footer and delete cookies in your browser settings. Declining does not limit the Service’s features.
+If you press “Accept”, Google Tag Manager, Google Analytics and Google AdSense may set their own cookies and identifiers (for example `_ga`) for statistics and ad serving. You can withdraw consent any time via “Cookie settings” in the footer and delete cookies in your browser settings. Declining does not limit the Service’s features.
 
 ## 9. Your rights
 
