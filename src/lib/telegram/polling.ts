@@ -13,9 +13,28 @@ export function liveDeps() {
  * Long polling for local development, where Telegram cannot reach a webhook.
  * Enabled with TELEGRAM_MODE=polling. Do not run it next to a webhook: Telegram allows only one.
  */
+
+/**
+ * Polling has to delete the bot's webhook, which would silence a production bot that shares the token. So it only starts when
+ * the bot has no webhook, unless TELEGRAM_POLLING_TAKEOVER=1 says that taking the bot over is intended.
+ */
+export async function mayTakeOverBot(token = botToken()): Promise<{ ok: true } | { ok: false; reason: string }> {
+  if (process.env.TELEGRAM_POLLING_TAKEOVER === "1") return { ok: true };
+  const info = await tgCall<{ url?: string }>("getWebhookInfo", {}, token);
+  if (!info.ok) return { ok: false, reason: "could not check whether the bot has a webhook" };
+  const url = info.result?.url;
+  if (url) return { ok: false, reason: `this bot has a webhook (${new URL(url).host}); long polling would delete it and silence that deployment` };
+  return { ok: true };
+}
+
 export async function startPolling(): Promise<void> {
   const token = botToken();
   if (!token) return;
+  const guard = await mayTakeOverBot(token);
+  if (!guard.ok) {
+    console.warn(`[telegram] long polling NOT started: ${guard.reason}. Use a separate bot for development, or set TELEGRAM_POLLING_TAKEOVER=1.`);
+    return;
+  }
   await tgCall("deleteWebhook", {});
   await setupCommands();
   console.log("[telegram] long polling started");
