@@ -5,9 +5,10 @@ Three chevron streams (blue, yellow, green) converge on a four-point star. The s
 and the fading chevrons use lighter tints on dark. `full` is the header mark, `icon` the simplified one (two chevrons per stream) for
 the favicon and app icons. See docs/logo.md.
 
-usage: python3 scripts/logo/generate.py            (run from the repository root)
+usage: python3 scripts/logo/generate.py                 (run from the repository root; rewrites the site files)
+       python3 scripts/logo/generate.py --avatars DIR   (square 640 px avatars for bots and chats, dark and light)
 """
-import math, os, subprocess, tempfile
+import math, os, subprocess, sys, tempfile
 
 BASE = {"b": "#4F73FF", "y": "#FFC41F", "g": "#12B5A3"}
 ARM = {"b": 180, "y": 300, "g": 60}  # where each stream comes from (screen degrees)
@@ -97,17 +98,48 @@ def write(path, text):
     with open(path, "w", encoding="utf-8") as f:
         f.write(text)
 
-write("src/components/LogoMark.tsx", component())
-write("public/favicon.svg", favicon_svg())
-with tempfile.TemporaryDirectory() as tmp:
-    src = os.path.join(tmp, "tile.svg")
-    write(src, tile_svg())
-    def png(out, size):
-        subprocess.run(["magick", "-background", "none", "-density", "1200", src, "-resize", f"{size}x{size}", out], check=True)
-    png("public/icon-512.png", 512)
-    png("public/icon-192.png", 192)
-    png("public/apple-touch-icon.png", 180)
-    a, b = os.path.join(tmp, "a.png"), os.path.join(tmp, "b.png")
-    png(a, 32); png(b, 48)
-    subprocess.run(["magick", a, b, "public/favicon.ico"], check=True)
-print("logo files written")
+def avatar_svg(theme):
+    """Square, full-bleed avatar for bots and chats. Telegram crops it to a circle, so the mark stays inside the middle ~55%."""
+    cfg = CFG["icon"]
+    chevrons, vb = geometry(cfg)
+    dark = theme == "dark"
+    bg, star = (NAVY, "#fff") if dark else ("#F5F6F8", "#0B1220")
+    s = 560 / vb[2]  # 1024 canvas, mark about 55 % of it
+    off = (1024 - 560) / 2
+    body = "".join(
+        f'<path d="{d}" stroke="{DARK[k] if dark else BASE[k]}" opacity="{dark_op(cfg["ops"][i]) if dark else cfg["ops"][i]}"/>' for k, i, d in chevrons
+    )
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><rect width="1024" height="1024" fill="{bg}"/>'
+            f'<g transform="translate({off} {off}) scale({s:.5f}) translate({-vb[0]} {-vb[1]})" fill="none" stroke-width="{cfg["w"]}" stroke-linecap="round" stroke-linejoin="round">'
+            f'{body}{star_el(cfg, star)}</g></svg>\n')
+
+def raster(src, out, size):
+    subprocess.run(["magick", "-background", "none", "-density", "1200", src, "-resize", f"{size}x{size}", out], check=True)
+
+def main():
+    if "--avatars" in sys.argv:
+        out_dir = sys.argv[sys.argv.index("--avatars") + 1]
+        os.makedirs(out_dir, exist_ok=True)
+        with tempfile.TemporaryDirectory() as tmp:
+            for theme in ("dark", "light"):
+                svg = os.path.join(tmp, f"{theme}.svg")
+                write(svg, avatar_svg(theme))
+                raster(svg, os.path.join(out_dir, f"remeeet-avatar-{theme}.png"), 640)
+        print("avatars written to", out_dir)
+        return
+    write("src/components/LogoMark.tsx", component())
+    write("public/favicon.svg", favicon_svg())
+    with tempfile.TemporaryDirectory() as tmp:
+        src = os.path.join(tmp, "tile.svg")
+        write(src, tile_svg())
+        raster(src, "public/icon-512.png", 512)
+        raster(src, "public/icon-192.png", 192)
+        raster(src, "public/apple-touch-icon.png", 180)
+        a, b = os.path.join(tmp, "a.png"), os.path.join(tmp, "b.png")
+        raster(src, a, 32)
+        raster(src, b, 48)
+        subprocess.run(["magick", a, b, "public/favicon.ico"], check=True)
+    print("logo files written")
+
+if __name__ == "__main__":
+    main()
