@@ -7,8 +7,9 @@ import { useSyncExternalStore } from "react";
 import { usePref } from "@/lib/prefs";
 import { useI18n } from "@/lib/i18n";
 import { cx } from "@/lib/format";
+import { LogoMark } from "@/components/LogoMark";
 
-/** The three "e" of Re:meeet are the brand's extra time together: violet, lilac, amber. */
+/** The three "e" of Re:meeet are the brand's extra time together: amber, blue, teal. */
 export function Wordmark({ className }: { className?: string }) {
   return (
     <span className={cx("font-extrabold tracking-tight", className)} aria-label="Re:meeet">
@@ -21,13 +22,9 @@ export function Wordmark({ className }: { className?: string }) {
 
 export function Logo({ className }: { className?: string }) {
   return (
-    <span className={cx("inline-flex items-center gap-2", className)}>
-      {/* Two routes meeting in the middle */}
-      <svg width="30" height="28" viewBox="0 0 30 28" aria-hidden>
-        <circle cx="11" cy="14" r="8" fill="var(--e1)" fillOpacity="0.92" />
-        <circle cx="19" cy="14" r="8" fill="var(--e2)" fillOpacity="0.92" />
-        <path d="M15 7.3a8 8 0 0 1 0 13.4a8 8 0 0 1 0-13.4z" fill="var(--e3)" />
-      </svg>
+    <span className={cx("inline-flex items-center gap-2.5", className)}>
+      {/* Three streams (blue, yellow, green) converge on a star: people from different places meeting */}
+      <LogoMark size={46} />
       <Wordmark className="text-xl" />
     </span>
   );
