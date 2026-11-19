@@ -1,8 +1,8 @@
 "use client";
 
+import { HeroEntries, Highlights } from "@/components/home/Landing";
 import { HowLink } from "@/components/info/HowLink";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeftRight, Search, SlidersHorizontal } from "lucide-react";
 import type { SearchResponse, ScoredItinerary } from "@/lib/domain/types";
@@ -175,14 +175,10 @@ export function SearchPage() {
         <p className="mb-3 text-sm font-semibold tracking-wide text-accent-text">{t.brand.slogan}</p>
         <h1 className="max-w-2xl text-3xl font-extrabold tracking-tight sm:text-4xl">{t.search.title}</h1>
         <p className="mt-3 max-w-xl text-ink-2">{t.search.subtitle}</p>
-        <HowLink step="weekend" className="mt-2" />
-        <p className="mt-2 max-w-xl text-sm text-ink-3">{t.brand.line}</p>
-        <Link href="/meetup" className="mt-5 inline-flex h-11 items-center rounded-xl bg-accent px-5 text-[15px] font-semibold text-accent-ink shadow-[0_6px_16px_-8px_var(--accent)] transition hover:bg-accent-hover">
-          {t.brand.cta}
-        </Link>
+        <HeroEntries />
       </section>
 
-      <Card className="-mt-2 p-4 sm:p-6">
+      <Card id="search" className="-mt-2 p-4 sm:p-6">
         <form
           className="flex flex-col gap-5"
           onSubmit={(e) => {
@@ -324,6 +320,8 @@ export function SearchPage() {
           </>
         )}
       </section>
+
+      {!res && !loading && <Highlights />}
 
       {trackIt && (
         <WatchDialog
