@@ -96,6 +96,7 @@ export const en: Dict = {
     after: "not before",
     before: "not after",
     maxStops: "Stops",
+    directOnly: "Direct flights only",
     any: "Any",
     maxOne: "Up to one",
     maxPrice: "Max price",

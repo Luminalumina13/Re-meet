@@ -94,6 +94,7 @@ export const uk = {
     after: "не раніше",
     before: "не пізніше",
     maxStops: "Пересадки",
+    directOnly: "Лише прямі рейси",
     any: "Будь-які",
     maxOne: "До однієї",
     maxPrice: "Макс. ціна",
