@@ -179,11 +179,11 @@ export function CheapestWeekends({
                 onClick={() => onPick(r)}
                 title={t.cheap.pick}
                 className={cx(
-                  "flex w-full flex-wrap items-center justify-between gap-x-4 gap-y-1 rounded-xl border px-4 py-3 text-left transition hover:border-accent hover:bg-surface-2",
+                  "flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left transition hover:border-accent hover:bg-surface-2",
                   i === 0 && !pending ? "border-good/60 bg-good/10" : "border-border",
                 )}
               >
-                <span className="flex flex-col">
+                <span className="flex min-w-0 flex-col">
                   <span className="font-semibold">
                     {dm(r.departDate)} <span className="text-ink-3">→</span> {dm(r.returnDate)}
                   </span>
@@ -192,9 +192,10 @@ export function CheapestWeekends({
                     {i === 0 && !pending ? ` · ${t.cheap.best}` : ""}
                   </span>
                 </span>
-                <span className="flex items-baseline gap-2">
+                {/* Price stays in its own right-hand column; on phones the difference sits above it. */}
+                <span className="flex shrink-0 flex-col items-end sm:flex-row sm:items-baseline sm:gap-2">
                   {i > 0 && <span className="text-xs text-ink-3">+{money(r.price - best)}</span>}
-                  <span className="text-lg font-extrabold tabular-nums">{money(r.price)}</span>
+                  <span className="whitespace-nowrap text-lg font-extrabold tabular-nums">{money(r.price)}</span>
                 </span>
               </button>
             </li>
