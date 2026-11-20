@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { apiError, badRequest, serverError } from "@/lib/api/respond";
+import { verifyTurnstile } from "@/lib/turnstile";
 import { allowFeedback, feedbackConfig, feedbackSchema, sendFeedback } from "@/lib/feedback";
 
 export const runtime = "nodejs";
 
-/** Question form on /faq: POST { message, contact?, lang?, website (honeypot) }. */
+/** Question form on /faq: POST { message, contact?, lang?, website (honeypot), turnstile }. */
 export async function POST(req: Request) {
   let body: unknown;
   try {
@@ -22,6 +23,7 @@ export async function POST(req: Request) {
   // Caddy puts the real address in X-Forwarded-For.
   const client = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   if (!allowFeedback(client)) return apiError("rate_limited", 429);
+  if (!(await verifyTurnstile(parsed.data.turnstile, client))) return apiError("bot_check_failed", 403);
   try {
     return (await sendFeedback(parsed.data, cfg)) ? NextResponse.json({ ok: true }, { status: 201 }) : apiError("unavailable", 502);
   } catch (e) {

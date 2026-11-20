@@ -49,12 +49,14 @@ The Share button creates an address that contains your search parameters and, in
 
 If you write to us through the form on the “Questions and answers” page, we receive the text of your message and, if you gave them, your contact details (an email or a Telegram username). The message arrives in the Service owner’s Telegram chat and is not stored on our server. Please don’t include unnecessary personal data in it.
 
+To filter out automated (spam) submissions, the form uses the Cloudflare Turnstile check. It runs in your browser, and Cloudflare receives your IP address, browser data and how you interact with the page in order to tell a person from a bot. The script is loaded only on the page with the form and is not used for advertising or profiling.
+
 ## 4. Why we process data and on what basis
 
 - **To show search results** and run the features of the Service: this is necessary to provide the Service you request (performance of a contract under the [Terms](/terms)).
 - **To run trackers and send notifications:** necessary to fulfil your request. For Telegram, your consent also applies, which you give by opening the connect link and pressing Start in the bot. You can withdraw it at any time.
 - **To answer your question** sent through the form: our legitimate interest in communicating with users, and your consent where you gave a contact.
-- **To protect the Service** from abuse and failures: our legitimate interest in security and stability.
+- **To protect the Service** from abuse, spam and failures (including the Cloudflare Turnstile check on the question form): our legitimate interest in security and stability.
 - **To measure visits and show ads** (Google Analytics via Google Tag Manager, Google AdSense): only with your consent, which you can withdraw.
 - **To comply with legal obligations.**
 
@@ -62,6 +64,7 @@ If you write to us through the form on the “Questions and answers” page, we 
 
 - **Flight data providers.** To find offers we send the route, dates, number of travellers and cabin to services such as Kiwi.com, lastminute.com and Ryanair, and, where configured, Duffel and Amadeus. Names and contact details are not sent to them. These companies then act under their own policies.
 - **Telegram**, if you connected the bot (to deliver messages) or sent a question through the form (the message reaches us in Telegram).
+- **Cloudflare, Inc.** (the Turnstile check on the question form): receives your IP address and technical browser data to determine that a person is filling in the form, and processes them under its own policy (https://www.cloudflare.com/privacypolicy/).
 - **Infrastructure providers** (hosting, network) that process data on our behalf.
 - **Public authorities** where there is a lawful request.
 - **Airline and aggregator websites.** When you follow a link to such a site you leave the Service. What happens to your data there is governed by their policies.
@@ -87,7 +90,7 @@ After these periods we delete the data or anonymise it, unless the law requires 
 
 ## 8. Cookies and browser storage
 
-Without your consent we do not set analytics or advertising cookies. To work, the Service stores in your browser (localStorage and sessionStorage) your chosen language and theme, your consent answer, and the filled form and search results within the open tab so they do not disappear when you return from a carrier site. For price trackers, the `remeeet_owner` cookie (httpOnly, up to two years) holds a secret token proving the trackers are yours. This data is necessary for the Service and works only for its operation.
+Without your consent we do not set analytics or advertising cookies. To work, the Service stores in your browser (localStorage and sessionStorage) your chosen language and theme, your consent answer, and the filled form and search results within the open tab so they do not disappear when you return from a carrier site. For price trackers, the `remeeet_owner` cookie (httpOnly, up to two years) holds a secret token proving the trackers are yours. This data is necessary for the Service and works only for its operation. On the page with the question form, the Cloudflare Turnstile check may also store technical data in your browser that it needs for bot protection; it is not used for advertising.
 
 If you press “Accept”, Google Tag Manager, Google Analytics and Google AdSense may set their own cookies and identifiers (for example `_ga`) for statistics and ad serving. You can withdraw consent any time via “Cookie settings” in the footer and delete cookies in your browser settings. Declining does not limit the Service’s features.
 
