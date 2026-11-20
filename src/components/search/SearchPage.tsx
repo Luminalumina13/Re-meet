@@ -316,8 +316,8 @@ export function SearchPage() {
           />
         )}
         {origin && destination && mode !== "cheap" && <FlexDates params={flexParams} onPick={pickDates} />}
-        {error && <div className="rounded-xl border border-critical/40 bg-critical/10 px-4 py-3 text-sm text-critical">{error}</div>}
-        {loading && (
+        {mode !== "cheap" && error && <div className="rounded-xl border border-critical/40 bg-critical/10 px-4 py-3 text-sm text-critical">{error}</div>}
+        {mode !== "cheap" && loading && (
           <div className="flex flex-col gap-3">
             <p className="text-sm text-ink-3">{t.common.polling}</p>
             {[0, 1, 2].map((i) => (
@@ -325,7 +325,7 @@ export function SearchPage() {
             ))}
           </div>
         )}
-        {res && !loading && (
+        {mode !== "cheap" && res && !loading && (
           <>
             <HowLink step="results" label="results" className="-mb-1" />
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
