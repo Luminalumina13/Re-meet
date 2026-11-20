@@ -8,6 +8,8 @@ export const feedbackSchema = z.object({
   lang: z.enum(["uk", "en"]).optional(),
   /** Honeypot: a real visitor never sees or fills this field. */
   website: z.string().max(200).optional(),
+  /** Cloudflare Turnstile token. */
+  turnstile: z.string().max(2048).optional(),
 });
 export type FeedbackInput = z.infer<typeof feedbackSchema>;
 

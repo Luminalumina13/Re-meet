@@ -3,7 +3,7 @@ import type { ZodError } from "zod";
 import { reportError } from "@/lib/errorReport";
 
 /** Stable machine-readable codes: the front end maps them to localized text, never shows `error` verbatim. */
-export type ErrorCode = "invalid_request" | "bad_json" | "not_found" | "unauthorized" | "unavailable" | "rate_limited" | "internal";
+export type ErrorCode = "invalid_request" | "bad_json" | "not_found" | "unauthorized" | "unavailable" | "rate_limited" | "bot_check_failed" | "internal";
 
 export function apiError(code: ErrorCode, status: number, extra: Record<string, unknown> = {}) {
   return NextResponse.json({ error: code, code, ...extra }, { status });

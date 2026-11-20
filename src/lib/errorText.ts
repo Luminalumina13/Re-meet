@@ -28,6 +28,8 @@ export function errorText(e: unknown, t: Dict): string {
       return t.errors.unavailable;
     case "rate_limited":
       return t.errors.rateLimited;
+    case "bot_check_failed":
+      return t.errors.botCheck;
     case "internal":
       return t.errors.internal;
     case "invalid_request": {

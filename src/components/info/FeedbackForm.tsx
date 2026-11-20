@@ -6,6 +6,7 @@ import { howto } from "@/content/howto";
 import { errorText } from "@/lib/errorText";
 import { postJson } from "@/lib/client";
 import { useI18n } from "@/lib/i18n";
+import { TURNSTILE_SITE_KEY, TurnstileWidget } from "@/components/TurnstileWidget";
 import { Button } from "@/components/ui/primitives";
 
 const field = "w-full rounded-xl border border-border-strong bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-3 focus-visible:outline-2 focus-visible:outline-accent";
@@ -17,6 +18,8 @@ export function FeedbackForm() {
   const [message, setMessage] = useState("");
   const [contact, setContact] = useState("");
   const [website, setWebsite] = useState(""); // honeypot
+  const [token, setToken] = useState<string | null>(null);
+  const [widgetKey, setWidgetKey] = useState(0);
   const [state, setState] = useState<"idle" | "sending" | "done">("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -25,13 +28,15 @@ export function FeedbackForm() {
     setState("sending");
     setError(null);
     try {
-      await postJson("/api/feedback", { message, contact: contact || undefined, lang, website });
+      await postJson("/api/feedback", { message, contact: contact || undefined, lang, website, turnstile: token ?? undefined });
       setState("done");
       setMessage("");
       setContact("");
     } catch (err) {
       setError(errorText(err, t));
       setState("idle");
+      setToken(null);
+      setWidgetKey((k) => k + 1); // a token works once: ask for a fresh one
     }
   }
 
@@ -66,6 +71,7 @@ export function FeedbackForm() {
               <input tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
             </label>
           </div>
+          <TurnstileWidget key={widgetKey} onToken={setToken} />
           <p className="text-xs text-ink-3">
             {f.consent}{" "}
             <Link href="/privacy" className="font-semibold underline hover:text-accent-text">
@@ -74,7 +80,7 @@ export function FeedbackForm() {
           </p>
           {error && <p role="alert" className="rounded-xl border border-critical/40 bg-critical/10 px-3 py-2 text-sm text-critical">{error}</p>}
           <div>
-            <Button type="submit" variant="primary" loading={state === "sending"}>
+            <Button type="submit" variant="primary" loading={state === "sending"} disabled={Boolean(TURNSTILE_SITE_KEY) && !token}>
               {state === "sending" ? f.sending : f.send}
             </Button>
           </div>
