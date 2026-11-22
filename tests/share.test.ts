@@ -82,3 +82,19 @@ describe("meetup links", () => {
     expect(parseMeetupQuery(q("f=Ann~WAW,Bo~BER&to=bcn,zzzz")).destinations).toEqual(["BCN"]);
   });
 });
+
+describe("complex route and nearby links", () => {
+  it("round-trips a multi-leg trip", () => {
+    const legs = [{ from: "FCO", to: "WAW", date: "2026-12-04" }, { from: "WAW", to: "KRK", date: "2026-12-06" }];
+    const parsed = parseSearchQuery(q(buildSearchQuery({ mode: "multi", origin: "WAW", destination: "NAP", departDate: "2026-12-01", legs })));
+    expect(parsed).toMatchObject({ mode: "multi", origin: "WAW", destination: "NAP", departDate: "2026-12-01", legs });
+  });
+  it("drops a multi-leg link with a broken leg", () => {
+    expect(parseSearchQuery(q("from=WAW&to=NAP&dep=2026-12-01&leg=FCO.WAW.nope")).legs).toBeUndefined();
+  });
+  it("round-trips nearby airport spreads and ignores bad ones", () => {
+    const p = parseSearchQuery(q(buildSearchQuery({ mode: "weekend", origin: "WAW", destination: "BCN", saturday: "2026-11-28", oSpread: 200, dSpread: "country" })));
+    expect(p).toMatchObject({ oSpread: 200, dSpread: "country" });
+    expect(parseSearchQuery(q("from=WAW&to=BCN&os=999&ds=x"))).toMatchObject({ oSpread: undefined, dSpread: undefined });
+  });
+});

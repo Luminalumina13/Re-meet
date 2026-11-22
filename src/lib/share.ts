@@ -49,10 +49,25 @@ export interface SharedSearch extends Party {
   departDate?: string;
   returnDate?: string;
   cabin?: SharedCabin;
+  /** Complex route: the legs after the first (the first is origin, destination and departDate). */
+  legs?: SharedLeg[];
+  /** Also search nearby airports: radius in km or "country". */
+  oSpread?: SharedSpread;
+  dSpread?: SharedSpread;
 }
 
+export interface SharedLeg {
+  from: string;
+  to: string;
+  date: string;
+}
+export type SharedSpread = 100 | 200 | 300 | "country";
+const SPREADS: SharedSpread[] = [100, 200, 300, "country"];
+const spread = (v: string | null): SharedSpread | undefined => SPREADS.find((s) => String(s) === v);
+const MAX_LEGS = 4;
+
 export interface SearchShareState extends SharedSearch {
-  mode: "weekend" | "custom";
+  mode: "weekend" | "custom" | "multi";
 }
 
 export function buildSearchQuery(s: SearchShareState): string {
@@ -62,23 +77,44 @@ export function buildSearchQuery(s: SearchShareState): string {
   if (s.mode === "weekend") {
     if (s.saturday) q.set("sat", s.saturday);
     if (s.shape && s.shape !== "sat-sun") q.set("shape", s.shape);
+  } else if (s.mode === "multi") {
+    if (s.departDate) q.set("dep", s.departDate);
+    for (const l of (s.legs ?? []).slice(0, MAX_LEGS)) q.append("leg", `${l.from}.${l.to}.${l.date}`);
   } else {
     if (s.departDate) q.set("dep", s.departDate);
     if (s.returnDate) q.set("ret", s.returnDate);
+  }
+  if (s.mode !== "multi") {
+    if (s.oSpread) q.set("os", String(s.oSpread));
+    if (s.dSpread) q.set("ds", String(s.dSpread));
   }
   partyParams(q, s);
   if (s.cabin && s.cabin !== "economy") q.set("cabin", s.cabin);
   return q.toString();
 }
 
-export function parseSearchQuery(q: URLSearchParams): SharedSearch & { mode?: "weekend" | "custom" } {
+export function parseSearchQuery(q: URLSearchParams): SharedSearch & { mode?: "weekend" | "custom" | "multi" } {
   const shape = q.get("shape") as WeekendShape | null;
   const cabin = q.get("cabin") as SharedCabin | null;
   const dep = date(q.get("dep"));
+  const legs = q
+    .getAll("leg")
+    .slice(0, MAX_LEGS)
+    .map((v): SharedLeg | null => {
+      const [from, to, d] = v.split(".");
+      const f = iata(from);
+      const t = iata(to);
+      const dt = date(d);
+      return f && t && dt && f !== t ? { from: f, to: t, date: dt } : null;
+    });
+  const validLegs = legs.length > 0 && dep && legs.every((l): l is SharedLeg => l !== null) ? (legs as SharedLeg[]) : undefined;
   return {
     origin: iata(q.get("from")),
     destination: iata(q.get("to")),
-    mode: dep ? "custom" : q.get("sat") ? "weekend" : undefined,
+    mode: validLegs ? "multi" : dep ? "custom" : q.get("sat") ? "weekend" : undefined,
+    legs: validLegs,
+    oSpread: spread(q.get("os")),
+    dSpread: spread(q.get("ds")),
     saturday: date(q.get("sat")),
     shape: shape && SHAPES.includes(shape) ? shape : undefined,
     departDate: dep,

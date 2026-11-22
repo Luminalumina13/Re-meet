@@ -3,6 +3,7 @@ import { legMatchesWindow } from "@/lib/domain/filters";
 import { airportTz } from "@/lib/data/airports";
 import { utcToLocal } from "@/lib/domain/time";
 import { fetchRaw, type AggregateOptions } from "@/lib/providers/aggregator";
+import { findLayoverMeets, findSharedFlights } from "./layover";
 import type { Friend, FriendPlan, MeetupPlan, MeetupRequest, MeetupResponse } from "./types";
 
 /**
@@ -237,6 +238,8 @@ function* planSteps(req: MeetupRequest, destination: string, sets: CandidateSets
         meetStartLocal: utcToLocal(realStart, tz),
         meetEndLocal: utcToLocal(realEnd, tz),
         friends,
+        layoverMeets: findLayoverMeets(friends),
+        sharedFlights: findSharedFlights(friends),
         score: Math.round((realTogether / 60) * req.valuePerHour - total),
       });
     }
