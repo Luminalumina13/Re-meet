@@ -64,6 +64,32 @@ export function PlanCard({
           </div>
         </div>
 
+        {plan.sharedFlights && plan.sharedFlights.length > 0 && (
+          <ul className="flex flex-col gap-1 rounded-xl border border-good/40 bg-good/10 px-3 py-2 text-sm">
+            {plan.sharedFlights.slice(0, 2).map((m, i) => {
+              const name = (id: string) => plan.friends.find((f) => f.friend.id === id)?.friend.name ?? "";
+              return (
+                <li key={i}>
+                  <span className="font-semibold">{t.meetup.sharedTitle}</span> {name(m.friendIds[0])} + {name(m.friendIds[1])}: {m.flight}, {getAirport(m.from)?.city ?? m.from} → {getAirport(m.to)?.city ?? m.to}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+        {plan.layoverMeets && plan.layoverMeets.length > 0 && (
+          <ul className="flex flex-col gap-1 rounded-xl border border-good/40 bg-good/10 px-3 py-2 text-sm">
+            {plan.layoverMeets.slice(0, 2).map((m, i) => {
+              const name = (id: string) => plan.friends.find((f) => f.friend.id === id)?.friend.name ?? "";
+              return (
+                <li key={i}>
+                  <span className="font-semibold">{t.meetup.layoverTitle}</span> {name(m.friendIds[0])} + {name(m.friendIds[1])}: {getAirport(m.airport)?.city ?? m.airport} ({m.airport}),{" "}
+                  {fmtDurationLocalized(m.minutes, t.meetup.hours, t.meetup.minutes)} {m.direction === "outbound" ? t.meetup.layoverOut : t.meetup.layoverBack}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+
         <Timeline plan={plan} departDate={departDate} returnDate={returnDate} colorIndex={colorIndex} />
 
         <div className="flex items-center justify-between gap-2">

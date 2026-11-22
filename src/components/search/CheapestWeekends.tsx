@@ -54,6 +54,8 @@ export function CheapPicker({ shapes, onShapes, weeks, onWeeks }: { shapes: Week
 export interface CheapParams {
   origin: string;
   destination: string;
+  /** Airport pairs to price. Defaults to origin and destination alone. */
+  pairs?: [string, string][];
   adults: number;
   children: number;
   infants: number;
@@ -62,6 +64,14 @@ export interface CheapParams {
 }
 
 type Entry = FlexDayResult | "error";
+
+/** One day priced from several airport pairs: the union of their fares, cheapest first. */
+function mergeDays(list: FlexDayResult[]): FlexDayResult {
+  if (list.length === 1) return list[0];
+  const options = list.flatMap((r) => r.options).sort((a, b) => a.price - b.price);
+  const prices = list.map((r) => r.price).filter((x): x is number => x !== null);
+  return { ...list[0], options, price: prices.length ? Math.min(...prices) : null, count: list.reduce((n, r) => n + r.count, 0), partial: list.some((r) => r.partial) };
+}
 
 /**
  * Cheapest weekends: prices every day the chosen weekend formats need (one request per day and
@@ -112,13 +122,15 @@ export function CheapestWeekends({
     const worker = async () => {
       while (next < jobs.length && !ctl.signal.aborted) {
         const { d, dir } = jobs[next++];
-        const [origin, destination] = dir === "outbound" ? [p.origin, p.destination] : [p.destination, p.origin];
-        let entry: Entry;
-        try {
-          entry = await postJson<FlexDayResult>("/api/flex", { ...base, origin, destination, date: d, direction: dir, filters: ff(d) });
-        } catch {
-          entry = "error";
-        }
+        const pairs = p.pairs?.length ? p.pairs : [[p.origin, p.destination] as [string, string]];
+        const got = await Promise.all(
+          pairs.map(([o, de]) => {
+            const [origin, destination] = dir === "outbound" ? [o, de] : [de, o];
+            return postJson<FlexDayResult>("/api/flex", { ...base, origin, destination, date: d, direction: dir, filters: ff(d) }).catch(() => null);
+          }),
+        );
+        const okList = got.filter((r): r is FlexDayResult => r !== null);
+        const entry: Entry = okList.length === 0 ? "error" : { ...mergeDays(okList), partial: okList.length < got.length || okList.some((r) => r.partial) };
         if (ctl.signal.aborted) return;
         setEntries((e) => ({ ...e, [`${dir}:${d}`]: entry }));
         setDone((n) => n + 1);

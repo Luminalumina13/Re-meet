@@ -33,6 +33,25 @@ export interface FriendPlan {
   price: number;
 }
 
+/** Two friends who sit on the same flight for part of their way (one boards in the other's city, or both at a hub). */
+export interface SharedFlight {
+  flight: string;
+  from: IATA;
+  to: IATA;
+  friendIds: [string, string];
+  direction: "outbound" | "inbound";
+}
+
+/** Two friends whose chosen flights wait at the same connecting airport at the same time. */
+export interface LayoverMeet {
+  airport: IATA;
+  minutes: number;
+  startUtc: string;
+  endUtc: string;
+  friendIds: [string, string];
+  direction: "outbound" | "inbound";
+}
+
 export interface MeetupPlan {
   id: string;
   destination: IATA;
@@ -45,6 +64,10 @@ export interface MeetupPlan {
   meetStartLocal: string;
   meetEndLocal: string;
   friends: FriendPlan[];
+  /** Chance to meet on the way, at a shared connection (not counted in the time together). */
+  layoverMeets?: LayoverMeet[];
+  /** Flights the friends share, so they travel on together. */
+  sharedFlights?: SharedFlight[];
   /** valuePerHour * hours - price; higher is better */
   score: number;
 }

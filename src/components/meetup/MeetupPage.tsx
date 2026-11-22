@@ -3,7 +3,7 @@
 import { HowLink } from "@/components/info/HowLink";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Plus, SlidersHorizontal, Trash2, Users, X } from "lucide-react";
+import { MapPin, Plus, SlidersHorizontal, Trash2, Users, X } from "lucide-react";
 import type { Friend, MeetupResponse } from "@/lib/meetup/types";
 import type { MeetupRequestInput } from "@/lib/api/schemas";
 import { useSearchFilters } from "@/lib/useSearchFilters";
@@ -11,6 +11,7 @@ import { buildMeetupQuery, parseMeetupQuery } from "@/lib/share";
 import { ShareButton } from "@/components/ShareButton";
 import { nextSaturday, todayIso, weekendFromSaturday, type WeekendShape } from "@/lib/domain/dates";
 import { getAirport } from "@/lib/data/airports";
+import { suggestMeetingAirports } from "@/lib/data/nearby";
 import { useI18n } from "@/lib/i18n";
 import { postJson } from "@/lib/client";
 import { cx, fmtMoney } from "@/lib/format";
@@ -249,6 +250,21 @@ export function MeetupPage() {
                   <Plus className="h-4 w-4" /> {t.meetup.addDestination}
                 </Button>
               )}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="self-start"
+                disabled={friends.filter((f) => f.origins.some(Boolean)).length < 2}
+                onClick={() => {
+                  const found = suggestMeetingAirports(friends.map((f) => f.origins.filter(Boolean)), 4);
+                  if (found.length === 0) return;
+                  dropSamplesWithPrefix("dest:");
+                  setDestinations(found);
+                  setIncludeOrigins(true); // a friend's own city may be where they join up and fly on together
+                }}
+              >
+                <MapPin className="h-4 w-4" /> {t.meetup.suggestMiddle}
+              </Button>
               <Switch checked={includeOrigins} onChange={setIncludeOrigins} label={t.meetup.includeOrigins} />
             </div>
           </div>
