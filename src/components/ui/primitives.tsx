@@ -59,7 +59,7 @@ export function Card({ className, children, id }: { className?: string; children
 
 export function Field({ label, hint, children, className }: { label: ReactNode; hint?: ReactNode; children: ReactNode; className?: string }) {
   return (
-    <label className={cx("flex flex-col gap-1.5", className)}>
+    <label className={cx("flex min-w-0 flex-col gap-1.5", className)}>
       <span className="text-[12px] font-semibold uppercase tracking-wide text-ink-3">{label}</span>
       {children}
       {hint && <span className="text-xs text-ink-3">{hint}</span>}

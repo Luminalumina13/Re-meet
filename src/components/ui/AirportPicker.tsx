@@ -44,11 +44,13 @@ export function AirportPicker({
   // The imported airports arrive as a separate chunk after the page loaded: fill in the name of an airport that came from a
   // shared link. Suggestions typed before that only cover the main list and widen with the next keystroke.
   useEffect(() => {
+    // Only an airport that was missing from the main list at mount needs its name filled in later, and only while it is still the value.
+    const initial = value;
+    const missing = Boolean(initial) && !getAirport(initial);
     let alive = true;
     void loadExtraAirports().then(() => {
-      if (!alive) return;
-      const a = value ? getAirport(value) : undefined;
-      if (a) setText((t) => t || `${a.city} (${a.iata})`);
+      const a = missing ? getAirport(initial) : undefined;
+      if (alive && a) setText((t) => t || `${a.city} (${a.iata})`);
     });
     return () => {
       alive = false;

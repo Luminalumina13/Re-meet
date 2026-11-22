@@ -3,15 +3,15 @@
 import { HowLink } from "@/components/info/HowLink";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { MapPin, Plus, SlidersHorizontal, Trash2, Users, X } from "lucide-react";
-import type { Friend, MeetupResponse } from "@/lib/meetup/types";
+import { Plus, SlidersHorizontal, Trash2, Users, X } from "lucide-react";
+import type { Friend, MeetupResponse, ViaResponse } from "@/lib/meetup/types";
 import type { MeetupRequestInput } from "@/lib/api/schemas";
+import { MAX_MEETUP_DESTINATIONS } from "@/lib/meetup/limits";
 import { useSearchFilters } from "@/lib/useSearchFilters";
 import { buildMeetupQuery, parseMeetupQuery } from "@/lib/share";
 import { ShareButton } from "@/components/ShareButton";
 import { nextSaturday, todayIso, weekendFromSaturday, type WeekendShape } from "@/lib/domain/dates";
 import { getAirport } from "@/lib/data/airports";
-import { suggestMeetingAirports } from "@/lib/data/nearby";
 import { useI18n } from "@/lib/i18n";
 import { postJson } from "@/lib/client";
 import { cx, fmtMoney } from "@/lib/format";
@@ -23,6 +23,7 @@ import { TimeWindows, idealHint } from "@/components/search/TimeWindows";
 import { ProviderBar } from "@/components/search/ProviderBar";
 import { WatchDialog } from "@/components/watch/WatchDialog";
 import { PlanCard } from "./PlanCard";
+import { ViaCard } from "./ViaCard";
 import { Frontier } from "./Frontier";
 import { SERIES } from "./Timeline";
 import { errorText } from "@/lib/errorText";
@@ -59,6 +60,8 @@ export function MeetupPage() {
   const dropSamplesWithPrefix = (prefix: string) =>
     setSamples((s) => new Set([...s].filter((k) => !k.startsWith(prefix))));
   const [includeOrigins, setIncludeOrigins] = useState(seed.includeOrigins ?? false);
+  const [via, setVia] = useState(seed.via ?? false);
+  const [viaRes, setViaRes] = useState<ViaResponse | null>(null);
   const [saturday, setSaturday] = useState(() => (seed.saturday && seed.saturday >= todayIso() ? seed.saturday : nextSaturday(todayIso())));
   const [shape, setShape] = useState<WeekendShape>(seed.shape ?? "sat-sun");
   const [mode, setMode] = useState<"weekend" | "custom">(seed.mode ?? "weekend");
@@ -79,7 +82,8 @@ export function MeetupPage() {
   const allDest = useMemo(() => {
     const set = new Set(destinations.filter(Boolean));
     if (includeOrigins) for (const f of friends) for (const o of f.origins) if (o) set.add(o);
-    return [...set];
+    // The chosen places come first, so trimming only drops extra home airports.
+    return [...set].slice(0, MAX_MEETUP_DESTINATIONS);
   }, [destinations, includeOrigins, friends]);
 
   const request = useMemo<MeetupRequestInput>(
@@ -105,8 +109,15 @@ export function MeetupPage() {
     if (!valid) return;
     setLoading(true);
     setError(null);
+    setViaRes(null);
+    // The hub search runs alongside; it uses only the chosen places (meeting at a friend's home needs no hub), and its failure must not hide the main plans.
+    const viaDest = destinations.filter(Boolean);
+    const viaCall = via && viaDest.length
+      ? postJson<ViaResponse>("/api/meetup/via", { ...request, destinations: viaDest }).then(setViaRes, () => setViaRes(null))
+      : Promise.resolve();
     try {
       const r = await postJson<MeetupResponse>("/api/meetup", request);
+      await viaCall;
       setRes(r);
       setSelected(r.plans[0]?.id);
       trackEvent("search", { kind: "meetup" });
@@ -115,11 +126,11 @@ export function MeetupPage() {
     } finally {
       setLoading(false);
     }
-  }, [valid, request, t]);
+  }, [valid, request, t, via, destinations]);
 
   const shareQuery = useMemo(
-    () => buildMeetupQuery({ friends, destinations, mode, saturday, shape, departDate, returnDate, valuePerHour, budget, includeOrigins }),
-    [friends, destinations, mode, saturday, shape, departDate, returnDate, valuePerHour, budget, includeOrigins],
+    () => buildMeetupQuery({ friends, destinations, mode, saturday, shape, departDate, returnDate, valuePerHour, budget, includeOrigins, via }),
+    [friends, destinations, mode, saturday, shape, departDate, returnDate, valuePerHour, budget, includeOrigins, via],
   );
   const fromLink = Boolean(seed.friends);
   const autoRan = useRef(false);
@@ -250,22 +261,9 @@ export function MeetupPage() {
                   <Plus className="h-4 w-4" /> {t.meetup.addDestination}
                 </Button>
               )}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="self-start"
-                disabled={friends.filter((f) => f.origins.some(Boolean)).length < 2}
-                onClick={() => {
-                  const found = suggestMeetingAirports(friends.map((f) => f.origins.filter(Boolean)), 4);
-                  if (found.length === 0) return;
-                  dropSamplesWithPrefix("dest:");
-                  setDestinations(found);
-                  setIncludeOrigins(true); // a friend's own city may be where they join up and fly on together
-                }}
-              >
-                <MapPin className="h-4 w-4" /> {t.meetup.suggestMiddle}
-              </Button>
               <Switch checked={includeOrigins} onChange={setIncludeOrigins} label={t.meetup.includeOrigins} />
+              <Switch checked={via} onChange={setVia} label={t.meetup.via} />
+              {via && <p className="text-xs text-ink-3">{t.meetup.viaHint}</p>}
             </div>
           </div>
 
@@ -361,6 +359,26 @@ export function MeetupPage() {
         {res && !loading && (
           <>
             <ProviderBar providers={res.providers} count={res.plans.length} />
+            {via && viaRes && (
+              <div className="flex flex-col gap-3">
+                <div>
+                  <h2 className="text-lg font-extrabold tracking-tight">{t.meetup.viaTitle}</h2>
+                  <p className="text-sm text-ink-3">{t.meetup.viaSubtitle}</p>
+                </div>
+                {viaRes.plans.length === 0 ? (
+                  <Card className="p-5 text-sm text-ink-2">
+                    {t.meetup.viaNone}
+                    {viaRes.hubs.some((h) => h.hubs.length) && (
+                      <span className="block pt-1 text-xs text-ink-3">
+                        {t.meetup.viaHubs} {viaRes.hubs.flatMap((h) => h.hubs).map((c) => getAirport(c)?.city ?? c).filter((v, i, a) => a.indexOf(v) === i).join(", ")}
+                      </span>
+                    )}
+                  </Card>
+                ) : (
+                  viaRes.plans.slice(0, 4).map((p) => <ViaCard key={p.id} plan={p} colorIndex={colorIndex} />)
+                )}
+              </div>
+            )}
             {res.unreachable.length > 0 && (
               <div className="rounded-xl border border-warn/40 bg-warn/10 px-4 py-3 text-sm text-ink-2">
                 {t.meetup.unreachable}:{" "}

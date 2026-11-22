@@ -1,0 +1,23 @@
+import { NextResponse } from "next/server";
+import { meetupRequestSchema } from "@/lib/api/schemas";
+import { badRequest, serverError } from "@/lib/api/respond";
+import { meetVia } from "@/lib/meetup/via";
+
+export const runtime = "nodejs";
+
+/** "Meet on the way": the friends meet at a hub and fly on together. Same request as /api/meetup. */
+export async function POST(req: Request) {
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return badRequest("Body must be JSON");
+  }
+  const parsed = meetupRequestSchema.safeParse(body);
+  if (!parsed.success) return badRequest(parsed.error);
+  try {
+    return NextResponse.json(await meetVia(parsed.data, { signal: req.signal }));
+  } catch (e) {
+    return serverError(e);
+  }
+}
