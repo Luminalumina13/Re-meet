@@ -32,32 +32,3 @@ export function airportPairs(origin: IATA, destination: IATA, oSpread: Spread, d
   os.forEach((o, i) => ds.forEach((d, j) => o !== d && pairs.push([o, d, i + j])));
   return pairs.sort((x, y) => x[2] - y[2]).slice(0, cap).map(([o, d]) => [o, d]);
 }
-
-const MAX_MEET_KM = 3000;
-
-/**
- * Fair meeting airports for friends who fly from different places: the large airports where the friend with the
- * longest trip has the shortest one (straight-line), one per city. The friends' own cities may come up too. `groups` holds each friend's airports.
- */
-export function suggestMeetingAirports(groups: IATA[][], count = 4, all: Airport[] = AIRPORTS): IATA[] {
-  const people = groups.map((g) => g.map((i) => getAirport(i)).filter((a): a is Airport => Boolean(a))).filter((g) => g.length > 0);
-  if (people.length < 2) return [];
-  const scored = all
-    .filter((a) => a.size === undefined || a.size === "large")
-    .map((a) => {
-      const ds = people.map((g) => Math.min(...g.map((h) => distanceKm(h, a))));
-      return { a, worst: Math.max(...ds), sum: ds.reduce((s, x) => s + x, 0) };
-    })
-    .filter((x) => x.worst <= MAX_MEET_KM)
-    .sort((x, y) => x.worst - y.worst || x.sum - y.sum);
-  const cities = new Set<string>();
-  const out: IATA[] = [];
-  for (const { a } of scored) {
-    const key = `${a.country}:${a.city}`;
-    if (cities.has(key)) continue;
-    cities.add(key);
-    out.push(a.iata);
-    if (out.length >= count) break;
-  }
-  return out;
-}

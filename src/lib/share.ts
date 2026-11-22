@@ -186,6 +186,8 @@ export interface MeetupShareState {
   valuePerHour?: number;
   budget?: string;
   includeOrigins?: boolean;
+  /** Also look for a hub to meet at and fly on together. */
+  via?: boolean;
 }
 
 /** Friends travel as `Name~WAW.KRK` (airports joined by dots), comma separated and URL-encoded. */
@@ -196,6 +198,7 @@ export function buildMeetupQuery(s: MeetupShareState): string {
   const dest = s.destinations.filter(Boolean);
   if (dest.length) q.set("to", dest.join(","));
   if (s.includeOrigins) q.set("own", "1");
+  if (s.via) q.set("via", "1");
   if (s.mode === "weekend") {
     if (s.saturday) q.set("sat", s.saturday);
     if (s.shape && s.shape !== "sat-sun") q.set("shape", s.shape);
@@ -223,6 +226,7 @@ export function parseMeetupQuery(q: URLSearchParams): Partial<MeetupShareState> 
     friends: friends.length >= 2 ? friends : undefined,
     destinations: destinations.length ? destinations : undefined,
     includeOrigins: q.get("own") === "1" ? true : undefined,
+    via: q.get("via") === "1" ? true : undefined,
     mode: dep ? "custom" : q.get("sat") ? "weekend" : undefined,
     saturday: date(q.get("sat")),
     shape: shape && SHAPES.includes(shape) ? shape : undefined,

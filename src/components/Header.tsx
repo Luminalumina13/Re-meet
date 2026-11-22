@@ -56,18 +56,18 @@ export function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-bg/80 backdrop-blur">
+    <header className="relative z-40 sm:sticky sm:top-0 border-b border-border/70 bg-bg/80 backdrop-blur">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-2 sm:h-14 sm:flex-nowrap sm:py-0">
         <Link href="/" className="shrink-0">
           <Logo />
         </Link>
-        <nav className="order-last flex w-full items-center justify-center gap-1 rounded-xl bg-surface-2/70 p-1 sm:order-none sm:w-auto">
+        <nav className="order-last flex w-full min-w-0 items-center gap-1 overflow-x-auto rounded-xl bg-surface-2/70 p-1 [scrollbar-width:none] sm:order-none sm:w-auto">
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
               className={cx(
-                "whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[13px] font-semibold transition sm:px-3",
+                "flex-1 shrink-0 text-center whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[13px] font-semibold transition sm:px-3",
                 path === l.href ? "bg-surface text-ink shadow-sm" : "text-ink-3 hover:text-ink",
               )}
             >

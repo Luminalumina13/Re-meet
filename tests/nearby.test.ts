@@ -22,16 +22,3 @@ describe("nearby airports", () => {
     expect(p.every(([o, d]) => o !== d)).toBe(true);
   });
 });
-
-import { suggestMeetingAirports } from "@/lib/data/nearby";
-
-describe("suggestMeetingAirports", () => {
-  it("proposes large airports between friends, their own cities allowed", () => {
-    const r = suggestMeetingAirports([["WAW"], ["KTW"]], 4);
-    expect(r.length).toBe(4);
-    expect(r.some((c) => c === "WAW" || c === "KTW")).toBe(true);
-  });
-  it("needs at least two friends", () => {
-    expect(suggestMeetingAirports([["KBP"]])).toEqual([]);
-  });
-});

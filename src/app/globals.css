@@ -113,9 +113,12 @@
   --shadow-card: var(--shadow);
 }
 
-/* The sticky header must not cover the target of an in-page link (#anchor). */
+/* The sticky header (from 640px up; on phones it scrolls away) must not cover the target of an in-page link (#anchor). */
 html {
-  scroll-padding-top: 7.5rem; /* on phones the header wraps into two rows (about 97px) */
+  scroll-padding-top: 1rem;
+  /* In-app browsers (Telegram) may scale text up on their own; keep our sizes. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 @media (min-width: 640px) {
@@ -194,4 +197,17 @@ input[type="range"] {
   background:
     radial-gradient(55% 80% at 20% 0%, color-mix(in oklab, var(--accent) 20%, transparent), transparent 72%),
     radial-gradient(40% 70% at 88% 0%, color-mix(in oklab, var(--e2) 26%, transparent), transparent 72%);
+}
+
+/* iOS Safari (and in-app browsers on it) give date inputs a fixed intrinsic width that ignores the layout and spills
+   out of the card on phones; let them shrink like any other field and keep the date left-aligned. */
+input[type="date"] {
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 0;
+  max-width: 100%;
+  display: block;
+}
+input[type="date"]::-webkit-date-and-time-value {
+  text-align: left;
 }

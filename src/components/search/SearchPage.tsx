@@ -160,8 +160,9 @@ export function SearchPage() {
   // A search arriving via the URL (destination card) wins over whatever was stored.
   useSessionSnapshot("remeet:search", snapshot, (s) => {
     const today = todayIso();
-    if (s.origin) setOrigin(s.origin);
-    if (s.destination) setDestination(s.destination);
+    // An emptied field is restored empty too, or the example city would come back looking like a real choice.
+    if (typeof s.origin === "string") setOrigin(s.origin);
+    if (typeof s.destination === "string") setDestination(s.destination);
     if (s.sampleFrom !== undefined) setSampleFrom(s.sampleFrom);
     if (s.sampleTo !== undefined) setSampleTo(s.sampleTo);
     if (s.mode && MODES.includes(s.mode)) setMode(s.mode);

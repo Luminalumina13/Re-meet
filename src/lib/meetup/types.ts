@@ -82,3 +82,42 @@ export interface MeetupResponse {
   unreachable: { destination: IATA; friendId: string; direction: "outbound" | "inbound" }[];
   generatedAt: string;
 }
+
+/** One friend in a "meet on the way" plan. */
+export interface ViaFriend {
+  friend: Friend;
+  /** Home → hub; null for the friend who lives at the hub. */
+  toHub: Itinerary | null;
+  /** Hub → home (back together) or destination → home (back on their own); null when back together and living at the hub. */
+  home: Itinerary | null;
+  price: number;
+}
+
+/** Friends meet at a hub and fly on together to the destination. */
+export interface ViaPlan {
+  id: string;
+  destination: IATA;
+  hub: IATA;
+  /** From the last friend landing at the hub to the shared flight. */
+  hubWaitMinutes: number;
+  shared: Itinerary;
+  back: "together" | "separate";
+  sharedBack: Itinerary | null;
+  friends: ViaFriend[];
+  /** At the destination only. */
+  togetherMinutes: number;
+  totalPrice: number;
+  currency: string;
+  meetStartUtc: string;
+  meetEndUtc: string;
+  meetStartLocal: string;
+  meetEndLocal: string;
+  score: number;
+}
+
+export interface ViaResponse {
+  plans: ViaPlan[];
+  hubs: { destination: IATA; hubs: IATA[] }[];
+  providers: ProviderStatus[];
+  generatedAt: string;
+}

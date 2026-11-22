@@ -98,3 +98,10 @@ describe("complex route and nearby links", () => {
     expect(parseSearchQuery(q("from=WAW&to=BCN&os=999&ds=x"))).toMatchObject({ oSpread: undefined, dSpread: undefined });
   });
 });
+
+describe("meetup via flag", () => {
+  it("survives the round trip", () => {
+    const q = buildMeetupQuery({ friends: [{ name: "A", origins: ["VLC"] }, { name: "B", origins: ["LCA"] }], destinations: ["BRI"], mode: "weekend", via: true });
+    expect(parseMeetupQuery(new URLSearchParams(q)).via).toBe(true);
+  });
+});

@@ -1,3 +1,4 @@
+import { MAX_MEETUP_DESTINATIONS } from "@/lib/meetup/limits";
 import { isSafeWebhookSyntax } from "@/lib/watch/webhook";
 import { z } from "zod";
 
@@ -77,7 +78,7 @@ export const friendSchema = z.preprocess(
 export const meetupRequestSchema = z
   .object({
     friends: z.array(friendSchema).min(2).max(8),
-    destinations: z.array(iata).min(1).max(6),
+    destinations: z.array(iata).min(1).max(MAX_MEETUP_DESTINATIONS),
     departDate: isoDate,
     returnDate: isoDate,
     cabin: cabinSchema.default("economy"),
