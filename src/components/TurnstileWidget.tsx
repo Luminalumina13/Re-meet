@@ -4,14 +4,15 @@ import { useEffect, useRef } from "react";
 
 export const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
 
-interface Api {
+export interface TurnstileApi {
   render: (el: HTMLElement, o: Record<string, unknown>) => string;
   remove: (id: string) => void;
 }
+type Api = TurnstileApi;
 const SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
 let loading: Promise<Api> | null = null;
 
-function load(): Promise<Api> {
+export function loadTurnstile(): Promise<Api> {
   const w = window as unknown as { turnstile?: Api };
   if (w.turnstile) return Promise.resolve(w.turnstile);
   loading ??= new Promise<Api>((resolve, reject) => {
@@ -39,7 +40,7 @@ export function TurnstileWidget({ onToken, theme }: { onToken: (t: string | null
     if (!TURNSTILE_SITE_KEY || !box.current) return;
     let id: string | undefined;
     let gone = false;
-    load()
+    loadTurnstile()
       .then((api) => {
         if (gone || !box.current) return;
         id = api.render(box.current, {

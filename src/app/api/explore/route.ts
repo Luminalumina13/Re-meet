@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { exploreRequestSchema } from "@/lib/api/schemas";
 import { badRequest, serverError } from "@/lib/api/respond";
 import { explore } from "@/lib/explore/engine";
+import { COST, guardSearch } from "@/lib/api/guard";
 
 export const runtime = "nodejs";
 
@@ -14,6 +15,8 @@ export async function POST(req: Request) {
   }
   const parsed = exploreRequestSchema.safeParse(body);
   if (!parsed.success) return badRequest(parsed.error);
+  const blocked = guardSearch(req, COST.explore);
+  if (blocked) return blocked;
   try {
     return NextResponse.json(await explore(parsed.data, { signal: req.signal }));
   } catch (e) {
