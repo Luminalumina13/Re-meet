@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { meetupRequestSchema } from "@/lib/api/schemas";
 import { badRequest, serverError } from "@/lib/api/respond";
 import { meetVia } from "@/lib/meetup/via";
+import { COST, guardSearch } from "@/lib/api/guard";
 
 export const runtime = "nodejs";
 
@@ -15,6 +16,8 @@ export async function POST(req: Request) {
   }
   const parsed = meetupRequestSchema.safeParse(body);
   if (!parsed.success) return badRequest(parsed.error);
+  const blocked = guardSearch(req, COST.via * parsed.data.destinations.length);
+  if (blocked) return blocked;
   try {
     return NextResponse.json(await meetVia(parsed.data, { signal: req.signal }));
   } catch (e) {

@@ -1,3 +1,4 @@
+import { ensureHuman } from "@/lib/humanCheck";
 import type { ErrorCode } from "@/lib/api/respond";
 
 export type ClientErrorCode = ErrorCode | "network" | "timeout" | "http";
@@ -13,7 +14,7 @@ export class ApiError extends Error {
   }
 }
 
-export async function api<T>(url: string, init?: RequestInit): Promise<T> {
+export async function api<T>(url: string, init?: RequestInit, retried = false): Promise<T> {
   let res: Response;
   try {
     res = await fetch(url, { ...init, headers: { "content-type": "application/json", ...(init?.headers ?? {}) } });
@@ -25,6 +26,15 @@ export async function api<T>(url: string, init?: RequestInit): Promise<T> {
   const body = await res.json().catch(() => ({}));
   if (!res.ok) {
     const code: ClientErrorCode = typeof body?.code === "string" ? body.code : res.status === 504 || res.status === 408 ? "timeout" : "http";
+    // The search endpoints want a fresh "not a robot" check: pass it once and repeat the request.
+    if (code === "human_check" && !retried) {
+      try {
+        await ensureHuman();
+      } catch {
+        throw new ApiError("bot_check_failed", 403, undefined, "bot_check_failed");
+      }
+      return api<T>(url, init, true);
+    }
     throw new ApiError(body?.error ?? `HTTP ${res.status}`, res.status, body?.issues, code);
   }
   return body as T;

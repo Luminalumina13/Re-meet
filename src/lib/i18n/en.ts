@@ -102,6 +102,7 @@ export const en: Dict = {
     unauthorized: "You don't have access to this action.",
     unavailable: "The service is temporarily unavailable. Try again later.",
     rateLimited: "Too many messages. Please try again in a few minutes.",
+    searchLimit: "Too many searches in a short time. Please try again in a few minutes.",
     botCheck: "Could not confirm you are not a bot. Reload the page and try again.",
     internal: "Something went wrong on our side. Please try again.",
     sourceDown: "source unavailable",

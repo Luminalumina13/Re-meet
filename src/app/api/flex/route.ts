@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { flexDaySchema } from "@/lib/api/schemas";
 import { badRequest, serverError } from "@/lib/api/respond";
 import { flexDay } from "@/lib/flex/day";
+import { COST, guardSearch } from "@/lib/api/guard";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -17,6 +18,8 @@ export async function POST(req: Request) {
   const parsed = flexDaySchema.safeParse(body);
   if (!parsed.success) return badRequest(parsed.error);
   if (parsed.data.origin === parsed.data.destination) return badRequest("Origin and destination must differ");
+  const blocked = guardSearch(req, COST.flex);
+  if (blocked) return blocked;
   try {
     return NextResponse.json(await flexDay(parsed.data, { signal: req.signal }));
   } catch (e) {
