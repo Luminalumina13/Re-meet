@@ -15,7 +15,7 @@ export async function POST(req: Request) {
   }
   const parsed = exploreRequestSchema.safeParse(body);
   if (!parsed.success) return badRequest(parsed.error);
-  const blocked = guardSearch(req, COST.explore);
+  const blocked = guardSearch(req, COST.explore * (1 + (parsed.data.origins?.filter((o) => o !== parsed.data.origin).length ?? 0)));
   if (blocked) return blocked;
   try {
     return NextResponse.json(await explore(parsed.data, { signal: req.signal }));

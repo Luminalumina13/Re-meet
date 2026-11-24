@@ -1,8 +1,11 @@
 import type { Cabin, IATA, ProviderStatus, ScoredItinerary, SearchFilters } from "@/lib/domain/types";
+import type { DateRange } from "@/lib/domain/dateRange";
 
 /** "Anywhere" search (a weekend or any round-trip dates): where can I fly from `origin` within `maxFlightHours` each way? */
-export interface ExploreRequest {
+export interface ExploreRequest extends Omit<DateRange, "departDate" | "returnDate"> {
   origin: IATA;
+  /** More departure airports; results from all of them are pooled per destination city. */
+  origins?: IATA[];
   departDate: string;
   returnDate: string;
   adults: number;

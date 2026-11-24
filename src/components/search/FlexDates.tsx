@@ -4,16 +4,14 @@ import { HowLink } from "@/components/info/HowLink";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CalendarRange } from "lucide-react";
 import type { SearchFilters } from "@/lib/domain/types";
-import type { FlexDayResult } from "@/lib/flex/day";
+import { loadDays, type DayEntry } from "@/lib/flex/loadDays";
 import { flexDates, flexGrid, priceRank } from "@/lib/flex/matrix";
 import { todayIso } from "@/lib/domain/dates";
 import { useI18n } from "@/lib/i18n";
-import { postJson } from "@/lib/client";
 import { fmtMoney, cx } from "@/lib/format";
 import { Button, Card } from "@/components/ui/primitives";
 
 const DAYS = 3;
-const CONCURRENCY = 4;
 
 export interface FlexParams {
   origin: string;
@@ -28,7 +26,7 @@ export interface FlexParams {
   filters: SearchFilters;
 }
 
-type Entry = FlexDayResult | "error";
+type Entry = DayEntry;
 
 /**
  * Flexible dates: cheapest fares for ±3 days around the chosen dates. One request per day and
@@ -53,23 +51,8 @@ export function FlexDates({ params, onPick }: { params: FlexParams; onPick: (dep
     abort.current = ctl;
     setStarted(key);
     setEntries({});
-    const jobs = [...departDays.map((d) => ({ d, dir: "outbound" as const })), ...returnDays.map((d) => ({ d, dir: "inbound" as const }))];
-    const base = { adults: params.adults, children: params.children, infants: params.infants, cabin: params.cabin, currency: params.currency, filters: params.filters };
-    let next = 0;
-    const worker = async () => {
-      while (next < jobs.length && !ctl.signal.aborted) {
-        const { d, dir } = jobs[next++];
-        const [origin, destination] = dir === "outbound" ? [params.origin, params.destination] : [params.destination, params.origin];
-        let entry: Entry;
-        try {
-          entry = await postJson<FlexDayResult>("/api/flex", { ...base, origin, destination, date: d, direction: dir });
-        } catch {
-          entry = "error";
-        }
-        if (!ctl.signal.aborted) setEntries((e) => ({ ...e, [`${dir}:${d}`]: entry }));
-      }
-    };
-    await Promise.all(Array.from({ length: CONCURRENCY }, worker));
+    const jobs = [...departDays.map((date) => ({ date, dir: "outbound" as const })), ...returnDays.map((date) => ({ date, dir: "inbound" as const }))];
+    await loadDays(jobs, params, ctl.signal, (k, entry) => setEntries((e) => ({ ...e, [k]: entry })));
   }, [key, params, departDays, returnDays]);
 
   useEffect(() => () => abort.current?.abort(), []);

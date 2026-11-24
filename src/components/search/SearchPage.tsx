@@ -39,13 +39,17 @@ import { useSessionSnapshot } from "@/lib/useSessionSnapshot";
 import { buildSearchQuery, parseSearchQuery } from "@/lib/share";
 import { ShareButton } from "@/components/ShareButton";
 import { useSearchFilters } from "@/lib/useSearchFilters";
+import { DateRangeFields, useRangeProblem } from "./DateRangeFields";
+import { RangeResults } from "./RangeResults";
+import { defaultRangeForm, rangeFormToRequest, type RangeForm } from "@/lib/rangeForm";
+import { MAX_RANGE_DAYS, moveWith } from "@/lib/domain/dateRange";
 import { errorText } from "@/lib/errorText";
 
-type Mode = "weekend" | "cheap" | "multi" | "custom";
+type Mode = "weekend" | "cheap" | "multi" | "custom" | "range";
 const PAGE = 15;
 
 const SHAPES: WeekendShape[] = ["sat-sun", "fri-sun", "sat-mon", "fri-mon", "thu-sun"];
-const MODES: Mode[] = ["weekend", "cheap", "multi", "custom"];
+const MODES: Mode[] = ["weekend", "cheap", "multi", "custom", "range"];
 export function SearchPage() {
   const { t } = useI18n();
   const params = useSearchParams();
@@ -73,6 +77,10 @@ export function SearchPage() {
     if (seed.mode === "custom") return seed.returnDate && seed.returnDate >= (seed.departDate ?? "") ? seed.returnDate : "";
     return weekendFromSaturday(nextSaturday(todayIso()), "sat-sun").returnDate;
   });
+  // "Date range" mode: the windows, and a counter each search bumps so the results reload.
+  const [rangeForm, setRangeForm] = useState<RangeForm>(() => defaultRangeForm(seed.range));
+  const [rangeTick, setRangeTick] = useState(0);
+  const rangeProblem = useRangeProblem(rangeForm, MAX_RANGE_DAYS);
   const [adults, setAdults] = useState(seed.adults ?? 1);
   const [children, setChildren] = useState(seed.children ?? 0);
   const [infants, setInfants] = useState(seed.infants ?? 0);
@@ -96,8 +104,12 @@ export function SearchPage() {
       const w = weekendFromSaturday(saturday, shape);
       return { departDate: w.departDate, returnDate: w.returnDate as string | undefined };
     }
+    if (mode === "range") {
+      const r = rangeFormToRequest(rangeForm);
+      return { departDate: r.departDate, returnDate: r.returnDate };
+    }
     return { departDate, returnDate: returnDate || undefined };
-  }, [mode, saturday, shape, departDate, returnDate]);
+  }, [mode, saturday, shape, departDate, returnDate, rangeForm]);
 
   const { filters, setFilters, state: filterState, restore: restoreFilters } = useSearchFilters(dates.departDate);
 
@@ -110,6 +122,15 @@ export function SearchPage() {
     if (!origin || !destination) return;
     if (mode === "cheap") {
       setCheapTick((n) => n + 1);
+      return;
+    }
+    if (mode === "range") {
+      if (rangeProblem) return;
+      setRes(null);
+      setMultiRes(null);
+      setError(null);
+      setRangeTick((n) => n + 1);
+      track("search", { kind: "range" });
       return;
     }
     if (mode === "multi") {
@@ -151,11 +172,11 @@ export function SearchPage() {
     } finally {
       setLoading(false);
     }
-  }, [origin, destination, oSpread, dSpread, mode, request, t, extraLegs, departDate, adults, children, infants, cabin, filters.maxStops]);
+  }, [origin, destination, oSpread, dSpread, mode, request, t, extraLegs, departDate, adults, children, infants, cabin, filters.maxStops, rangeProblem]);
 
   const snapshot = useMemo(
-    () => ({ origin, destination, sampleFrom, sampleTo, mode, saturday, shape, cheapShapes, cheapWeeks, oSpread, dSpread, departDate, returnDate, adults, children, infants, cabin, filterState, sort, res }),
-    [origin, destination, sampleFrom, sampleTo, mode, saturday, shape, cheapShapes, cheapWeeks, oSpread, dSpread, departDate, returnDate, adults, children, infants, cabin, filterState, sort, res],
+    () => ({ origin, destination, sampleFrom, sampleTo, mode, saturday, shape, cheapShapes, cheapWeeks, oSpread, dSpread, departDate, returnDate, rangeForm, adults, children, infants, cabin, filterState, sort, res }),
+    [origin, destination, sampleFrom, sampleTo, mode, saturday, shape, cheapShapes, cheapWeeks, oSpread, dSpread, departDate, returnDate, rangeForm, adults, children, infants, cabin, filterState, sort, res],
   );
   // A search arriving via the URL (destination card) wins over whatever was stored.
   useSessionSnapshot("remeet:search", snapshot, (s) => {
@@ -174,6 +195,7 @@ export function SearchPage() {
     if (s.shape && SHAPES.includes(s.shape)) setShape(s.shape);
     if (s.departDate && s.departDate >= today) setDepartDate(s.departDate);
     if (s.returnDate && s.returnDate >= today) setReturnDate(s.returnDate);
+    if (s.rangeForm && typeof s.rangeForm === "object") setRangeForm(defaultRangeForm(s.rangeForm));
     if (s.adults) setAdults(s.adults);
     if (s.children !== undefined) setChildren(s.children);
     if (s.infants !== undefined) setInfants(s.infants);
@@ -189,7 +211,8 @@ export function SearchPage() {
       buildSearchQuery({
         origin,
         destination,
-        mode: mode === "custom" || mode === "multi" ? mode : "weekend",
+        mode: mode === "custom" || mode === "multi" || mode === "range" ? mode : "weekend",
+        range: rangeForm,
         saturday,
         shape,
         departDate,
@@ -202,7 +225,7 @@ export function SearchPage() {
         infants,
         cabin: cabin ?? "economy",
       }),
-    [origin, destination, mode, saturday, shape, departDate, returnDate, extraLegs, oSpread, dSpread, adults, children, infants, cabin],
+    [origin, destination, mode, saturday, shape, departDate, returnDate, rangeForm, extraLegs, oSpread, dSpread, adults, children, infants, cabin],
   );
   const flexParams = useMemo<FlexParams>(
     () => ({ origin, destination, departDate: dates.departDate, returnDate: dates.returnDate, adults, children, infants, cabin: cabin ?? "economy", currency: "EUR", filters }),
@@ -308,7 +331,7 @@ export function SearchPage() {
               </Select>
             </Field>
           </div>
-          <div className={cx("grid grid-cols-1 gap-3 sm:grid-cols-2", mode === "multi" && "hidden")}>
+          <div className={cx("grid grid-cols-1 gap-3 sm:grid-cols-2", (mode === "multi" || mode === "range") && "hidden")}>
             <Field label={t.nearby.from}>
               <Select value={String(oSpread)} onChange={(e) => setOSpread(e.target.value === "country" ? "country" : (Number(e.target.value) as Spread))}>
                 {SPREADS.map((s) => (
@@ -341,14 +364,28 @@ export function SearchPage() {
                 { value: "cheap", label: t.common.cheapWeekends },
                 { value: "multi", label: t.common.multiLeg },
                 { value: "custom", label: t.common.customDates },
+                { value: "range", label: t.range.tab },
               ]}
             />
-            {mode === "cheap" ? (
+            {mode === "range" ? (
+              <DateRangeFields value={rangeForm} onChange={setRangeForm} maxDays={MAX_RANGE_DAYS} allowOneWay />
+            ) : mode === "cheap" ? (
               <CheapPicker shapes={cheapShapes} onShapes={setCheapShapes} weeks={cheapWeeks} onWeeks={setCheapWeeks} />
             ) : mode === "multi" ? (
               <div className="flex flex-col gap-3">
                 <Field label={`${t.multi.leg} 1: ${t.common.depart}`}>
-                  <Input type="date" value={departDate} min={todayIso()} onChange={(e) => setDepartDate(e.target.value)} className="sm:max-w-48" />
+                  <Input
+                    type="date"
+                    value={departDate}
+                    min={todayIso()}
+                    onChange={(e) => {
+                      const next = e.target.value;
+                      // Later legs move along, keeping the gaps between them.
+                      setExtraLegs((ls) => ls.map((l) => ({ ...l, date: moveWith(l.date, departDate, next) })));
+                      setDepartDate(next);
+                    }}
+                    className="sm:max-w-48"
+                  />
                 </Field>
                 {extraLegs.map((l, i) => {
                   const set = (patch: Partial<typeof l>) => setExtraLegs((ls) => ls.map((x, j) => (j === i ? { ...x, ...patch } : x)));
@@ -393,7 +430,16 @@ export function SearchPage() {
             ) : (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:max-w-md">
                 <Field label={t.common.depart}>
-                  <Input type="date" value={departDate} min={todayIso()} onChange={(e) => setDepartDate(e.target.value)} />
+                  <Input
+                    type="date"
+                    value={departDate}
+                    min={todayIso()}
+                    onChange={(e) => {
+                      const next = e.target.value;
+                      if (returnDate) setReturnDate(moveWith(returnDate, departDate, next));
+                      setDepartDate(next);
+                    }}
+                  />
                 </Field>
                 <Field label={`${t.common.return} · ${t.common.oneWay}: —`}>
                   <Input type="date" value={returnDate} min={departDate} onChange={(e) => setReturnDate(e.target.value)} />
@@ -419,7 +465,7 @@ export function SearchPage() {
             <Switch checked={filters.maxStops === 0} onChange={(on) => setFilters({ ...filters, maxStops: on ? 0 : undefined })} label={t.filters.directOnly} />
             <div className="ml-auto flex items-start gap-3">
             {mode !== "cheap" && <ShareButton path="/" query={shareQuery} disabled={!origin || !destination || (mode === "multi" && extraLegs.length === 0)} />}
-            <SubmitButton icon={<Search className="h-4 w-4" />} idle={t.common.search} busy={t.common.searching} loading={loading} disabled={!origin || !destination || (mode === "cheap" && cheapShapes.length === 0) || (mode === "multi" && extraLegs.length === 0)} />
+            <SubmitButton icon={<Search className="h-4 w-4" />} idle={t.common.search} busy={t.common.searching} loading={loading} disabled={!origin || !destination || (mode === "cheap" && cheapShapes.length === 0) || (mode === "multi" && extraLegs.length === 0) || (mode === "range" && Boolean(rangeProblem))} />
             </div>
           </div>
         </form>
@@ -436,7 +482,14 @@ export function SearchPage() {
             onPick={pickTrip}
           />
         )}
-        {origin && destination && mode !== "cheap" && mode !== "multi" && <FlexDates params={flexParams} onPick={pickDates} />}
+        {origin && destination && mode === "range" && (
+          <RangeResults
+            params={{ origin, destination, adults, children, infants, cabin: cabin ?? "economy", currency: "EUR", filters, range: rangeFormToRequest(rangeForm) }}
+            run={rangeTick}
+            onPick={pickDates}
+          />
+        )}
+        {origin && destination && (mode === "weekend" || mode === "custom") && <FlexDates params={flexParams} onPick={pickDates} />}
         {mode === "multi" && multiRes && !loading && <MultiLegResults legs={multiRes} currency="EUR" />}
         {mode !== "cheap" && error && <div className="rounded-xl border border-critical/40 bg-critical/10 px-4 py-3 text-sm text-critical">{error}</div>}
         {mode !== "cheap" && loading && (

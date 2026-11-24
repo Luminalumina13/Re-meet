@@ -1,4 +1,5 @@
 import type { WeekendShape } from "@/lib/domain/dates";
+import { parseRangeQuery, rangeQuery, type RangeForm } from "@/lib/rangeForm";
 
 /**
  * Shareable links: every form state that defines a search lives in the URL, so opening the link
@@ -51,6 +52,8 @@ export interface SharedSearch extends Party {
   cabin?: SharedCabin;
   /** Complex route: the legs after the first (the first is origin, destination and departDate). */
   legs?: SharedLeg[];
+  /** Date-range mode: the windows (and nights). */
+  range?: Partial<RangeForm>;
   /** Also search nearby airports: radius in km or "country". */
   oSpread?: SharedSpread;
   dSpread?: SharedSpread;
@@ -67,7 +70,7 @@ const spread = (v: string | null): SharedSpread | undefined => SPREADS.find((s) 
 const MAX_LEGS = 4;
 
 export interface SearchShareState extends SharedSearch {
-  mode: "weekend" | "custom" | "multi";
+  mode: "weekend" | "custom" | "multi" | "range";
 }
 
 export function buildSearchQuery(s: SearchShareState): string {
@@ -77,6 +80,8 @@ export function buildSearchQuery(s: SearchShareState): string {
   if (s.mode === "weekend") {
     if (s.saturday) q.set("sat", s.saturday);
     if (s.shape && s.shape !== "sat-sun") q.set("shape", s.shape);
+  } else if (s.mode === "range" && s.range) {
+    rangeQuery(q, s.range as RangeForm);
   } else if (s.mode === "multi") {
     if (s.departDate) q.set("dep", s.departDate);
     for (const l of (s.legs ?? []).slice(0, MAX_LEGS)) q.append("leg", `${l.from}.${l.to}.${l.date}`);
@@ -84,7 +89,7 @@ export function buildSearchQuery(s: SearchShareState): string {
     if (s.departDate) q.set("dep", s.departDate);
     if (s.returnDate) q.set("ret", s.returnDate);
   }
-  if (s.mode !== "multi") {
+  if (s.mode === "weekend" || s.mode === "custom") {
     if (s.oSpread) q.set("os", String(s.oSpread));
     if (s.dSpread) q.set("ds", String(s.dSpread));
   }
@@ -93,7 +98,8 @@ export function buildSearchQuery(s: SearchShareState): string {
   return q.toString();
 }
 
-export function parseSearchQuery(q: URLSearchParams): SharedSearch & { mode?: "weekend" | "custom" | "multi" } {
+export function parseSearchQuery(q: URLSearchParams): SharedSearch & { mode?: "weekend" | "custom" | "multi" | "range" } {
+  const range = parseRangeQuery(q);
   const shape = q.get("shape") as WeekendShape | null;
   const cabin = q.get("cabin") as SharedCabin | null;
   const dep = date(q.get("dep"));
@@ -111,7 +117,8 @@ export function parseSearchQuery(q: URLSearchParams): SharedSearch & { mode?: "w
   return {
     origin: iata(q.get("from")),
     destination: iata(q.get("to")),
-    mode: validLegs ? "multi" : dep ? "custom" : q.get("sat") ? "weekend" : undefined,
+    mode: validLegs ? "multi" : range ? "range" : dep ? "custom" : q.get("sat") ? "weekend" : undefined,
+    range,
     legs: validLegs,
     oSpread: spread(q.get("os")),
     dSpread: spread(q.get("ds")),
@@ -126,8 +133,11 @@ export function parseSearchQuery(q: URLSearchParams): SharedSearch & { mode?: "w
 
 export interface ExploreShareState extends Party {
   origin?: string;
+  /** More departure airports. */
+  origins?: string[];
   /** Weekend mode (default): the Saturday and the shape. Custom mode: exact dates, both required. */
-  mode?: "weekend" | "custom";
+  mode?: "weekend" | "custom" | "range";
+  range?: Partial<RangeForm>;
   saturday?: string;
   shape?: WeekendShape;
   departDate?: string;
@@ -140,7 +150,11 @@ export interface ExploreShareState extends Party {
 export function buildExploreQuery(s: ExploreShareState): string {
   const q = new URLSearchParams();
   if (s.origin) q.set("from", s.origin);
-  if (s.mode === "custom") {
+  const more = (s.origins ?? []).filter((o) => o && o !== s.origin);
+  if (more.length) q.set("also", more.slice(0, 3).join(","));
+  if (s.mode === "range" && s.range) {
+    rangeQuery(q, s.range as RangeForm);
+  } else if (s.mode === "custom") {
     if (s.departDate) q.set("dep", s.departDate);
     if (s.returnDate) q.set("ret", s.returnDate);
   } else {
@@ -161,9 +175,13 @@ export function parseExploreQuery(q: URLSearchParams): ExploreShareState {
   const ret = date(q.get("ret"));
   // "Anywhere" needs a return date; a link with only a departure falls back to the weekend form.
   const custom = Boolean(dep && ret && ret >= dep);
+  const range = parseRangeQuery(q);
+  const also = (q.get("also") ?? "").split(",").map(iata).filter((x): x is string => Boolean(x)).slice(0, 3);
   return {
     origin: iata(q.get("from")),
-    mode: custom ? "custom" : undefined,
+    origins: also.length ? also : undefined,
+    mode: range && range.back !== "oneway" ? "range" : custom ? "custom" : undefined,
+    range: range && range.back !== "oneway" ? range : undefined,
     departDate: custom ? dep : undefined,
     returnDate: custom ? ret : undefined,
     saturday: date(q.get("sat")),
@@ -178,7 +196,8 @@ export function parseExploreQuery(q: URLSearchParams): ExploreShareState {
 export interface MeetupShareState {
   friends: { name: string; origins: string[] }[];
   destinations: string[];
-  mode: "weekend" | "custom";
+  mode: "weekend" | "custom" | "range";
+  range?: Partial<RangeForm>;
   saturday?: string;
   shape?: WeekendShape;
   departDate?: string;
@@ -202,6 +221,8 @@ export function buildMeetupQuery(s: MeetupShareState): string {
   if (s.mode === "weekend") {
     if (s.saturday) q.set("sat", s.saturday);
     if (s.shape && s.shape !== "sat-sun") q.set("shape", s.shape);
+  } else if (s.mode === "range" && s.range) {
+    rangeQuery(q, s.range as RangeForm);
   } else {
     if (s.departDate) q.set("dep", s.departDate);
     if (s.returnDate) q.set("ret", s.returnDate);
@@ -222,12 +243,15 @@ export function parseMeetupQuery(q: URLSearchParams): Partial<MeetupShareState> 
   const dep = date(q.get("dep"));
   const shape = q.get("shape") as WeekendShape | null;
   const budget = q.get("budget");
+  const range = parseRangeQuery(q);
+  const ranged = range && range.back !== "oneway" ? range : undefined;
   return {
     friends: friends.length >= 2 ? friends : undefined,
+    range: ranged,
     destinations: destinations.length ? destinations : undefined,
     includeOrigins: q.get("own") === "1" ? true : undefined,
     via: q.get("via") === "1" ? true : undefined,
-    mode: dep ? "custom" : q.get("sat") ? "weekend" : undefined,
+    mode: ranged ? "range" : dep ? "custom" : q.get("sat") ? "weekend" : undefined,
     saturday: date(q.get("sat")),
     shape: shape && SHAPES.includes(shape) ? shape : undefined,
     departDate: dep,

@@ -68,13 +68,13 @@ export function DestinationCard({ d, searchHref, onDetails }: { d: ExploreDestin
           )}
         </div>
         <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
-          <dt className="text-ink-3">{fmtDate(out.departLocal, locale, { weekday: "short", day: "numeric" })}</dt>
+          <dt className="text-ink-3">{fmtDate(out.departLocal, locale, { weekday: "short", day: "numeric", month: "short" })}</dt>
           <dd className="tabular-nums">
             {localTime(out.departLocal)} {out.from} → {localTime(out.arriveLocal)} {out.to}
           </dd>
           {back && (
             <>
-              <dt className="text-ink-3">{fmtDate(back.departLocal, locale, { weekday: "short", day: "numeric" })}</dt>
+              <dt className="text-ink-3">{fmtDate(back.departLocal, locale, { weekday: "short", day: "numeric", month: "short" })}</dt>
               <dd className="tabular-nums">
                 {localTime(back.departLocal)} {back.from} → {localTime(back.arriveLocal)} {back.to}
               </dd>
