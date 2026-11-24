@@ -10,6 +10,7 @@ import { fmtDurationLocalized, fmtMoney, cx } from "@/lib/format";
 import { Card } from "@/components/ui/primitives";
 import { LegRow } from "@/components/search/FlightCard";
 import { SERIES } from "./Timeline";
+import { tripDays } from "./PlanCard";
 
 const city = (code: string) => getAirport(code)?.city ?? code;
 const hhmm = (local: string) => local.slice(11, 16);
@@ -36,6 +37,7 @@ export function ViaCard({ plan, colorIndex }: { plan: ViaPlan; colorIndex: (id: 
             <span className="block text-sm font-semibold text-ink-2">
               {t.meetup.viaMeet} {city(plan.hub)} ({plan.hub})
             </span>
+            {plan.departDate && <span className="block text-sm font-normal tracking-normal text-ink-2">{tripDays(plan.departDate, plan.returnDate, locale)}</span>}
           </h3>
           <div className="flex items-center gap-5">
             <div className="text-right">

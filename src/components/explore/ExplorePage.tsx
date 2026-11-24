@@ -3,7 +3,7 @@
 import { HowLink } from "@/components/info/HowLink";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Bell, Compass, SlidersHorizontal } from "lucide-react";
+import { Bell, Compass, Plus, SlidersHorizontal, X } from "lucide-react";
 import type { ExploreDestination, ExploreResponse } from "@/lib/explore/types";
 import type { ExploreRequestInput } from "@/lib/api/schemas";
 import { useSearchFilters } from "@/lib/useSearchFilters";
@@ -20,6 +20,9 @@ import { SubmitButton } from "@/components/ui/SubmitButton";
 import { Button, Card, Chip, Field, Input, Segmented, Skeleton, Stepper, Switch } from "@/components/ui/primitives";
 import { Modal } from "@/components/ui/Modal";
 import { WeekendPicker } from "@/components/search/WeekendPicker";
+import { DateRangeFields, useRangeProblem } from "@/components/search/DateRangeFields";
+import { defaultRangeForm, rangeFormToRequest, type RangeForm } from "@/lib/rangeForm";
+import { MAX_GROUP_RANGE_DAYS, moveWith } from "@/lib/domain/dateRange";
 import { TimeWindows, idealHint } from "@/components/search/TimeWindows";
 import { track as trackEvent } from "@/lib/consent";
 import { AdSlot } from "@/components/AdSlot";
@@ -53,9 +56,13 @@ export function ExplorePage() {
   const [origin, setOrigin] = useState(seed.origin ?? "WAW");
   // The default airport is only an example: shown light and wiped when the field gets focus.
   const [sampleFrom, setSampleFrom] = useState(!seed.origin);
+  // More departure airports, searched together with the first one.
+  const [moreOrigins, setMoreOrigins] = useState<string[]>(seed.origins ?? []);
+  const [rangeForm, setRangeForm] = useState<RangeForm>(() => defaultRangeForm({ back: "nights", ...seed.range }));
+  const rangeProblem = useRangeProblem(rangeForm, MAX_GROUP_RANGE_DAYS);
   const [saturday, setSaturday] = useState(() => (seed.saturday && seed.saturday >= todayIso() ? seed.saturday : nextSaturday(todayIso())));
   const [shape, setShape] = useState<WeekendShape>(seed.shape ?? "sat-sun");
-  const [mode, setMode] = useState<"weekend" | "custom">(seed.mode ?? "weekend");
+  const [mode, setMode] = useState<"weekend" | "custom" | "range">(seed.mode ?? "weekend");
   const [departDate, setDepartDate] = useState(() => (seed.departDate && seed.departDate >= todayIso() ? seed.departDate : nextSaturday(todayIso())));
   const [returnDate, setReturnDate] = useState(() => (seed.returnDate && seed.returnDate >= (seed.departDate ?? "") ? seed.returnDate : weekendFromSaturday(nextSaturday(todayIso()), "sat-sun").returnDate));
   const [maxHours, setMaxHours] = useState(seed.maxHours ?? 4);
@@ -79,14 +86,21 @@ export function ExplorePage() {
   };
 
   const weekend = useMemo(() => weekendFromSaturday(saturday, shape), [saturday, shape]);
-  const dates = useMemo(() => (mode === "weekend" ? { departDate: weekend.departDate, returnDate: weekend.returnDate } : { departDate, returnDate }), [mode, weekend, departDate, returnDate]);
-  const datesOk = Boolean(dates.departDate && dates.returnDate && dates.returnDate >= dates.departDate);
+  const range = useMemo(() => (mode === "range" ? rangeFormToRequest(rangeForm) : null), [mode, rangeForm]);
+  const dates = useMemo(
+    () => (mode === "weekend" ? { departDate: weekend.departDate, returnDate: weekend.returnDate } : range ? { departDate: range.departDate, returnDate: range.returnDate ?? range.departDate } : { departDate, returnDate }),
+    [mode, weekend, departDate, returnDate, range],
+  );
+  const datesOk = Boolean(dates.departDate && dates.returnDate && dates.returnDate >= dates.departDate) && !(mode === "range" && rangeProblem);
+  const extraOrigins = useMemo(() => [...new Set(moreOrigins.filter((o) => o && o !== origin))], [moreOrigins, origin]);
   const { filters, setFilters, state: filterState, restore: restoreFilters } = useSearchFilters(dates.departDate);
   const request = useMemo<ExploreRequestInput>(
     () => ({
       origin,
+      origins: extraOrigins.length ? extraOrigins : undefined,
       departDate: dates.departDate,
       returnDate: dates.returnDate,
+      ...(range ? { departUntil: range.departUntil, returnUntil: range.returnUntil, minNights: range.minNights, maxNights: range.maxNights } : {}),
       adults,
       children,
       infants,
@@ -99,7 +113,7 @@ export function ExplorePage() {
         maxPrice: budget ? Number(budget) : filters.maxPrice,
       },
     }),
-    [origin, dates, adults, children, infants, maxHours, filters, directOnly, budget],
+    [origin, extraOrigins, dates, range, adults, children, infants, maxHours, filters, directOnly, budget],
   );
 
   const run = useCallback(async () => {
@@ -118,8 +132,8 @@ export function ExplorePage() {
   }, [origin, datesOk, request, t]);
 
   const shareQuery = useMemo(
-    () => buildExploreQuery({ origin, mode, saturday, shape, departDate, returnDate, maxHours, directOnly, budget, adults, children, infants }),
-    [origin, mode, saturday, shape, departDate, returnDate, maxHours, directOnly, budget, adults, children, infants],
+    () => buildExploreQuery({ origin, origins: extraOrigins, mode, range: rangeForm, saturday, shape, departDate, returnDate, maxHours, directOnly, budget, adults, children, infants }),
+    [origin, extraOrigins, mode, rangeForm, saturday, shape, departDate, returnDate, maxHours, directOnly, budget, adults, children, infants],
   );
   const fromLink = Boolean(params.get("from"));
   const autoRan = useRef(false);
@@ -135,12 +149,14 @@ export function ExplorePage() {
   }, [fromLink, run]);
 
   const snapshot = useMemo(
-    () => ({ origin, sampleFrom, mode, saturday, shape, departDate, returnDate, maxHours, directOnly, budget, adults, children, infants, filterState, sort, res }),
-    [origin, sampleFrom, mode, saturday, shape, departDate, returnDate, maxHours, directOnly, budget, adults, children, infants, filterState, sort, res],
+    () => ({ origin, moreOrigins, sampleFrom, mode, rangeForm, saturday, shape, departDate, returnDate, maxHours, directOnly, budget, adults, children, infants, filterState, sort, res }),
+    [origin, moreOrigins, sampleFrom, mode, rangeForm, saturday, shape, departDate, returnDate, maxHours, directOnly, budget, adults, children, infants, filterState, sort, res],
   );
   useSessionSnapshot("remeet:explore", snapshot, (s) => {
     if (s.origin) setOrigin(s.origin);
     if (s.sampleFrom !== undefined) setSampleFrom(s.sampleFrom);
+    if (Array.isArray(s.moreOrigins)) setMoreOrigins(s.moreOrigins.filter((o: unknown) => typeof o === "string").slice(0, 3));
+    if (s.rangeForm && typeof s.rangeForm === "object") setRangeForm(defaultRangeForm(s.rangeForm));
     if (s.mode) setMode(s.mode);
     if (s.departDate && s.departDate >= todayIso()) setDepartDate(s.departDate);
     if (s.returnDate && s.returnDate >= todayIso()) setReturnDate(s.returnDate);
@@ -170,7 +186,10 @@ export function ExplorePage() {
 
   const searchHref = (d: ExploreDestination) => {
     // Open the normal search with the same dates (or weekend) and party.
-    const base = { origin, destination: d.best.legs[0].to, adults, children, infants };
+    // With several departure airports (or a range) the best option decides the airport and the dates.
+    const [out, back] = d.best.legs;
+    const base = { origin: out.from, destination: out.to, adults, children, infants };
+    if (mode === "range") return `/?${buildSearchQuery({ ...base, mode: "custom", departDate: out.departLocal.slice(0, 10), returnDate: back?.departLocal.slice(0, 10) })}`;
     return `/?${buildSearchQuery(mode === "weekend" ? { ...base, mode, saturday, shape } : { ...base, mode, departDate: dates.departDate, returnDate: dates.returnDate })}`;
   };
 
@@ -193,7 +212,28 @@ export function ExplorePage() {
           <div className="flex flex-col gap-5">
             <div className="grid grid-cols-[1fr_auto] gap-3">
               <Field label={t.common.from}>
-                <AirportPicker value={origin} onChange={setOrigin} sample={sampleFrom} onSampleFocus={() => setSampleFrom(false)} placeholder={t.common.airportPlaceholder} />
+                <div className="flex flex-col gap-2">
+                  <AirportPicker value={origin} onChange={setOrigin} sample={sampleFrom} onSampleFocus={() => setSampleFrom(false)} placeholder={t.common.airportPlaceholder} />
+                  {moreOrigins.map((o, k) => (
+                    <div key={k} className="flex items-center gap-1">
+                      <div className="min-w-0 flex-1">
+                        <AirportPicker value={o} onChange={(v) => setMoreOrigins((list) => list.map((x, j) => (j === k ? v : x)))} placeholder={t.common.airportPlaceholder} exclude={[origin, ...moreOrigins.filter((_, j) => j !== k)]} />
+                      </div>
+                      <Button variant="ghost" size="sm" className="h-10 w-8 shrink-0 px-0" onClick={() => setMoreOrigins((list) => list.filter((_, j) => j !== k))} aria-label={t.meetup.removeAirport}>
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  {moreOrigins.length < 3 && (
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-1 self-start text-xs font-semibold text-ink-3 hover:text-accent-text"
+                      onClick={() => setMoreOrigins((list) => [...list, ""])}
+                    >
+                      <Plus className="h-3 w-3" /> {t.meetup.addAirport}
+                    </button>
+                  )}
+                </div>
               </Field>
               <Field label={t.common.adults}>
                 <Stepper value={adults} onChange={changeAdults} max={9 - children - infants} />
@@ -238,9 +278,12 @@ export function ExplorePage() {
                 options={[
                   { value: "weekend", label: t.common.weekend },
                   { value: "custom", label: t.common.customDates },
+                  { value: "range", label: t.range.tab },
                 ]}
               />
-              {mode === "weekend" ? (
+              {mode === "range" ? (
+                <DateRangeFields value={rangeForm} onChange={setRangeForm} maxDays={MAX_GROUP_RANGE_DAYS} />
+              ) : mode === "weekend" ? (
                 <WeekendPicker
                   saturday={saturday}
                   shape={shape}
@@ -257,8 +300,8 @@ export function ExplorePage() {
                       value={departDate}
                       min={todayIso()}
                       onChange={(e) => {
+                        setReturnDate(moveWith(returnDate, departDate, e.target.value));
                         setDepartDate(e.target.value);
-                        if (returnDate < e.target.value) setReturnDate(e.target.value);
                       }}
                     />
                   </Field>

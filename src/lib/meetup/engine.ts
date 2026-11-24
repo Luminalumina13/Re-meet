@@ -3,6 +3,7 @@ import { legMatchesWindow } from "@/lib/domain/filters";
 import { airportTz } from "@/lib/data/airports";
 import { utcToLocal } from "@/lib/domain/time";
 import { fetchRaw, type AggregateOptions } from "@/lib/providers/aggregator";
+import { datePairs, isRange } from "@/lib/domain/dateRange";
 import { findLayoverMeets, findSharedFlights } from "./layover";
 import type { Friend, FriendPlan, MeetupPlan, MeetupRequest, MeetupResponse } from "./types";
 
@@ -228,8 +229,10 @@ function* planSteps(req: MeetupRequest, destination: string, sets: CandidateSets
         };
       });
       plans.push({
-        id: `${destination}-${hashKey(key)}`,
+        id: `${destination}-${req.departDate}-${req.returnDate}-${hashKey(key)}`,
         destination,
+        departDate: req.departDate,
+        returnDate: req.returnDate,
         togetherMinutes: realTogether,
         totalPrice: Math.round(total),
         currency: req.currency,
@@ -280,28 +283,54 @@ export async function meetup(req: MeetupRequest, opts: AggregateOptions = {}): P
   const unreachable: MeetupResponse["unreachable"] = [];
   const topK = req.topK ?? 6;
 
+  // A date range is tried pair by pair; each day is fetched once per route and shared by its pairs.
+  const pairs: [string, string][] = isRange(req) ? datePairs(req) : [[req.departDate, req.returnDate]];
+  const outDays = [...new Set(pairs.map((p) => p[0]))];
+  const backDays = [...new Set(pairs.map((p) => p[1]))];
+
   // Destinations are independent: fetch and plan them in parallel.
   await Promise.all(req.destinations.map(async (destination) => {
-    const sets: CandidateSets = { outbound: new Map(), inbound: new Map() };
+    // day -> friend -> itineraries
+    const outBy = new Map<string, Map<string, Itinerary[]>>();
+    const backBy = new Map<string, Map<string, Itinerary[]>>();
+    const add = (m: Map<string, Map<string, Itinerary[]>>, day: string, friendId: string, its: Itinerary[]) => {
+      let byFriend = m.get(day);
+      if (!byFriend) m.set(day, (byFriend = new Map()));
+      byFriend.set(friendId, [...(byFriend.get(friendId) ?? []), ...its]);
+    };
+    const base = { adults: 1, cabin: req.cabin, currency: req.currency } as const;
     await Promise.all(
       req.friends
         .filter((f) => !f.origins.includes(destination))
         .flatMap((f) =>
-          f.origins.map(async (origin) => {
-            const base = { adults: 1, cabin: req.cabin, currency: req.currency } as const;
-            const outReq: SearchRequest = { ...base, origin, destination, departDate: req.departDate, filters: oneWayFilters(req.filters, "outbound") };
-            const backReq: SearchRequest = { ...base, origin: destination, destination: origin, departDate: req.returnDate, filters: oneWayFilters(req.filters, "inbound") };
-            const [o, b] = await Promise.all([fetchRaw(outReq, opts), fetchRaw(backReq, opts)]);
-            for (const s of [...o.providers, ...b.providers]) mergeStatus(statuses, s);
-            // A friend's airports are searched in parallel; pool the results per friend.
-            sets.outbound.set(f.id, [...(sets.outbound.get(f.id) ?? []), ...o.raw.filter((it) => matchesOneWay(it, outReq.filters))]);
-            sets.inbound.set(f.id, [...(sets.inbound.get(f.id) ?? []), ...b.raw.filter((it) => matchesOneWay(it, backReq.filters))]);
-          }),
+          f.origins.flatMap((origin) => [
+            ...outDays.map(async (day) => {
+              const r: SearchRequest = { ...base, origin, destination, departDate: day, filters: oneWayFilters(req.filters, "outbound") };
+              const o = await fetchRaw(r, opts);
+              for (const s of o.providers) mergeStatus(statuses, s);
+              // A friend's airports are searched in parallel; pool the results per friend.
+              add(outBy, day, f.id, o.raw.filter((it) => matchesOneWay(it, r.filters)));
+            }),
+            ...backDays.map(async (day) => {
+              const r: SearchRequest = { ...base, origin: destination, destination: origin, departDate: day, filters: oneWayFilters(req.filters, "inbound") };
+              const b = await fetchRaw(r, opts);
+              for (const s of b.providers) mergeStatus(statuses, s);
+              add(backBy, day, f.id, b.raw.filter((it) => matchesOneWay(it, r.filters)));
+            }),
+          ]),
         ),
     );
-    const res = await planMeetupAsync(req, destination, sets);
-    allPlans.push(...res.plans);
-    unreachable.push(...res.unreachable);
+    let found = false;
+    let missing: MeetupResponse["unreachable"] = [];
+    for (const [d, r] of pairs) {
+      const sets: CandidateSets = { outbound: outBy.get(d) ?? new Map(), inbound: backBy.get(r) ?? new Map() };
+      const res = await planMeetupAsync({ ...req, departDate: d, returnDate: r }, destination, sets);
+      allPlans.push(...res.plans);
+      if (res.plans.length) found = true;
+      if (!missing.length) missing = res.unreachable;
+    }
+    // With a range, a friend counts as unreachable only when no pair worked for this destination.
+    if (!found) unreachable.push(...missing);
   }));
 
   allPlans.sort((a, b) => b.score - a.score || a.totalPrice - b.totalPrice);

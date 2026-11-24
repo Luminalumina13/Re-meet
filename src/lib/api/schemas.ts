@@ -1,4 +1,5 @@
 import { MAX_MEETUP_DESTINATIONS } from "@/lib/meetup/limits";
+import { MAX_GROUP_RANGE_DAYS, MAX_NIGHTS, rangeProblem, type DateRange } from "@/lib/domain/dateRange";
 import { isSafeWebhookSyntax } from "@/lib/watch/webhook";
 import { z } from "zod";
 
@@ -25,6 +26,16 @@ export const filtersSchema = z
     maxDurationMin: z.number().int().min(30).max(24 * 60).optional(),
   })
   .strict();
+
+/** Optional flexible dates shared by the group planner and "anywhere". */
+const rangeFields = {
+  departUntil: isoDate.optional(),
+  returnUntil: isoDate.optional(),
+  minNights: z.number().int().min(0).max(MAX_NIGHTS).optional(),
+  maxNights: z.number().int().min(0).max(MAX_NIGHTS).optional(),
+};
+const rangeOk = (v: DateRange) => rangeProblem(v, MAX_GROUP_RANGE_DAYS) === null;
+const rangeMessage = { message: "Date range is reversed, too long or has no valid pair", path: ["departUntil"] };
 
 export const cabinSchema = z.enum(["economy", "premium_economy", "business", "first"]);
 
@@ -88,14 +99,23 @@ export const meetupRequestSchema = z
     maxBudgetPerPerson: z.number().positive().optional(),
     minTogetherHours: z.number().min(0).max(240).optional(),
     topK: z.number().int().min(1).max(20).optional(),
+    ...rangeFields,
   })
-  .refine((v) => v.returnDate >= v.departDate, { message: "Return before departure", path: ["returnDate"] });
+  .refine((v) => v.returnDate >= v.departDate, { message: "Return before departure", path: ["returnDate"] })
+  .refine(rangeOk, rangeMessage);
 
 export const exploreRequestSchema = z
   .object({
     origin: iata,
+    /** Extra departure airports; `origin` is always searched too. */
+    origins: z
+      .array(iata)
+      .max(4)
+      .optional()
+      .transform((a) => (a?.length ? [...new Set(a)] : undefined)),
     departDate: isoDate,
     returnDate: isoDate,
+    ...rangeFields,
     adults: z.number().int().min(1).max(9).default(1),
     children: z.number().int().min(0).max(8).default(0),
     infants: z.number().int().min(0).max(4).default(0),
@@ -106,7 +126,8 @@ export const exploreRequestSchema = z
   })
   .refine((v) => v.infants <= v.adults, { message: "Each infant needs an adult", path: ["infants"] })
   .refine((v) => v.adults + v.children + v.infants <= 9, { message: "At most 9 passengers", path: ["adults"] })
-  .refine((v) => v.returnDate >= v.departDate, { message: "Return before departure", path: ["returnDate"] });
+  .refine((v) => v.returnDate >= v.departDate, { message: "Return before departure", path: ["returnDate"] })
+  .refine(rangeOk, rangeMessage);
 
 export const watchCreateSchema = z.object({
   label: z.string().trim().min(1).max(120),

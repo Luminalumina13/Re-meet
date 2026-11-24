@@ -199,6 +199,11 @@ export class KiwiMcpProvider implements FlightProvider {
     const f: SearchFilters = { ...req.filters, maxDurationMin: Math.round(req.maxFlightHours * 60) };
     const base = this.baseArgs({ ...req, destination: "anywhere" }, f);
     base.one_for_city = true;
+    // Kiwi searches date ranges itself: one call covers every day pair.
+    if (req.departUntil && req.departUntil > req.departDate) base.departureDateTo = ddmmyyyy(req.departUntil);
+    if (req.returnUntil && req.returnUntil > req.returnDate) base.returnDateTo = ddmmyyyy(req.returnUntil);
+    if (req.minNights !== undefined) base.nights_in_dst_from = req.minNights;
+    if (req.maxNights !== undefined) base.nights_in_dst_to = req.maxNights;
     return this.windowed(base, f);
   }
 

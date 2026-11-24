@@ -19,6 +19,9 @@ import { AirportPicker } from "@/components/ui/AirportPicker";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 import { Button, Card, Field, Input, Segmented, Skeleton, Switch } from "@/components/ui/primitives";
 import { WeekendPicker } from "@/components/search/WeekendPicker";
+import { DateRangeFields, useRangeProblem } from "@/components/search/DateRangeFields";
+import { defaultRangeForm, rangeFormToRequest, type RangeForm } from "@/lib/rangeForm";
+import { MAX_GROUP_RANGE_DAYS, moveWith } from "@/lib/domain/dateRange";
 import { TimeWindows, idealHint } from "@/components/search/TimeWindows";
 import { ProviderBar } from "@/components/search/ProviderBar";
 import { WatchDialog } from "@/components/watch/WatchDialog";
@@ -64,7 +67,9 @@ export function MeetupPage() {
   const [viaRes, setViaRes] = useState<ViaResponse | null>(null);
   const [saturday, setSaturday] = useState(() => (seed.saturday && seed.saturday >= todayIso() ? seed.saturday : nextSaturday(todayIso())));
   const [shape, setShape] = useState<WeekendShape>(seed.shape ?? "sat-sun");
-  const [mode, setMode] = useState<"weekend" | "custom">(seed.mode ?? "weekend");
+  const [mode, setMode] = useState<"weekend" | "custom" | "range">(seed.mode ?? "weekend");
+  const [rangeForm, setRangeForm] = useState<RangeForm>(() => defaultRangeForm({ back: "nights", ...seed.range }));
+  const rangeProblem = useRangeProblem(rangeForm, MAX_GROUP_RANGE_DAYS);
   const [departDate, setDepartDate] = useState(() => (seed.departDate && seed.departDate >= todayIso() ? seed.departDate : nextSaturday(todayIso())));
   const [returnDate, setReturnDate] = useState(() => (seed.returnDate && seed.returnDate >= (seed.departDate ?? "") ? seed.returnDate : weekendFromSaturday(nextSaturday(todayIso()), "sat-sun").returnDate));
   const [valuePerHour, setValuePerHour] = useState(seed.valuePerHour ?? 15);
@@ -77,7 +82,12 @@ export function MeetupPage() {
   const [track, setTrack] = useState(false);
 
   const weekend = useMemo(() => weekendFromSaturday(saturday, shape), [saturday, shape]);
-  const dates = useMemo(() => (mode === "weekend" ? { departDate: weekend.departDate, returnDate: weekend.returnDate } : { departDate, returnDate }), [mode, weekend, departDate, returnDate]);
+  // A range sends its windows; the plans then say which day pair each one flies.
+  const range = useMemo(() => (mode === "range" ? rangeFormToRequest(rangeForm) : null), [mode, rangeForm]);
+  const dates = useMemo(
+    () => (mode === "weekend" ? { departDate: weekend.departDate, returnDate: weekend.returnDate } : range ? { departDate: range.departDate, returnDate: range.returnDate ?? range.departDate } : { departDate, returnDate }),
+    [mode, weekend, departDate, returnDate, range],
+  );
   const { filters, setFilters } = useSearchFilters(dates.departDate);
   const allDest = useMemo(() => {
     const set = new Set(destinations.filter(Boolean));
@@ -94,6 +104,7 @@ export function MeetupPage() {
       destinations: allDest,
       departDate: dates.departDate,
       returnDate: dates.returnDate,
+      ...(range ? { departUntil: range.departUntil, returnUntil: range.returnUntil, minNights: range.minNights, maxNights: range.maxNights } : {}),
       cabin: "economy",
       currency: "EUR",
       filters,
@@ -101,9 +112,9 @@ export function MeetupPage() {
       maxBudgetPerPerson: budget ? Number(budget) : undefined,
       topK: 6,
     }),
-    [friends, allDest, dates, filters, valuePerHour, budget],
+    [friends, allDest, dates, range, filters, valuePerHour, budget],
   );
-  const valid = request.friends.length >= 2 && allDest.length >= 1 && Boolean(dates.departDate) && Boolean(dates.returnDate) && dates.returnDate >= dates.departDate;
+  const valid = request.friends.length >= 2 && allDest.length >= 1 && Boolean(dates.departDate) && Boolean(dates.returnDate) && dates.returnDate >= dates.departDate && !(mode === "range" && rangeProblem);
 
   const run = useCallback(async () => {
     if (!valid) return;
@@ -129,8 +140,8 @@ export function MeetupPage() {
   }, [valid, request, t, via, destinations]);
 
   const shareQuery = useMemo(
-    () => buildMeetupQuery({ friends, destinations, mode, saturday, shape, departDate, returnDate, valuePerHour, budget, includeOrigins, via }),
-    [friends, destinations, mode, saturday, shape, departDate, returnDate, valuePerHour, budget, includeOrigins, via],
+    () => buildMeetupQuery({ friends, destinations, mode, range: rangeForm, saturday, shape, departDate, returnDate, valuePerHour, budget, includeOrigins, via }),
+    [friends, destinations, mode, rangeForm, saturday, shape, departDate, returnDate, valuePerHour, budget, includeOrigins, via],
   );
   const fromLink = Boolean(seed.friends);
   const autoRan = useRef(false);
@@ -275,9 +286,12 @@ export function MeetupPage() {
                 options={[
                   { value: "weekend", label: t.common.weekend },
                   { value: "custom", label: t.common.customDates },
+                  { value: "range", label: t.range.tab },
                 ]}
               />
-              {mode === "weekend" ? (
+              {mode === "range" ? (
+                <DateRangeFields value={rangeForm} onChange={setRangeForm} maxDays={MAX_GROUP_RANGE_DAYS} />
+              ) : mode === "weekend" ? (
                 <WeekendPicker
                   saturday={saturday}
                   shape={shape}
@@ -294,8 +308,8 @@ export function MeetupPage() {
                       value={departDate}
                       min={todayIso()}
                       onChange={(e) => {
+                        setReturnDate(moveWith(returnDate, departDate, e.target.value));
                         setDepartDate(e.target.value);
-                        if (returnDate < e.target.value) setReturnDate(e.target.value);
                       }}
                     />
                   </Field>
@@ -394,7 +408,7 @@ export function MeetupPage() {
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_360px] items-start">
                 <div className="flex flex-col gap-4">
                   {plans.map((p, i) => (
-                    <PlanCard key={p.id} plan={p} rank={res.plans.indexOf(p) + 1} departDate={dates.departDate} returnDate={dates.returnDate} colorIndex={colorIndex} highlight={i === 0} onTrack={i === 0 ? () => setTrack(true) : undefined} />
+                    <PlanCard key={p.id} plan={p} rank={res.plans.indexOf(p) + 1} departDate={p.departDate ?? dates.departDate} returnDate={p.returnDate ?? dates.returnDate} colorIndex={colorIndex} highlight={i === 0} onTrack={i === 0 ? () => setTrack(true) : undefined} />
                   ))}
                 </div>
                 <Card className="p-4 lg:sticky lg:top-20">

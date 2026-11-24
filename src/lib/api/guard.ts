@@ -1,3 +1,4 @@
+import { datePairs, isRange, type DateRange } from "@/lib/domain/dateRange";
 import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { apiError } from "./respond";
 import { turnstileEnabled } from "@/lib/turnstile";
@@ -19,6 +20,13 @@ export const WINDOW_POINTS = 600;
 export const DAY_POINTS = 4000;
 
 /** Rough cost of each endpoint, in provider requests. */
+/** Distinct outbound plus return days a (possibly ranged) request searches; 2 for exact dates. */
+export function searchedDays(r: DateRange): number {
+  if (!isRange(r)) return r.returnDate ? 2 : 1;
+  const pairs = datePairs(r);
+  return new Set(pairs.map((p) => p[0])).size + new Set(pairs.map((p) => p[1])).size;
+}
+
 export const COST = { search: 4, flex: 1, explore: 10, meetupPerRoute: 1, via: 30 } as const;
 
 interface Spent {

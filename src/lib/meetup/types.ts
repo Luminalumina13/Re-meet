@@ -1,4 +1,5 @@
 import type { Cabin, IATA, Itinerary, ProviderStatus, SearchFilters } from "@/lib/domain/types";
+import type { DateRange } from "@/lib/domain/dateRange";
 
 export interface Friend {
   id: string;
@@ -7,7 +8,8 @@ export interface Friend {
   origins: IATA[];
 }
 
-export interface MeetupRequest {
+/** `departUntil`, `returnUntil` and the nights turn the dates into a range; every fitting pair is tried. */
+export interface MeetupRequest extends Omit<DateRange, "departDate" | "returnDate"> {
   friends: Friend[];
   /** Candidate meeting cities; the engine ranks plans across all of them. */
   destinations: IATA[];
@@ -55,6 +57,9 @@ export interface LayoverMeet {
 export interface MeetupPlan {
   id: string;
   destination: IATA;
+  /** The day pair this plan flies on (local search dates); differs between plans of a date range. */
+  departDate: string;
+  returnDate: string;
   togetherMinutes: number;
   totalPrice: number;
   currency: string;
@@ -97,6 +102,8 @@ export interface ViaFriend {
 export interface ViaPlan {
   id: string;
   destination: IATA;
+  departDate: string;
+  returnDate: string;
   hub: IATA;
   /** From the last friend landing at the hub to the shared flight. */
   hubWaitMinutes: number;

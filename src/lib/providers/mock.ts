@@ -1,6 +1,7 @@
 import type { Itinerary, Leg, SearchRequest, Segment } from "@/lib/domain/types";
 import { AIRPORTS, distanceKm, getAirport, isMajor } from "@/lib/data/airports";
 import type { ExploreRequest } from "@/lib/explore/types";
+import { datePairs, isRange } from "@/lib/domain/dateRange";
 import type { Airport } from "@/lib/domain/types";
 import { localToUtc, utcToLocal, minutesToHhmm, weekday } from "@/lib/domain/time";
 import type { FlightProvider } from "./types";
@@ -132,19 +133,22 @@ export class MockProvider implements FlightProvider {
       .filter((x) => 35 + (x.km / 780) * 60 <= reach + 15)
       .sort((x, y) => x.km - y.km)
       .slice(0, 30);
+    const pairs: [string, string][] = isRange(req) ? datePairs(req) : [[req.departDate, req.returnDate]];
     const lists = await Promise.all(
-      targets.map(({ a }) =>
-        this.search({
-          origin: from.iata,
-          destination: a.iata,
-          departDate: req.departDate,
-          returnDate: req.returnDate,
-          adults: req.adults,
-          children: req.children,
-          infants: req.infants,
-          cabin: req.cabin,
-          currency: req.currency,
-        }),
+      targets.flatMap(({ a }) =>
+        pairs.map(([departDate, returnDate]) =>
+          this.search({
+            origin: from.iata,
+            destination: a.iata,
+            departDate,
+            returnDate,
+            adults: req.adults,
+            children: req.children,
+            infants: req.infants,
+            cabin: req.cabin,
+            currency: req.currency,
+          }),
+        ),
       ),
     );
     return lists.flat();

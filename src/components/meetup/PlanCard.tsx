@@ -43,6 +43,7 @@ export function PlanCard({
             <h3 className="mt-1 text-xl font-extrabold tracking-tight">
               {dest?.city ?? plan.destination} <span className="text-ink-3 font-semibold">{plan.destination}</span>
             </h3>
+            <p className="mt-0.5 text-sm text-ink-2">{tripDays(departDate, returnDate, locale)}</p>
           </div>
           <div className="flex items-center gap-5">
             <div className="text-right">
@@ -148,4 +149,11 @@ export function PlanCard({
       </div>
     </Card>
   );
+}
+
+/** "Sat 6 Dec → Tue 9 Dec": the day pair a plan flies on. */
+export function tripDays(depart: string, ret: string, locale: string): string {
+  const f = new Intl.DateTimeFormat(locale, { weekday: "short", day: "numeric", month: "short" });
+  const d = (x: string) => f.format(new Date(`${x}T12:00:00`));
+  return `${d(depart)} → ${d(ret)}`;
 }

@@ -2,6 +2,7 @@ import type { Airport, IATA, Itinerary, ProviderStatus, SearchRequest } from "@/
 import { AIRPORTS, airportTz, distanceKm, getAirport } from "@/lib/data/airports";
 import { utcToLocal } from "@/lib/domain/time";
 import { fetchRaw, type AggregateOptions } from "@/lib/providers/aggregator";
+import { datePairs, isRange } from "@/lib/domain/dateRange";
 import { matchesOneWay, mergeStatus, oneWayFilters } from "./engine";
 import type { Friend, MeetupRequest, ViaFriend, ViaPlan, ViaResponse } from "./types";
 
@@ -159,8 +160,10 @@ export function planVia(req: MeetupRequest, sets: ViaSets): ViaPlan[] {
     });
     if (req.maxBudgetPerPerson !== undefined && friends.some((f) => f.price > req.maxBudgetPerPerson!)) return;
     plans.push({
-      id: `via-${sets.destination}-${sets.hub}-${hashKey(key)}`,
+      id: `via-${sets.destination}-${sets.hub}-${req.departDate}-${req.returnDate}-${hashKey(key)}`,
       destination: sets.destination,
+      departDate: req.departDate,
+      returnDate: req.returnDate,
       hub: sets.hub,
       hubWaitMinutes: hubWait,
       shared: s,
@@ -208,7 +211,10 @@ export async function meetVia(req: MeetupRequest, opts: AggregateOptions = {}): 
   };
   const pool = async (f: Friend, origins: IATA[], fn: (o: IATA) => Promise<Itinerary[]>) => (await Promise.all(origins.map(fn))).flat();
 
-  const perDest = Math.max(1, Math.floor(MAX_HUBS / Math.max(1, req.destinations.length)));
+  const pairs: [string, string][] = isRange(req) ? datePairs(req) : [[req.departDate, req.returnDate]];
+  // A date range multiplies the requests per hub, so fewer hubs are tried.
+  const hubBudget = pairs.length > 1 ? Math.max(1, Math.floor(MAX_HUBS / 2)) : MAX_HUBS;
+  const perDest = Math.max(1, Math.floor(hubBudget / Math.max(1, req.destinations.length)));
   const hubsTried: ViaResponse["hubs"] = [];
   const all: ViaPlan[] = [];
   await Promise.all(
@@ -219,26 +225,28 @@ export async function meetVia(req: MeetupRequest, opts: AggregateOptions = {}): 
       hubsTried.push({ destination, hubs });
       const local = { ...req, friends };
       await Promise.all(
-        hubs.map(async (hub) => {
-          const away = (f: Friend) => f.origins.filter((o) => o !== hub);
-          const sets: ViaSets = { destination, hub, toHub: new Map(), shared: [], sharedBack: [], fromHub: new Map(), direct: new Map() };
-          await Promise.all([
-            get(hub, destination, req.departDate, "any").then((x) => void (sets.shared = x)),
-            get(destination, hub, req.returnDate, "inbound").then((x) => void (sets.sharedBack = x)),
-            ...friends.map(async (f) => {
-              const origins = f.origins.includes(hub) ? [] : away(f);
-              const [to, from, direct] = await Promise.all([
-                pool(f, origins, (o) => get(o, hub, req.departDate, "outbound")),
-                pool(f, origins, (o) => get(hub, o, req.returnDate, "any")),
-                pool(f, f.origins, (o) => get(destination, o, req.returnDate, "inbound")),
-              ]);
-              sets.toHub.set(f.id, to);
-              sets.fromHub.set(f.id, from);
-              sets.direct.set(f.id, direct);
-            }),
-          ]);
-          all.push(...planVia(local, sets));
-        }),
+        hubs.flatMap((hub) =>
+          pairs.map(async ([dep, ret]) => {
+            const away = (f: Friend) => f.origins.filter((o) => o !== hub);
+            const sets: ViaSets = { destination, hub, toHub: new Map(), shared: [], sharedBack: [], fromHub: new Map(), direct: new Map() };
+            await Promise.all([
+              get(hub, destination, dep, "any").then((x) => void (sets.shared = x)),
+              get(destination, hub, ret, "inbound").then((x) => void (sets.sharedBack = x)),
+              ...friends.map(async (f) => {
+                const origins = f.origins.includes(hub) ? [] : away(f);
+                const [to, from, direct] = await Promise.all([
+                  pool(f, origins, (o) => get(o, hub, dep, "outbound")),
+                  pool(f, origins, (o) => get(hub, o, ret, "any")),
+                  pool(f, f.origins, (o) => get(destination, o, ret, "inbound")),
+                ]);
+                sets.toHub.set(f.id, to);
+                sets.fromHub.set(f.id, from);
+                sets.direct.set(f.id, direct);
+              }),
+            ]);
+            all.push(...planVia({ ...local, departDate: dep, returnDate: ret }, sets));
+          }),
+        ),
       );
     }),
   );
