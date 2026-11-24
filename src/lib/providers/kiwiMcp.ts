@@ -4,9 +4,11 @@ import { hhmmToMinutes, localToUtc } from "@/lib/domain/time";
 import type { FlightProvider } from "./types";
 import { ProviderError } from "./types";
 import { TtlCache } from "./cache";
-import { createLimiter } from "./limiter";
+import { gateFor } from "./gate";
 import { finalize, httpJson } from "./util";
 import type { ExploreRequest } from "@/lib/explore/types";
+import type { RangeSearchRequest } from "./types";
+import { rangeDays } from "@/lib/domain/dateRange";
 
 /**
  * Kiwi.com connector over its public MCP server (https://mcp.kiwi.com), no API key needed.
@@ -75,7 +77,8 @@ const WINDOWS: [number, number][] = [
   [18, 23],
 ];
 
-const limit = createLimiter(Number(process.env.KIWI_MCP_CONCURRENCY ?? 8));
+// Shared by every visitor: concurrency, requests per minute and a pause after 429s (see gate.ts).
+const gate = gateFor("kiwi", { concurrency: Number(process.env.KIWI_MCP_CONCURRENCY ?? 8), perMinute: 120 });
 const cache = new TtlCache<KiwiMcpResult>(10 * 60_000, 2000);
 let rpcId = 0;
 
@@ -94,7 +97,7 @@ export function parseRpc(body: string): RpcResponse {
 
 export function httpMcpCaller(url: string): McpCaller {
   return async (tool, args, signal) => {
-    const { status, body } = await limit(() =>
+    const { status, body } = await gate.run(() =>
       httpJson<string>(url, {
         method: "POST",
         headers: {
@@ -191,6 +194,11 @@ export class KiwiMcpProvider implements FlightProvider {
   /** The query plan: one tool call per departure window that overlaps the requested outbound window. */
   plan(req: SearchRequest): Record<string, unknown>[] {
     const f: SearchFilters = req.filters ?? {};
+    if (req.quick) {
+      // One call for the whole requested window: the cheapest ~15 fares are all a price grid needs.
+      const [dLo, dHi] = hourBounds(f.outbound?.departAfter, f.outbound?.departBefore);
+      return [{ ...this.baseArgs(req, f), dtime_from: dLo, dtime_to: dHi }];
+    }
     return this.windowed(this.baseArgs(req, f), f);
   }
 
@@ -205,6 +213,41 @@ export class KiwiMcpProvider implements FlightProvider {
     if (req.minNights !== undefined) base.nights_in_dst_from = req.minNights;
     if (req.maxNights !== undefined) base.nights_in_dst_to = req.maxNights;
     return this.windowed(base, f);
+  }
+
+  /**
+   * Plan for a date range: the departure window is cut into at most 4 parts (each call returns
+   * ~15 trips, cheapest first, so this spreads them over the range), the return is a window or a
+   * number of nights. Kiwi prices real round trips, not sums of one-way tickets.
+   */
+  rangePlan(req: RangeSearchRequest): Record<string, unknown>[] {
+    const f: SearchFilters = req.filters ?? {};
+    const days = rangeDays(req.departDate, req.departUntil);
+    const parts = Math.min(4, days.length);
+    const size = Math.ceil(days.length / parts);
+    const byNights = req.minNights !== undefined || req.maxNights !== undefined;
+    const [dLo, dHi] = hourBounds(f.outbound?.departAfter, f.outbound?.departBefore);
+    const out: Record<string, unknown>[] = [];
+    for (let i = 0; i < days.length; i += size) {
+      const chunk = days.slice(i, i + size);
+      const args = this.baseArgs({ ...req, departDate: chunk[0], returnDate: byNights ? undefined : req.returnDate }, f);
+      if (chunk.length > 1) args.departureDateTo = ddmmyyyy(chunk[chunk.length - 1]);
+      if (dLo > 0) args.dtime_from = dLo;
+      if (dHi < 23) args.dtime_to = dHi;
+      if (byNights) {
+        if (req.minNights !== undefined) args.nights_in_dst_from = req.minNights;
+        if (req.maxNights !== undefined) args.nights_in_dst_to = req.maxNights;
+      } else if (req.returnDate && req.returnUntil && req.returnUntil > req.returnDate) {
+        args.returnDateTo = ddmmyyyy(req.returnUntil);
+      }
+      out.push(args);
+    }
+    return out;
+  }
+
+  async searchRange(req: RangeSearchRequest, signal?: AbortSignal): Promise<Itinerary[]> {
+    const results = await Promise.allSettled(this.rangePlan(req).map(async (args) => [await this.cachedCall(args, signal)]));
+    return this.collect(results, req.currency);
   }
 
   private async cachedCall(args: Record<string, unknown>, signal?: AbortSignal): Promise<KiwiMcpResult> {

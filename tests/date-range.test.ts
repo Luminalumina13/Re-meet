@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { datePairs, isRange, moveWith, nightsWindow, pairFits, rangeDays, rangeProblem } from "@/lib/domain/dateRange";
+import { datePairs, isRange, moveWith, nightsWindow, returnNotBefore, pairFits, rangeDays, rangeProblem } from "@/lib/domain/dateRange";
 import { defaultRangeForm, parseRangeQuery, rangeFormToRequest, rangeQuery } from "@/lib/rangeForm";
 import { buildExploreQuery, buildMeetupQuery, buildSearchQuery, parseExploreQuery, parseMeetupQuery, parseSearchQuery } from "@/lib/share";
 import { exploreRequestSchema, meetupRequestSchema } from "@/lib/api/schemas";
@@ -42,6 +42,8 @@ describe("date ranges", () => {
     expect(moveWith("2027-01-08", "2027-01-05", "2026-12-12")).toBe("2026-12-15");
     expect(moveWith("2026-12-07", "2026-12-05", "2026-12-20")).toBe("2026-12-22");
     expect(moveWith("", "2026-12-05", "2026-12-20")).toBe("");
+    expect(returnNotBefore("2026-11-29", "2026-12-05")).toBe("2026-12-07");
+    expect(returnNotBefore("2026-12-09", "2026-12-05")).toBe("2026-12-09");
   });
 
   it("an exact trip is not a range", () => {

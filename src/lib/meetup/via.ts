@@ -195,12 +195,13 @@ export async function meetVia(req: MeetupRequest, opts: AggregateOptions = {}): 
   const statuses = new Map<string, ProviderStatus>();
   const base = { adults: 1, cabin: req.cabin, currency: req.currency } as const;
   const cache = new Map<string, Promise<Itinerary[]>>();
+  const quick = isRange(req) && datePairs(req).length > 1;
   const get = (origin: IATA, destination: IATA, date: string, direction: "outbound" | "inbound" | "any") => {
     const key = `${origin}-${destination}-${date}-${direction}`;
     let p = cache.get(key);
     if (!p) {
       const filters = direction === "any" ? oneWayFilters(req.filters ? { ...req.filters, outbound: undefined, inbound: undefined } : undefined, "outbound") : oneWayFilters(req.filters, direction);
-      const r: SearchRequest = { ...base, origin, destination, departDate: date, filters };
+      const r: SearchRequest = { ...base, origin, destination, departDate: date, filters, quick };
       p = fetchRaw(r, opts).then((res) => {
         for (const s of res.providers) mergeStatus(statuses, s);
         return res.raw.filter((it) => matchesOneWay(it, filters));

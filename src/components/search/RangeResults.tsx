@@ -8,6 +8,8 @@ import { diffDays } from "@/lib/domain/time";
 import { flexGrid, type FlexCell } from "@/lib/flex/matrix";
 import { dayKey, loadDays, type DayEntry } from "@/lib/flex/loadDays";
 import { useI18n } from "@/lib/i18n";
+import { postJson } from "@/lib/client";
+import type { RangePair, RangeResponse } from "@/lib/flex/range";
 import { cx, fmtMoney } from "@/lib/format";
 import { Button, Card } from "@/components/ui/primitives";
 
@@ -35,6 +37,9 @@ export function RangeResults({ params, run, onPick }: { params: RangeParams; run
   const [shown, setShown] = useState(PAGE);
   // What the last search asked for; editing the form afterwards does not change the list on screen.
   const [ran, setRan] = useState<{ range: DateRange; outDays: string[]; backDays: string[]; pairs: [string, string][] } | null>(null);
+  // Trips priced by a source that searches the whole range at once; null while not (yet) used.
+  const [fares, setFares] = useState<RangePair[] | null>(null);
+  const [asking, setAsking] = useState(false);
   const abort = useRef<AbortController | null>(null);
   const latest = useRef(params);
   useEffect(() => {
@@ -52,7 +57,25 @@ export function RangeResults({ params, run, onPick }: { params: RangeParams; run
     abort.current = ctl;
     setRan({ range, outDays, backDays, pairs });
     setEntries({});
+    setFares(null);
     setShown(PAGE);
+    // First ask for the whole range in a few calls; only if no source can, price day by day.
+    setAsking(true);
+    try {
+      const res = await postJson<RangeResponse>(
+        "/api/range",
+        { origin: p.origin, destination: p.destination, adults: p.adults, children: p.children, infants: p.infants, cabin: p.cabin, currency: p.currency, filters: p.filters, ...range },
+      );
+      if (ctl.signal.aborted) return;
+      if (res.supported && res.providers.some((x) => x.status === "ok") && res.pairs.length) {
+        setFares(res.pairs);
+        return;
+      }
+    } catch {
+      if (ctl.signal.aborted) return;
+    } finally {
+      if (!ctl.signal.aborted) setAsking(false);
+    }
     const jobs = [...outDays.map((date) => ({ date, dir: "outbound" as const })), ...backDays.map((date) => ({ date, dir: "inbound" as const }))];
     await loadDays(jobs, p, ctl.signal, (k, entry) => setEntries((e) => ({ ...e, [k]: entry })));
   }, []);
@@ -69,7 +92,7 @@ export function RangeResults({ params, run, onPick }: { params: RangeParams; run
   const pairs = useMemo(() => ran?.pairs ?? [], [ran]);
   const total = outDays.length + backDays.length;
   const done = Object.keys(entries).length;
-  const pending = done < total;
+  const pending = asking || (!fares && done < total);
 
   const cells = useMemo<FlexCell[]>(() => {
     const optionsOf = (dir: "outbound" | "inbound", d: string) => {
@@ -86,7 +109,10 @@ export function RangeResults({ params, run, onPick }: { params: RangeParams; run
     return flexGrid(new Map(outDays.map((d) => [d, optionsOf("outbound", d)] as const)), new Map(backDays.map((d) => [d, optionsOf("inbound", d)] as const))).filter((c) => fits.has(`${c.depart}|${c.ret}`));
   }, [entries, roundTrip, outDays, backDays, pairs]);
 
-  const sorted = useMemo(() => [...cells].sort((a, b) => a.price - b.price || a.depart.localeCompare(b.depart)), [cells]);
+  const sorted = useMemo(
+    () => (fares ? fares.map((f) => ({ depart: f.depart, ret: f.ret ?? f.depart, price: f.price })) : [...cells].sort((a, b) => a.price - b.price || a.depart.localeCompare(b.depart))),
+    [fares, cells],
+  );
   if (!ran) return null;
   const min = sorted[0]?.price;
   const money = (n: number) => fmtMoney({ amount: n, currency: params.currency }, locale);
@@ -97,9 +123,10 @@ export function RangeResults({ params, run, onPick }: { params: RangeParams; run
       <h3 className="flex items-center gap-2 text-base font-bold">
         <CalendarRange className="h-4 w-4 text-accent-text" /> {t.range.title}
       </h3>
-      <p className="mt-0.5 text-xs text-ink-3">{roundTrip ? t.range.subtitle : t.range.subtitleOne}</p>
-      {pending && <p className="mt-2 text-xs font-semibold text-ink-2" aria-live="polite">{t.range.progress.replace("{done}", String(done)).replace("{total}", String(total))}</p>}
-      {pending && total > 0 && (
+      <p className="mt-0.5 text-xs text-ink-3">{fares ? t.range.subtitleFares : roundTrip ? t.range.subtitle : t.range.subtitleOne}</p>
+      {asking && <p className="mt-2 text-xs font-semibold text-ink-2" aria-live="polite">{t.common.searching}</p>}
+      {pending && !asking && <p className="mt-2 text-xs font-semibold text-ink-2" aria-live="polite">{t.range.progress.replace("{done}", String(done)).replace("{total}", String(total))}</p>}
+      {pending && !asking && total > 0 && (
         <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-surface-2">
           <div className="h-full bg-accent transition-all" style={{ width: `${Math.round((done / total) * 100)}%` }} />
         </div>
@@ -134,7 +161,7 @@ export function RangeResults({ params, run, onPick }: { params: RangeParams; run
           {t.range.more}
         </Button>
       )}
-      {roundTrip && <p className="mt-3 text-xs text-ink-3">{t.flex.noteRound}</p>}
+      {roundTrip && !fares && <p className="mt-3 text-xs text-ink-3">{t.flex.noteRound}</p>}
       {!pending && sorted.length === 0 && <p className="mt-3 text-sm text-ink-2">{t.range.empty2}</p>}
     </Card>
   );

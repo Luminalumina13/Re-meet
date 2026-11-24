@@ -287,6 +287,8 @@ export async function meetup(req: MeetupRequest, opts: AggregateOptions = {}): P
   const pairs: [string, string][] = isRange(req) ? datePairs(req) : [[req.departDate, req.returnDate]];
   const outDays = [...new Set(pairs.map((p) => p[0]))];
   const backDays = [...new Set(pairs.map((p) => p[1]))];
+  // A range already multiplies the days searched; per day the cheaper single call is enough.
+  const quick = pairs.length > 1;
 
   // Destinations are independent: fetch and plan them in parallel.
   await Promise.all(req.destinations.map(async (destination) => {
@@ -305,14 +307,14 @@ export async function meetup(req: MeetupRequest, opts: AggregateOptions = {}): P
         .flatMap((f) =>
           f.origins.flatMap((origin) => [
             ...outDays.map(async (day) => {
-              const r: SearchRequest = { ...base, origin, destination, departDate: day, filters: oneWayFilters(req.filters, "outbound") };
+              const r: SearchRequest = { ...base, origin, destination, departDate: day, filters: oneWayFilters(req.filters, "outbound"), quick };
               const o = await fetchRaw(r, opts);
               for (const s of o.providers) mergeStatus(statuses, s);
               // A friend's airports are searched in parallel; pool the results per friend.
               add(outBy, day, f.id, o.raw.filter((it) => matchesOneWay(it, r.filters)));
             }),
             ...backDays.map(async (day) => {
-              const r: SearchRequest = { ...base, origin: destination, destination: origin, departDate: day, filters: oneWayFilters(req.filters, "inbound") };
+              const r: SearchRequest = { ...base, origin: destination, destination: origin, departDate: day, filters: oneWayFilters(req.filters, "inbound"), quick };
               const b = await fetchRaw(r, opts);
               for (const s of b.providers) mergeStatus(statuses, s);
               add(backBy, day, f.id, b.raw.filter((it) => matchesOneWay(it, r.filters)));

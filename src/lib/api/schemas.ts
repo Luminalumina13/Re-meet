@@ -1,5 +1,5 @@
 import { MAX_MEETUP_DESTINATIONS } from "@/lib/meetup/limits";
-import { MAX_GROUP_RANGE_DAYS, MAX_NIGHTS, rangeProblem, type DateRange } from "@/lib/domain/dateRange";
+import { MAX_GROUP_RANGE_DAYS, MAX_NIGHTS, MAX_RANGE_DAYS, rangeProblem, type DateRange } from "@/lib/domain/dateRange";
 import { isSafeWebhookSyntax } from "@/lib/watch/webhook";
 import { z } from "zod";
 
@@ -56,6 +56,26 @@ export const searchRequestSchema = z
   .refine((v) => v.adults + v.children + v.infants <= 9, { message: "At most 9 passengers", path: ["adults"] })
   .refine((v) => v.origin !== v.destination, { message: "Origin and destination must differ", path: ["destination"] })
   .refine((v) => !v.returnDate || v.returnDate >= v.departDate, { message: "Return before departure", path: ["returnDate"] });
+
+/** Date range on the search page: one route over flexible dates (see `rangeSearch`). */
+export const rangeSearchSchema = z
+  .object({
+    origin: iata,
+    destination: iata,
+    departDate: isoDate,
+    returnDate: isoDate.optional(),
+    ...rangeFields,
+    adults: z.number().int().min(1).max(9).default(1),
+    children: z.number().int().min(0).max(8).default(0),
+    infants: z.number().int().min(0).max(4).default(0),
+    cabin: cabinSchema.default("economy"),
+    currency: z.string().length(3).toUpperCase().default("EUR"),
+    filters: filtersSchema.optional(),
+  })
+  .refine((v) => v.infants <= v.adults, { message: "Each infant needs an adult", path: ["infants"] })
+  .refine((v) => v.adults + v.children + v.infants <= 9, { message: "At most 9 passengers", path: ["adults"] })
+  .refine((v) => v.origin !== v.destination, { message: "Origin and destination must differ", path: ["destination"] })
+  .refine((v) => rangeProblem(v, MAX_RANGE_DAYS) === null, rangeMessage);
 
 /** One day of the flexible-dates grid: the cheapest one-way fare on `date`. */
 export const flexDaySchema = z.object({

@@ -45,6 +45,7 @@ export async function flexDay(
     cabin: req.cabin,
     currency: req.currency,
     filters,
+    quick: true,
   };
   const { raw, providers } = await fetchRaw(search, opts);
   const fits = raw.filter((it) => matchesOneWay(it, filters));
