@@ -74,3 +74,8 @@ export function moveWith(date: string, oldDepart: string, newDepart: string): st
   const moved = addDays(date, diffDays(oldDepart, newDepart));
   return moved < newDepart ? newDepart : moved;
 }
+
+/** `ret` if it is not before `depart`, otherwise two days after `depart`. */
+export function returnNotBefore(ret: string, depart: string): string {
+  return ret && ret >= depart ? ret : addDays(depart, 2);
+}

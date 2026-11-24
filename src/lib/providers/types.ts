@@ -1,5 +1,9 @@
 import type { Itinerary, ProviderKind, SearchRequest } from "@/lib/domain/types";
 import type { ExploreRequest } from "@/lib/explore/types";
+import type { DateRange } from "@/lib/domain/dateRange";
+
+/** A route over flexible dates: leave within a window, come back within a window or after N–M nights. */
+export type RangeSearchRequest = Omit<SearchRequest, "departDate" | "returnDate" | "quick"> & DateRange;
 
 /**
  * A flight data connector. Implementations map a vendor API onto the domain model.
@@ -18,6 +22,8 @@ export interface FlightProvider {
   search(req: SearchRequest, signal?: AbortSignal): Promise<Itinerary[]>;
   /** Optional "anywhere" search: round trips from one origin to every reachable destination. */
   explore?(req: ExploreRequest, signal?: AbortSignal): Promise<Itinerary[]>;
+  /** Optional date-range search in a few calls: the cheapest trips across the whole range. */
+  searchRange?(req: RangeSearchRequest, signal?: AbortSignal): Promise<Itinerary[]>;
 }
 
 export class ProviderError extends Error {

@@ -5,7 +5,7 @@ import { hhmmToMinutes, localToUtc, minutesToHhmm } from "@/lib/domain/time";
 import type { FlightProvider } from "./types";
 import { ProviderError } from "./types";
 import { TtlCache } from "./cache";
-import { createLimiter } from "./limiter";
+import { gateFor } from "./gate";
 import { finalize, httpJson, legFromSegments } from "./util";
 
 /** Ryanair charges a flat fee per infant per flight; children pay the adult fare. Approximation, EUR. */
@@ -58,11 +58,11 @@ export interface FarfndResponse {
 type Requester = (url: string, signal?: AbortSignal) => Promise<{ status: number; body: FarfndResponse }>;
 
 const MAX_REQUESTS_PER_DAY = 24;
-const limit = createLimiter(4);
+const gate = gateFor("ryanair", { concurrency: 4, perMinute: 120 });
 const dayCache = new TtlCache<FarfndFare[]>(10 * 60_000, 2000);
 
 const defaultRequester: Requester = (url, signal) =>
-  limit(() =>
+  gate.run(() =>
     httpJson<FarfndResponse>(url, {
       headers: { accept: "application/json" },
       signal,

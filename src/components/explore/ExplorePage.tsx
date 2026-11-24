@@ -22,7 +22,7 @@ import { Modal } from "@/components/ui/Modal";
 import { WeekendPicker } from "@/components/search/WeekendPicker";
 import { DateRangeFields, useRangeProblem } from "@/components/search/DateRangeFields";
 import { defaultRangeForm, rangeFormToRequest, type RangeForm } from "@/lib/rangeForm";
-import { MAX_GROUP_RANGE_DAYS, moveWith } from "@/lib/domain/dateRange";
+import { MAX_GROUP_RANGE_DAYS, moveWith, returnNotBefore } from "@/lib/domain/dateRange";
 import { TimeWindows, idealHint } from "@/components/search/TimeWindows";
 import { track as trackEvent } from "@/lib/consent";
 import { AdSlot } from "@/components/AdSlot";
@@ -63,8 +63,10 @@ export function ExplorePage() {
   const [saturday, setSaturday] = useState(() => (seed.saturday && seed.saturday >= todayIso() ? seed.saturday : nextSaturday(todayIso())));
   const [shape, setShape] = useState<WeekendShape>(seed.shape ?? "sat-sun");
   const [mode, setMode] = useState<"weekend" | "custom" | "range">(seed.mode ?? "weekend");
-  const [departDate, setDepartDate] = useState(() => (seed.departDate && seed.departDate >= todayIso() ? seed.departDate : nextSaturday(todayIso())));
-  const [returnDate, setReturnDate] = useState(() => (seed.returnDate && seed.returnDate >= (seed.departDate ?? "") ? seed.returnDate : weekendFromSaturday(nextSaturday(todayIso()), "sat-sun").returnDate));
+  // A return earlier than the departure (e.g. a link from another mode) would block the form, so it never starts that way.
+  const firstDepart = seed.departDate && seed.departDate >= todayIso() ? seed.departDate : nextSaturday(todayIso());
+  const [departDate, setDepartDate] = useState(firstDepart);
+  const [returnDate, setReturnDate] = useState(() => returnNotBefore(seed.returnDate && seed.returnDate >= (seed.departDate ?? "") ? seed.returnDate : weekendFromSaturday(nextSaturday(todayIso()), "sat-sun").returnDate, firstDepart));
   const [maxHours, setMaxHours] = useState(seed.maxHours ?? 4);
   const [directOnly, setDirectOnly] = useState(seed.directOnly ?? false);
   const [budget, setBudget] = useState(seed.budget ?? "");

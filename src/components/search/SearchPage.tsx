@@ -42,7 +42,7 @@ import { useSearchFilters } from "@/lib/useSearchFilters";
 import { DateRangeFields, useRangeProblem } from "./DateRangeFields";
 import { RangeResults } from "./RangeResults";
 import { defaultRangeForm, rangeFormToRequest, type RangeForm } from "@/lib/rangeForm";
-import { MAX_RANGE_DAYS, moveWith } from "@/lib/domain/dateRange";
+import { MAX_RANGE_DAYS, moveWith, returnNotBefore } from "@/lib/domain/dateRange";
 import { errorText } from "@/lib/errorText";
 
 type Mode = "weekend" | "cheap" | "multi" | "custom" | "range";
@@ -72,10 +72,12 @@ export function SearchPage() {
   const [multiRes, setMultiRes] = useState<Itinerary[][] | null>(null);
   const [oSpread, setOSpread] = useState<Spread>(seed.oSpread ?? 0);
   const [dSpread, setDSpread] = useState<Spread>(seed.dSpread ?? 0);
-  const [departDate, setDepartDate] = useState(() => (seed.departDate && seed.departDate >= todayIso() ? seed.departDate : nextSaturday(todayIso())));
+  // A return earlier than the departure (e.g. a link from another mode) would block the form, so it never starts that way.
+  const firstDepart = seed.departDate && seed.departDate >= todayIso() ? seed.departDate : nextSaturday(todayIso());
+  const [departDate, setDepartDate] = useState(firstDepart);
   const [returnDate, setReturnDate] = useState<string>(() => {
     if (seed.mode === "custom") return seed.returnDate && seed.returnDate >= (seed.departDate ?? "") ? seed.returnDate : "";
-    return weekendFromSaturday(nextSaturday(todayIso()), "sat-sun").returnDate;
+    return returnNotBefore(weekendFromSaturday(nextSaturday(todayIso()), "sat-sun").returnDate, firstDepart);
   });
   // "Date range" mode: the windows, and a counter each search bumps so the results reload.
   const [rangeForm, setRangeForm] = useState<RangeForm>(() => defaultRangeForm(seed.range));

@@ -4,7 +4,7 @@ import { addDays, localToUtc, utcToLocal } from "@/lib/domain/time";
 import type { FlightProvider } from "./types";
 import { ProviderError } from "./types";
 import { TtlCache } from "./cache";
-import { createLimiter } from "./limiter";
+import { gateFor } from "./gate";
 import { finalize, httpJson } from "./util";
 import { parseRpc } from "./kiwiMcp";
 
@@ -88,13 +88,13 @@ export function airlineCode(name: string): string {
   return AIRLINE_CODES[key] ?? "";
 }
 
-const limit = createLimiter(Number(process.env.LASTMINUTE_MCP_CONCURRENCY ?? 6));
+const gate = gateFor("lastminute", { concurrency: Number(process.env.LASTMINUTE_MCP_CONCURRENCY ?? 6), perMinute: 90 });
 const cache = new TtlCache<LmResult>(10 * 60_000, 2000);
 let rpcId = 0;
 
 export function httpLmCaller(url: string): LmCaller {
   return async (args, signal) => {
-    const { status, body } = await limit(() =>
+    const { status, body } = await gate.run(() =>
       httpJson<string>(url, {
         method: "POST",
         headers: {
@@ -224,6 +224,7 @@ export class LastminuteProvider implements FlightProvider {
     if (f.maxStops !== undefined) base.max_stops = String(f.maxStops);
     if (f.maxPrice !== undefined) base.max_price_cents = String(Math.round(f.maxPrice * 100));
     if (f.carriers?.length) base.airlines_include = f.carriers.join(",");
+    if (req.quick) return [{ ...base, departure_time_start: lo, departure_time_end: hi }];
     return WINDOWS.filter(([a, b]) => b >= lo && a <= hi).map(([a, b]) => ({
       ...base,
       departure_time_start: a > lo ? a : lo,

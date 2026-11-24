@@ -27,7 +27,7 @@ export function searchedDays(r: DateRange): number {
   return new Set(pairs.map((p) => p[0])).size + new Set(pairs.map((p) => p[1])).size;
 }
 
-export const COST = { search: 4, flex: 1, explore: 10, meetupPerRoute: 1, via: 30 } as const;
+export const COST = { search: 4, flex: 1, range: 4, explore: 10, meetupPerRoute: 1, via: 30 } as const;
 
 interface Spent {
   /** [time, points] */

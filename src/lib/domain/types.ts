@@ -113,6 +113,11 @@ export interface SearchRequest {
   cabin: Cabin;
   currency: string;
   filters?: SearchFilters;
+  /**
+   * Only the cheapest fares matter (date grids, ranges): sources answer with one price-sorted call
+   * instead of splitting the day into departure-time windows. Set by the server, not by visitors.
+   */
+  quick?: boolean;
 }
 
 /** Number of seats that pay a full or child fare (infants fly on a lap). */

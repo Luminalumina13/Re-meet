@@ -21,7 +21,7 @@ import { Button, Card, Field, Input, Segmented, Skeleton, Switch } from "@/compo
 import { WeekendPicker } from "@/components/search/WeekendPicker";
 import { DateRangeFields, useRangeProblem } from "@/components/search/DateRangeFields";
 import { defaultRangeForm, rangeFormToRequest, type RangeForm } from "@/lib/rangeForm";
-import { MAX_GROUP_RANGE_DAYS, moveWith } from "@/lib/domain/dateRange";
+import { MAX_GROUP_RANGE_DAYS, moveWith, returnNotBefore } from "@/lib/domain/dateRange";
 import { TimeWindows, idealHint } from "@/components/search/TimeWindows";
 import { ProviderBar } from "@/components/search/ProviderBar";
 import { WatchDialog } from "@/components/watch/WatchDialog";
@@ -70,8 +70,10 @@ export function MeetupPage() {
   const [mode, setMode] = useState<"weekend" | "custom" | "range">(seed.mode ?? "weekend");
   const [rangeForm, setRangeForm] = useState<RangeForm>(() => defaultRangeForm({ back: "nights", ...seed.range }));
   const rangeProblem = useRangeProblem(rangeForm, MAX_GROUP_RANGE_DAYS);
-  const [departDate, setDepartDate] = useState(() => (seed.departDate && seed.departDate >= todayIso() ? seed.departDate : nextSaturday(todayIso())));
-  const [returnDate, setReturnDate] = useState(() => (seed.returnDate && seed.returnDate >= (seed.departDate ?? "") ? seed.returnDate : weekendFromSaturday(nextSaturday(todayIso()), "sat-sun").returnDate));
+  // A return earlier than the departure (e.g. a link from another mode) would block the form, so it never starts that way.
+  const firstDepart = seed.departDate && seed.departDate >= todayIso() ? seed.departDate : nextSaturday(todayIso());
+  const [departDate, setDepartDate] = useState(firstDepart);
+  const [returnDate, setReturnDate] = useState(() => returnNotBefore(seed.returnDate && seed.returnDate >= (seed.departDate ?? "") ? seed.returnDate : weekendFromSaturday(nextSaturday(todayIso()), "sat-sun").returnDate, firstDepart));
   const [valuePerHour, setValuePerHour] = useState(seed.valuePerHour ?? 15);
   const [budget, setBudget] = useState(seed.budget ?? "");
   const [showAdvanced, setShowAdvanced] = useState(false);

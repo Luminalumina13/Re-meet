@@ -30,7 +30,9 @@ describe("human cookie", () => {
     const v = signHuman(now, env);
     expect(verifyHuman(v, now, env)).toBe(true);
     expect(verifyHuman(v, now + 2 * 3600_000, env)).toBe(false);
-    expect(verifyHuman(v.replace(/.$/, (c) => (c === "A" ? "B" : "A")), now, env)).toBe(false);
+    // Change the first character of the signature (the last one may carry only padding bits).
+    const dot = v.lastIndexOf(".") + 1;
+    expect(verifyHuman(v.slice(0, dot) + (v[dot] === "A" ? "B" : "A") + v.slice(dot + 1), now, env)).toBe(false);
     expect(verifyHuman(v, now, { TURNSTILE_SECRET_KEY: "other" } as unknown as NodeJS.ProcessEnv)).toBe(false);
     expect(verifyHuman(undefined, now, env)).toBe(false);
   });

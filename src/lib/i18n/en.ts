@@ -222,6 +222,7 @@ export const en: Dict = {
     hint: "We check every day of the range and show the cheapest date pairs.",
     title: "Cheapest dates in the range",
     subtitle: "Each pair's price is two one-way tickets added up. Tap a pair to search those dates.",
+    subtitleFares: "The cheapest round trips found in this range. Tap a pair to see every flight on those dates.",
     subtitleOne: "Cheapest ticket for each day. Tap a day to search that date.",
     nights: "nights",
     more: "Show more",
