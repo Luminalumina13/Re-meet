@@ -1,3 +1,4 @@
+import { markPartial } from "./partial";
 import type { Itinerary, Leg, SearchFilters, SearchRequest, Segment } from "@/lib/domain/types";
 import { getAirport } from "@/lib/data/airports";
 import { hhmmToMinutes, localToUtc } from "@/lib/domain/time";
@@ -272,7 +273,7 @@ export class KiwiMcpProvider implements FlightProvider {
           const mapped = this.map(it, page.currency || currency);
           if (mapped) out.push(mapped);
         }
-    return out;
+    return markPartial(out, ok.length < results.length);
   }
 
   async search(req: SearchRequest, signal?: AbortSignal): Promise<Itinerary[]> {

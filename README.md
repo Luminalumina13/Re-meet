@@ -142,7 +142,7 @@ Watches are checked either by the in-process scheduler (`WATCH_POLL_MINUTES=30`)
 
 Trackers created before this change have no owner and are not reachable through the API (the Telegram bot and the scheduler still use them).
 
-Notifications: per watch, a webhook URL (JSON `{ text, label, alerts }`) and/or Telegram. Webhooks must be public http(s) addresses: localhost, private ranges and cloud-metadata addresses are rejected, and redirects are not followed. A check where a data source failed raises no alerts and keeps the previous baseline.
+Notifications: per watch, a webhook URL (JSON `{ text, label, alerts }`) and/or Telegram. Webhooks must be public http(s) addresses: localhost, private ranges and cloud-metadata addresses are rejected, and redirects are not followed. A check where a data source failed, fully or partly (one of its hour windows or date chunks did not answer), raises no alerts and keeps the previous baseline; such incomplete answers are not cached either. When a query that had offers comes back empty, the check looks once more 30 s later before sending “no offers any more”.
 
 **API errors.** Every error response is `{ error, code }` (plus `issues` for validation); the UI maps `code` to localized text in `errors` of the i18n dictionaries and never shows server messages.
 

@@ -1,3 +1,4 @@
+import { partialFields } from "@/lib/providers/partial";
 import type { Itinerary, ProviderStatus, ScoredItinerary, SearchFilters } from "@/lib/domain/types";
 import { applyFilters, scoreAll } from "@/lib/domain/filters";
 import { getAirport } from "@/lib/data/airports";
@@ -86,7 +87,7 @@ async function exploreFrom(req: ExploreRequest, origin: string, opts: AggregateO
       const t0 = Date.now();
       try {
         const its = await p.explore(one, opts.signal);
-        statuses.push({ id: p.id, name: p.name, kind: p.kind, status: "ok", count: its.length, ms: Date.now() - t0, demo: p.demo });
+        statuses.push({ id: p.id, name: p.name, kind: p.kind, status: "ok", count: its.length, ms: Date.now() - t0, demo: p.demo, ...partialFields(its) });
         return its;
       } catch (e) {
         statuses.push({ id: p.id, name: p.name, kind: p.kind, status: "error", count: 0, ms: Date.now() - t0, error: e instanceof Error ? e.message : String(e), demo: p.demo });
@@ -95,7 +96,7 @@ async function exploreFrom(req: ExploreRequest, origin: string, opts: AggregateO
     }),
   );
   const fetched = { raw: dedupe(results.flat()), providers: statuses };
-  if (!opts.signal?.aborted && statuses.every((s) => s.status !== "error")) cache.set(key, fetched);
+  if (!opts.signal?.aborted && statuses.every((s) => s.status !== "error" && !s.partial)) cache.set(key, fetched);
   return fetched;
 }
 

@@ -1,3 +1,4 @@
+import { partialFields } from "@/lib/providers/partial";
 import type { Itinerary, ProviderStatus } from "@/lib/domain/types";
 import { applyFilters } from "@/lib/domain/filters";
 import { localDate } from "@/lib/domain/time";
@@ -48,7 +49,7 @@ export async function rangeSearch(req: RangeSearchRequest, opts: AggregateOption
       const t0 = Date.now();
       try {
         const its = await p.searchRange!(req, opts.signal);
-        statuses.push({ id: p.id, name: p.name, kind: p.kind, status: "ok", count: its.length, ms: Date.now() - t0, demo: p.demo });
+        statuses.push({ id: p.id, name: p.name, kind: p.kind, status: "ok", count: its.length, ms: Date.now() - t0, demo: p.demo, ...partialFields(its) });
         return its;
       } catch (e) {
         statuses.push({ id: p.id, name: p.name, kind: p.kind, status: "error", count: 0, ms: Date.now() - t0, error: e instanceof Error ? e.message : String(e), demo: p.demo });
@@ -70,6 +71,6 @@ export async function rangeSearch(req: RangeSearchRequest, opts: AggregateOption
     providers: statuses,
     supported: list.length > 0,
   };
-  if (!opts.signal?.aborted && statuses.every((s) => s.status === "ok")) cache.set(key, res);
+  if (!opts.signal?.aborted && statuses.every((s) => s.status === "ok" && !s.partial)) cache.set(key, res);
   return res;
 }

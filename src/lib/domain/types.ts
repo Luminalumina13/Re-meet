@@ -135,6 +135,8 @@ export interface ProviderStatus {
   count: number;
   ms: number;
   error?: string;
+  /** Some of this source's calls failed: the list may miss flights. */
+  partial?: boolean;
   demo?: boolean;
 }
 
