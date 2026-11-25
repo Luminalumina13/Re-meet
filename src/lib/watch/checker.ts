@@ -15,7 +15,9 @@ export interface Snapshot {
   complete?: boolean;
 }
 
-const allOk = (providers: { status: string }[]) => providers.every((p) => p.status !== "error");
+/** Every source answered in full: a missing flight then really is missing. */
+const allOk = (providers: { status: string; partial?: boolean }[]) =>
+  providers.every((p) => p.status !== "error" && !p.partial);
 
 /** Re-run the saved query and summarise it. */
 export async function snapshot(watch: Watch): Promise<Snapshot> {
@@ -114,6 +116,12 @@ export function diffAlerts(watch: Watch, snap: Snapshot, now = new Date().toISOS
   return alerts;
 }
 
+/** Pause before re-checking a query that suddenly came back empty. */
+let recheckDelayMs = 30_000;
+export function setRecheckDelay(ms: number): void {
+  recheckDelayMs = ms;
+}
+
 // One check per watch at a time: a manual check and the scheduler would otherwise both read the same
 // old state and overwrite each other's history and alerts.
 const gl = globalThis as { __watchLocks?: Map<string, Promise<unknown>> };
@@ -133,7 +141,12 @@ export function checkWatch(id: string, store: WatchStore = watchStore()): Promis
 async function checkWatchNow(id: string, store: WatchStore): Promise<{ watch: Watch; alerts: Alert[] } | null> {
   const watch = await store.get(id);
   if (!watch) return null;
-  const snap = await snapshot(watch);
+  let snap = await snapshot(watch);
+  if (snap.complete !== false && snap.bestPrice === null && (watch.lastCount ?? 0) > 0) {
+    // Offers were there last time: look once more before telling the owner they are gone.
+    await new Promise((r) => setTimeout(r, recheckDelayMs));
+    snap = await snapshot(watch);
+  }
   const now = new Date().toISOString();
   if (snap.complete === false) {
     // A source failed: record that we looked, but keep the baseline and raise nothing.

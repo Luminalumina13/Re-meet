@@ -1,3 +1,4 @@
+import { markPartial } from "./partial";
 import type { Itinerary, Leg, SearchRequest } from "@/lib/domain/types";
 import { getAirport } from "@/lib/data/airports";
 import { addDays, localToUtc, utcToLocal } from "@/lib/domain/time";
@@ -254,7 +255,7 @@ export class LastminuteProvider implements FlightProvider {
         if (it && !out.has(it.signature)) out.set(it.signature, it);
       }
     }
-    return [...out.values()];
+    return markPartial([...out.values()], ok.length < results.length);
   }
 
   map(f: LmFlight, req: SearchRequest, currency: string): Itinerary | null {

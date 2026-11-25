@@ -162,6 +162,7 @@ export function mergeStatus(map: Map<string, ProviderStatus>, s: ProviderStatus)
     count: cur.count + s.count,
     ms: Math.max(cur.ms, s.ms),
     error: cur.error ?? s.error,
+    ...(cur.partial || s.partial ? { partial: true } : {}),
   });
 }
 
