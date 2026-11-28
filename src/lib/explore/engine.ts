@@ -1,5 +1,5 @@
 import { partialFields } from "@/lib/providers/partial";
-import type { Itinerary, ProviderStatus, ScoredItinerary, SearchFilters } from "@/lib/domain/types";
+import { forBags, type Itinerary, type ProviderStatus, type ScoredItinerary, type SearchFilters } from "@/lib/domain/types";
 import { applyFilters, scoreAll } from "@/lib/domain/filters";
 import { getAirport } from "@/lib/data/airports";
 import { dedupe, type AggregateOptions } from "@/lib/providers/aggregator";
@@ -95,7 +95,7 @@ async function exploreFrom(req: ExploreRequest, origin: string, opts: AggregateO
       }
     }),
   );
-  const fetched = { raw: dedupe(results.flat()), providers: statuses };
+  const fetched = { raw: dedupe(results.flat(), req.filters?.bags), providers: statuses };
   if (!opts.signal?.aborted && statuses.every((s) => s.status !== "error" && !s.partial)) cache.set(key, fetched);
   return fetched;
 }
@@ -109,7 +109,7 @@ export async function explore(req: ExploreRequest, opts: AggregateOptions = {}):
 
   // Never offer a departure city as a destination.
   const homeCities = new Set(origins.map((o) => getAirport(o)?.city?.toLowerCase()).filter(Boolean));
-  const usable = applyFilters(dedupe(parts.flatMap((p) => p.raw)), filters).filter((it) => it.legs.length === 2 && !homeCities.has(cityOf(it).key) && withinDates(it, req));
+  const usable = forBags(applyFilters(dedupe(parts.flatMap((p) => p.raw), req.filters?.bags), filters), req.filters?.bags).filter((it) => it.legs.length === 2 && !homeCities.has(cityOf(it).key) && withinDates(it, req));
   const scored = scoreAll(usable, filters);
   return {
     request: req,

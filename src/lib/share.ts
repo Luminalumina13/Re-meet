@@ -1,3 +1,4 @@
+import type { Bags } from "@/lib/domain/types";
 import type { WeekendShape } from "@/lib/domain/dates";
 import { parseRangeQuery, rangeQuery, type RangeForm } from "@/lib/rangeForm";
 
@@ -23,11 +24,19 @@ interface Party {
   adults?: number;
   children?: number;
   infants?: number;
+  /** Bags per traveller. */
+  bags?: Bags;
 }
+const BAGS: Record<string, Bags> = { cabin: { cabin: 1 }, checked: { checked: 1 }, both: { cabin: 1, checked: 1 } };
 function partyParams(q: URLSearchParams, p: Party) {
   if (p.adults && p.adults !== 1) q.set("a", String(p.adults));
   if (p.children) q.set("c", String(p.children));
   if (p.infants) q.set("i", String(p.infants));
+  bagParam(q, p.bags);
+}
+function bagParam(q: URLSearchParams, bags?: Bags) {
+  const bag = Object.keys(BAGS).find((k) => BAGS[k].cabin === bags?.cabin && BAGS[k].checked === bags?.checked);
+  if (bag) q.set("bag", bag);
 }
 function parseParty(q: URLSearchParams): Party {
   const adults = int(q.get("a"), 1, 9);
@@ -37,8 +46,9 @@ function parseParty(q: URLSearchParams): Party {
   const a = adults ?? 1;
   const c = children ?? 0;
   const i = Math.min(infants ?? 0, a);
-  if (a + c + i > 9) return { adults: a };
-  return { adults: adults, children, infants: infants === undefined ? undefined : i };
+  const bags = BAGS[q.get("bag") ?? ""];
+  if (a + c + i > 9) return { adults: a, bags };
+  return { adults: adults, children, infants: infants === undefined ? undefined : i, bags };
 }
 
 export interface SharedSearch extends Party {
@@ -207,6 +217,7 @@ export interface MeetupShareState {
   includeOrigins?: boolean;
   /** Also look for a hub to meet at and fly on together. */
   via?: boolean;
+  bags?: Bags;
 }
 
 /** Friends travel as `Name~WAW.KRK` (airports joined by dots), comma separated and URL-encoded. */
@@ -229,6 +240,7 @@ export function buildMeetupQuery(s: MeetupShareState): string {
   }
   if (s.valuePerHour && s.valuePerHour !== 15) q.set("vph", String(s.valuePerHour));
   if (s.budget && /^\d+$/.test(s.budget)) q.set("budget", s.budget);
+  bagParam(q, s.bags);
   return q.toString();
 }
 
@@ -258,5 +270,6 @@ export function parseMeetupQuery(q: URLSearchParams): Partial<MeetupShareState> 
     returnDate: date(q.get("ret")),
     valuePerHour: int(q.get("vph"), 1, 60),
     budget: budget && /^\d{1,5}$/.test(budget) ? budget : undefined,
+    bags: BAGS[q.get("bag") ?? ""],
   };
 }

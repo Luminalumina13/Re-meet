@@ -1,4 +1,4 @@
-import type { Airport, IATA, Itinerary, ProviderStatus, SearchRequest } from "@/lib/domain/types";
+import { forBags, type Airport, type IATA, type Itinerary, type ProviderStatus, type SearchRequest } from "@/lib/domain/types";
 import { AIRPORTS, airportTz, distanceKm, getAirport } from "@/lib/data/airports";
 import { utcToLocal } from "@/lib/domain/time";
 import { fetchRaw, type AggregateOptions } from "@/lib/providers/aggregator";
@@ -204,7 +204,7 @@ export async function meetVia(req: MeetupRequest, opts: AggregateOptions = {}): 
       const r: SearchRequest = { ...base, origin, destination, departDate: date, filters, quick };
       p = fetchRaw(r, opts).then((res) => {
         for (const s of res.providers) mergeStatus(statuses, s);
-        return res.raw.filter((it) => matchesOneWay(it, filters));
+        return forBags(res.raw.filter((it) => matchesOneWay(it, filters)), filters?.bags);
       });
       cache.set(key, p);
     }

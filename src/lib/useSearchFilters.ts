@@ -17,9 +17,9 @@ export interface FilterState {
  * (afternoon departure on Fridays, otherwise after breakfast). Picking the default values
  * again hands control back to the date.
  */
-export function useSearchFilters(departDate: string) {
+export function useSearchFilters(departDate: string, initial: Rest = {}) {
   const [times, setTimes] = useState<Times | null>(null);
-  const [rest, setRest] = useState<Rest>({});
+  const [rest, setRest] = useState<Rest>(initial);
 
   const filters = useMemo<SearchFilters>(() => {
     const { outbound, inbound } = times ?? idealFiltersFor(departDate);

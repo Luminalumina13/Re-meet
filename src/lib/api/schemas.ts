@@ -24,6 +24,10 @@ export const filtersSchema = z
     maxPrice: z.number().positive().optional(),
     carriers: z.array(z.string().length(2)).max(30).optional(),
     maxDurationMin: z.number().int().min(30).max(24 * 60).optional(),
+    bags: z
+      .object({ cabin: z.number().int().min(0).max(1).optional(), checked: z.number().int().min(0).max(2).optional() })
+      .strict()
+      .optional(),
   })
   .strict();
 

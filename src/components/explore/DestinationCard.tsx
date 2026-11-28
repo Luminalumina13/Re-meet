@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { Clock, ExternalLink, Plane, Search } from "lucide-react";
 import type { ExploreDestination } from "@/lib/explore/types";
+import type { Bags } from "@/lib/domain/types";
+import { bagsLabel } from "@/components/search/BagsSelect";
 import { localTime } from "@/lib/domain/time";
 import { useI18n } from "@/lib/i18n";
 import { fmtDate, fmtDurationLocalized, fmtMoney } from "@/lib/format";
@@ -16,8 +18,9 @@ function gradientFor(key: string): string {
   return `linear-gradient(135deg, hsl(${h} 70% 62%), hsl(${(h + 50) % 360} 70% 48%))`;
 }
 
-export function DestinationCard({ d, searchHref, onDetails }: { d: ExploreDestination; searchHref: string; onDetails: () => void }) {
+export function DestinationCard({ d, searchHref, onDetails, bags }: { d: ExploreDestination; searchHref: string; onDetails: () => void; bags?: Bags }) {
   const { t, locale } = useI18n();
+  const bagNote = bagsLabel(t, bags, d.cheapest.baggage);
   const [imgOk, setImgOk] = useState(true);
   const [out, back] = d.best.legs;
   const airlines = [...new Set(d.best.legs.flatMap((l) => l.segments.map((s) => s.carrierName ?? s.carrier)))].join(", ");
@@ -49,6 +52,7 @@ export function DestinationCard({ d, searchHref, onDetails }: { d: ExploreDestin
           <div className="shrink-0 text-right">
             <div className="text-[11px] opacity-90">{t.explore.from}</div>
             <div className="text-2xl font-extrabold tabular-nums drop-shadow">{fmtMoney(d.cheapest.price, locale)}</div>
+            {bagNote && <div className="text-[11px] font-semibold opacity-90">{bagNote}</div>}
           </div>
         </div>
       </button>

@@ -124,6 +124,8 @@ Optional sources that need keys:
 
 `PROVIDERS=kiwi,ryanair` restricts the set; `PROVIDERS=mock` forces demo data; `INCLUDE_DEMO=1` adds demo data next to real results. Each no-key source can be turned off with `KIWI_MCP_ENABLED=0`, `LASTMINUTE_MCP_ENABLED=0`, `RYANAIR_ENABLED=0`.
 
+**Bags.** The search, "Anywhere" and meetup forms have a *Bags* choice (under-seat bag only / + cabin bag / + checked bag / both), per paying traveller, sent as `filters.bags = { cabin: 0–1, checked: 0–2 }` and kept in share links as `bag=cabin|checked|both`. Kiwi.com prices the bags itself (`adults_hand_bags` / `adults_hold_bags`, airline fees included) and says what the fare includes (`Itinerary.baggage`); lastminute.com and Ryanair return the ticket price only, so with bags chosen their prices carry a "no bags" badge. When the same flight comes from both, the offer that includes the bags leads the card. Date grids, group plans, "Anywhere" and price watches use the fares with bags whenever any source quoted them. The bag weight is the airline's standard and cannot be chosen.
+
 Adding another source = one file implementing `FlightProvider` (`search(req) → Itinerary[]`) and one line in `providers/registry.ts`.
 
 **Terms of use.** The Kiwi.com and lastminute.com MCP servers are published for AI assistants, and Ryanair's terms restrict automated use of its website by third parties. Fine for personal use and prototyping; for a public or commercial product, agree terms with each company (or use Duffel/partner APIs). Requests are cached for 5 minutes (explore: 10) and throttled.

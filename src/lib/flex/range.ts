@@ -58,7 +58,7 @@ export async function rangeSearch(req: RangeSearchRequest, opts: AggregateOption
     }),
   );
   const best = new Map<string, RangePair>();
-  for (const it of applyFilters(dedupe(results.flat()), req.filters ?? {})) {
+  for (const it of applyFilters(dedupe(results.flat(), req.filters?.bags), req.filters ?? {})) {
     if (!insideRange(it, req)) continue;
     const depart = localDate(it.legs[0].departLocal);
     const ret = it.legs[1] ? localDate(it.legs[1].departLocal) : undefined;

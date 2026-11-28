@@ -1,4 +1,4 @@
-import type { Itinerary, ProviderStatus, SearchFilters, SearchRequest } from "@/lib/domain/types";
+import { forBags, type Itinerary, type ProviderStatus, type SearchFilters, type SearchRequest } from "@/lib/domain/types";
 import { legMatchesWindow } from "@/lib/domain/filters";
 import { airportTz } from "@/lib/data/airports";
 import { utcToLocal } from "@/lib/domain/time";
@@ -274,7 +274,7 @@ function hashKey(s: string): string {
 export function oneWayFilters(f: SearchFilters | undefined, direction: "outbound" | "inbound"): SearchFilters | undefined {
   if (!f) return undefined;
   // For one-way searches the only leg is legs[0]; apply the matching window to it.
-  return { maxStops: f.maxStops, maxPrice: f.maxPrice, carriers: f.carriers, maxDurationMin: f.maxDurationMin, outbound: direction === "outbound" ? f.outbound : f.inbound };
+  return { maxStops: f.maxStops, maxPrice: f.maxPrice, carriers: f.carriers, maxDurationMin: f.maxDurationMin, bags: f.bags, outbound: direction === "outbound" ? f.outbound : f.inbound };
 }
 
 /** Fetch candidates for every friend and destination, then plan. */
@@ -312,13 +312,13 @@ export async function meetup(req: MeetupRequest, opts: AggregateOptions = {}): P
               const o = await fetchRaw(r, opts);
               for (const s of o.providers) mergeStatus(statuses, s);
               // A friend's airports are searched in parallel; pool the results per friend.
-              add(outBy, day, f.id, o.raw.filter((it) => matchesOneWay(it, r.filters)));
+              add(outBy, day, f.id, forBags(o.raw.filter((it) => matchesOneWay(it, r.filters)), r.filters?.bags));
             }),
             ...backDays.map(async (day) => {
               const r: SearchRequest = { ...base, origin: destination, destination: origin, departDate: day, filters: oneWayFilters(req.filters, "inbound"), quick };
               const b = await fetchRaw(r, opts);
               for (const s of b.providers) mergeStatus(statuses, s);
-              add(backBy, day, f.id, b.raw.filter((it) => matchesOneWay(it, r.filters)));
+              add(backBy, day, f.id, forBags(b.raw.filter((it) => matchesOneWay(it, r.filters)), r.filters?.bags));
             }),
           ]),
         ),

@@ -69,6 +69,8 @@ export interface Itinerary {
   otherOffers?: Offer[];
   /** Destination photo, when the source provides one. */
   imageUrl?: string;
+  /** Bags included in `price`. Absent = the source did not price bags (fare only). */
+  baggage?: Baggage;
 }
 
 export interface Offer {
@@ -76,6 +78,7 @@ export interface Offer {
   providerName: string;
   price: Money;
   deepLink?: string;
+  baggage?: Baggage;
 }
 
 export type Cabin = "economy" | "premium_economy" | "business" | "first";
@@ -97,6 +100,36 @@ export interface SearchFilters {
   carriers?: string[];
   /** Upper bound on each leg's door-to-door flight time, minutes (connections included). */
   maxDurationMin?: number;
+  /** Bags each paying traveller takes; sources that can price them include them in the fare. */
+  bags?: Bags;
+}
+
+/** Per traveller (adults and children): cabin bag 0–1, checked bags 0–2. A small under-seat item is always free. */
+export interface Bags {
+  cabin?: number;
+  checked?: number;
+}
+
+export function wantsBags(b?: Bags): boolean {
+  return Boolean(b && ((b.cabin ?? 0) > 0 || (b.checked ?? 0) > 0));
+}
+
+/**
+ * With bags requested, a fare quoted with them and a bare fare are not comparable. Where one price
+ * per day/route is picked (date grids, group plans, watches), use the fares that include the bags
+ * whenever any source quoted them.
+ */
+export function forBags<T extends { baggage?: Baggage }>(list: T[], bags?: Bags): T[] {
+  if (!wantsBags(bags)) return list;
+  const priced = list.filter((it) => it.baggage);
+  return priced.length ? priced : list;
+}
+
+/** What the fare includes, totals for the whole party, when the source says so. */
+export interface Baggage {
+  personalItem: number;
+  cabinBag: number;
+  checkedBag: number;
 }
 
 export interface SearchRequest {
