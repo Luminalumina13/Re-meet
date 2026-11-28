@@ -1,4 +1,4 @@
-import type { Itinerary, Leg, SearchRequest, Segment } from "@/lib/domain/types";
+import { wantsBags, type Itinerary, type Leg, type SearchRequest, type Segment } from "@/lib/domain/types";
 import { AIRPORTS, distanceKm, getAirport, isMajor } from "@/lib/data/airports";
 import type { ExploreRequest } from "@/lib/explore/types";
 import { datePairs, isRange } from "@/lib/domain/dateRange";
@@ -147,6 +147,7 @@ export class MockProvider implements FlightProvider {
             infants: req.infants,
             cabin: req.cabin,
             currency: req.currency,
+            filters: req.filters?.bags ? { bags: req.filters.bags } : undefined,
           }),
         ),
       ),
@@ -155,7 +156,18 @@ export class MockProvider implements FlightProvider {
   }
 
   private toItinerary(req: SearchRequest, legs: Leg[], idx: number): Itinerary {
-    const price = this.priceFor(legs, req);
+    let price = this.priceFor(legs, req);
+    // Demo of bag pricing: most fares quote the requested bags, every third one stays bare
+    // (like a source that cannot price bags), so both kinds can be seen side by side.
+    const bags = req.filters?.bags;
+    let baggage: Itinerary["baggage"];
+    if (wantsBags(bags) && idx % 3 !== 0) {
+      const people = req.adults + (req.children ?? 0);
+      const cabin = (bags?.cabin ?? 0) * people;
+      const checked = (bags?.checked ?? 0) * people;
+      price += legs.length * (cabin * 25 + checked * 35);
+      baggage = { personalItem: people, cabinBag: cabin, checkedBag: checked };
+    }
     const q = `Flights from ${req.origin} to ${req.destination} on ${req.departDate}${
       req.returnDate ? ` returning ${req.returnDate}` : ""
     }`;
@@ -167,6 +179,7 @@ export class MockProvider implements FlightProvider {
       price: { amount: price, currency: req.currency },
       deepLink: `https://www.google.com/travel/flights?q=${encodeURIComponent(q)}`,
       seatsLeft: 1 + (hash(legs[0].departUtc + idx) % 9),
+      baggage,
     });
   }
 

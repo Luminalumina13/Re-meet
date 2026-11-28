@@ -30,6 +30,7 @@ import { ProviderBar } from "@/components/search/ProviderBar";
 import { FlightCard } from "@/components/search/FlightCard";
 import { WatchDialog } from "@/components/watch/WatchDialog";
 import { DestinationCard } from "./DestinationCard";
+import { BagsSelect } from "@/components/search/BagsSelect";
 import { errorText } from "@/lib/errorText";
 
 type SortKey = "best" | "cheapest" | "time" | "short";
@@ -95,7 +96,7 @@ export function ExplorePage() {
   );
   const datesOk = Boolean(dates.departDate && dates.returnDate && dates.returnDate >= dates.departDate) && !(mode === "range" && rangeProblem);
   const extraOrigins = useMemo(() => [...new Set(moreOrigins.filter((o) => o && o !== origin))], [moreOrigins, origin]);
-  const { filters, setFilters, state: filterState, restore: restoreFilters } = useSearchFilters(dates.departDate);
+  const { filters, setFilters, state: filterState, restore: restoreFilters } = useSearchFilters(dates.departDate, seed.bags ? { bags: seed.bags } : {});
   const request = useMemo<ExploreRequestInput>(
     () => ({
       origin,
@@ -134,8 +135,8 @@ export function ExplorePage() {
   }, [origin, datesOk, request, t]);
 
   const shareQuery = useMemo(
-    () => buildExploreQuery({ origin, origins: extraOrigins, mode, range: rangeForm, saturday, shape, departDate, returnDate, maxHours, directOnly, budget, adults, children, infants }),
-    [origin, extraOrigins, mode, rangeForm, saturday, shape, departDate, returnDate, maxHours, directOnly, budget, adults, children, infants],
+    () => buildExploreQuery({ origin, origins: extraOrigins, mode, range: rangeForm, saturday, shape, departDate, returnDate, maxHours, directOnly, budget, adults, children, infants, bags: filters.bags }),
+    [origin, extraOrigins, mode, rangeForm, saturday, shape, departDate, returnDate, maxHours, directOnly, budget, adults, children, infants, filters.bags],
   );
   const fromLink = Boolean(params.get("from"));
   const autoRan = useRef(false);
@@ -190,7 +191,7 @@ export function ExplorePage() {
     // Open the normal search with the same dates (or weekend) and party.
     // With several departure airports (or a range) the best option decides the airport and the dates.
     const [out, back] = d.best.legs;
-    const base = { origin: out.from, destination: out.to, adults, children, infants };
+    const base = { origin: out.from, destination: out.to, adults, children, infants, bags: filters.bags };
     if (mode === "range") return `/?${buildSearchQuery({ ...base, mode: "custom", departDate: out.departLocal.slice(0, 10), returnDate: back?.departLocal.slice(0, 10) })}`;
     return `/?${buildSearchQuery(mode === "weekend" ? { ...base, mode, saturday, shape } : { ...base, mode, departDate: dates.departDate, returnDate: dates.returnDate })}`;
   };
@@ -267,6 +268,7 @@ export function ExplorePage() {
               </div>
             </Field>
             <Switch checked={directOnly} onChange={setDirectOnly} label={t.explore.directOnly} />
+            <BagsSelect value={filters.bags} onChange={(bags) => setFilters({ ...filters, bags })} className="sm:w-64" />
             <Field label={t.explore.budget}>
               <Input type="number" min={0} value={budget} placeholder="—" onChange={(e) => setBudget(e.target.value)} className="sm:w-48" />
             </Field>
@@ -390,7 +392,7 @@ export function ExplorePage() {
             ) : (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {shown.map((d) => (
-                  <DestinationCard key={d.key} d={d} searchHref={searchHref(d)} onDetails={() => setDetails(d)} />
+                  <DestinationCard key={d.key} d={d} searchHref={searchHref(d)} onDetails={() => setDetails(d)} bags={filters.bags} />
                 ))}
               </div>
             )}
@@ -402,8 +404,8 @@ export function ExplorePage() {
       {details && (
         <Modal open wide onClose={() => setDetails(null)} title={`${details.city}${details.country ? `, ${details.country}` : ""}`}>
           <div className="flex flex-col gap-3">
-            <FlightCard it={details.best} adults={adults + children} />
-            {details.cheapest.id !== details.best.id && <FlightCard it={details.cheapest} adults={adults + children} />}
+            <FlightCard it={details.best} adults={adults + children} bags={filters.bags} />
+            {details.cheapest.id !== details.best.id && <FlightCard it={details.cheapest} adults={adults + children} bags={filters.bags} />}
           </div>
         </Modal>
       )}

@@ -10,6 +10,7 @@ import { MAX_MEETUP_DESTINATIONS } from "@/lib/meetup/limits";
 import { useSearchFilters } from "@/lib/useSearchFilters";
 import { buildMeetupQuery, parseMeetupQuery } from "@/lib/share";
 import { ShareButton } from "@/components/ShareButton";
+import { BagsSelect } from "@/components/search/BagsSelect";
 import { nextSaturday, todayIso, weekendFromSaturday, type WeekendShape } from "@/lib/domain/dates";
 import { getAirport } from "@/lib/data/airports";
 import { useI18n } from "@/lib/i18n";
@@ -90,7 +91,7 @@ export function MeetupPage() {
     () => (mode === "weekend" ? { departDate: weekend.departDate, returnDate: weekend.returnDate } : range ? { departDate: range.departDate, returnDate: range.returnDate ?? range.departDate } : { departDate, returnDate }),
     [mode, weekend, departDate, returnDate, range],
   );
-  const { filters, setFilters } = useSearchFilters(dates.departDate);
+  const { filters, setFilters } = useSearchFilters(dates.departDate, seed.bags ? { bags: seed.bags } : {});
   const allDest = useMemo(() => {
     const set = new Set(destinations.filter(Boolean));
     if (includeOrigins) for (const f of friends) for (const o of f.origins) if (o) set.add(o);
@@ -142,8 +143,8 @@ export function MeetupPage() {
   }, [valid, request, t, via, destinations]);
 
   const shareQuery = useMemo(
-    () => buildMeetupQuery({ friends, destinations, mode, range: rangeForm, saturday, shape, departDate, returnDate, valuePerHour, budget, includeOrigins, via }),
-    [friends, destinations, mode, rangeForm, saturday, shape, departDate, returnDate, valuePerHour, budget, includeOrigins, via],
+    () => buildMeetupQuery({ friends, destinations, mode, range: rangeForm, saturday, shape, departDate, returnDate, valuePerHour, budget, includeOrigins, via, bags: filters.bags }),
+    [friends, destinations, mode, rangeForm, saturday, shape, departDate, returnDate, valuePerHour, budget, includeOrigins, via, filters.bags],
   );
   const fromLink = Boolean(seed.friends);
   const autoRan = useRef(false);
@@ -277,6 +278,7 @@ export function MeetupPage() {
               <Switch checked={includeOrigins} onChange={setIncludeOrigins} label={t.meetup.includeOrigins} />
               <Switch checked={via} onChange={setVia} label={t.meetup.via} />
               {via && <p className="text-xs text-ink-3">{t.meetup.viaHint}</p>}
+              <BagsSelect value={filters.bags} onChange={(bags) => setFilters({ ...filters, bags })} className="sm:w-64" />
             </div>
           </div>
 

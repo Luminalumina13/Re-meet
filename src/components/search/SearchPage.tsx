@@ -24,6 +24,7 @@ import { SubmitButton } from "@/components/ui/SubmitButton";
 import { Button, Card, Field, Input, Segmented, Select, Skeleton, Stepper, Switch } from "@/components/ui/primitives";
 import { WeekendPicker } from "./WeekendPicker";
 import { TimeWindows, idealHint } from "./TimeWindows";
+import { BagsSelect } from "./BagsSelect";
 import { FlightCard } from "./FlightCard";
 import { FlexDates, type FlexParams } from "./FlexDates";
 import { MultiLegResults } from "./MultiLegResults";
@@ -113,7 +114,7 @@ export function SearchPage() {
     return { departDate, returnDate: returnDate || undefined };
   }, [mode, saturday, shape, departDate, returnDate, rangeForm]);
 
-  const { filters, setFilters, state: filterState, restore: restoreFilters } = useSearchFilters(dates.departDate);
+  const { filters, setFilters, state: filterState, restore: restoreFilters } = useSearchFilters(dates.departDate, seed.bags ? { bags: seed.bags } : {});
 
   const request = useMemo<SearchRequestInput>(
     () => ({ origin, destination, departDate: dates.departDate, returnDate: dates.returnDate, adults, children, infants, cabin, currency: "EUR", filters }),
@@ -149,7 +150,7 @@ export function SearchPage() {
       setLoading(true);
       setError(null);
       try {
-        const base = { adults, children, infants, cabin: cabin ?? "economy", currency: "EUR", filters: { maxStops: filters.maxStops } };
+        const base = { adults, children, infants, cabin: cabin ?? "economy", currency: "EUR", filters: { maxStops: filters.maxStops, bags: filters.bags } };
         const found = await Promise.all(legs.map((l) => postJson<SearchResponse>("/api/search", { ...base, origin: l.from, destination: l.to, departDate: l.date })));
         setMultiRes(found.map((r) => r.itineraries));
         setRes(null);
@@ -174,7 +175,7 @@ export function SearchPage() {
     } finally {
       setLoading(false);
     }
-  }, [origin, destination, oSpread, dSpread, mode, request, t, extraLegs, departDate, adults, children, infants, cabin, filters.maxStops, rangeProblem]);
+  }, [origin, destination, oSpread, dSpread, mode, request, t, extraLegs, departDate, adults, children, infants, cabin, filters.maxStops, filters.bags, rangeProblem]);
 
   const snapshot = useMemo(
     () => ({ origin, destination, sampleFrom, sampleTo, mode, saturday, shape, cheapShapes, cheapWeeks, oSpread, dSpread, departDate, returnDate, rangeForm, adults, children, infants, cabin, filterState, sort, res }),
@@ -226,8 +227,9 @@ export function SearchPage() {
         children,
         infants,
         cabin: cabin ?? "economy",
+        bags: filters.bags,
       }),
-    [origin, destination, mode, saturday, shape, departDate, returnDate, rangeForm, extraLegs, oSpread, dSpread, adults, children, infants, cabin],
+    [origin, destination, mode, saturday, shape, departDate, returnDate, rangeForm, extraLegs, oSpread, dSpread, adults, children, infants, cabin, filters.bags],
   );
   const flexParams = useMemo<FlexParams>(
     () => ({ origin, destination, departDate: dates.departDate, returnDate: dates.returnDate, adults, children, infants, cabin: cabin ?? "economy", currency: "EUR", filters }),
@@ -332,6 +334,7 @@ export function SearchPage() {
                 ))}
               </Select>
             </Field>
+            <BagsSelect value={filters.bags} onChange={(bags) => setFilters({ ...filters, bags })} />
           </div>
           <div className={cx("grid grid-cols-1 gap-3 sm:grid-cols-2", (mode === "multi" || mode === "range") && "hidden")}>
             <Field label={t.nearby.from}>
@@ -492,7 +495,7 @@ export function SearchPage() {
           />
         )}
         {origin && destination && (mode === "weekend" || mode === "custom") && <FlexDates params={flexParams} onPick={pickDates} />}
-        {mode === "multi" && multiRes && !loading && <MultiLegResults legs={multiRes} currency="EUR" />}
+        {mode === "multi" && multiRes && !loading && <MultiLegResults legs={multiRes} currency="EUR" bags={filters.bags} />}
         {mode !== "cheap" && error && <div className="rounded-xl border border-critical/40 bg-critical/10 px-4 py-3 text-sm text-critical">{error}</div>}
         {mode !== "cheap" && loading && (
           <div className="flex flex-col gap-3">
@@ -519,7 +522,7 @@ export function SearchPage() {
             ) : (
               <div className="flex flex-col gap-3">
                 {sorted.slice(0, visible).map((it) => (
-                  <FlightCard key={it.id} it={it} adults={adults + children} onTrack={setTrackIt} />
+                  <FlightCard key={it.id} it={it} adults={adults + children} onTrack={setTrackIt} bags={filters.bags} />
                 ))}
                 {sorted.length > visible && (
                   <Button variant="secondary" className="self-center" onClick={() => setVisible((v) => v + PAGE)}>

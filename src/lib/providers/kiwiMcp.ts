@@ -1,5 +1,5 @@
 import { markPartial } from "./partial";
-import type { Itinerary, Leg, SearchFilters, SearchRequest, Segment } from "@/lib/domain/types";
+import { wantsBags, type Itinerary, type Leg, type SearchFilters, type SearchRequest, type Segment } from "@/lib/domain/types";
 import { getAirport } from "@/lib/data/airports";
 import { hhmmToMinutes, localToUtc } from "@/lib/domain/time";
 import type { FlightProvider } from "./types";
@@ -52,6 +52,7 @@ export interface KiwiMcpItinerary {
   price: number;
   bookingUrl?: string;
   imageId?: string;
+  baggage?: { personalItem?: number; cabinBag?: number; checkedBag?: number };
   outbound: KiwiLeg;
   inbound?: KiwiLeg;
 }
@@ -179,6 +180,17 @@ export class KiwiMcpProvider implements FlightProvider {
     if (f.maxPrice !== undefined) base.price_to = Math.ceil(f.maxPrice);
     if (f.carriers?.length) base.select_airlines = f.carriers.join(",");
     if (f.maxDurationMin !== undefined) base.max_fly_duration = Math.ceil(f.maxDurationMin / 60);
+    // Bags per traveller: Kiwi then quotes the fare with them (airline fees included).
+    if (wantsBags(f.bags)) {
+      const each = (n: number, v: number) => Array.from({ length: n }, () => v);
+      const kids = q.children ?? 0;
+      base.adults_hand_bags = each(q.adults, f.bags?.cabin ?? 0);
+      base.adults_hold_bags = each(q.adults, f.bags?.checked ?? 0);
+      if (kids) {
+        base.children_hand_bags = each(kids, f.bags?.cabin ?? 0);
+        base.children_hold_bags = each(kids, f.bags?.checked ?? 0);
+      }
+    }
     return base;
   }
 
@@ -315,6 +327,9 @@ export class KiwiMcpProvider implements FlightProvider {
         price: { amount: it.price, currency },
         deepLink: it.bookingUrl,
         imageUrl: it.imageId ? `https://images.kiwi.com/photos/600x600/${it.imageId}.jpg` : undefined,
+        baggage: it.baggage
+          ? { personalItem: it.baggage.personalItem ?? 0, cabinBag: it.baggage.cabinBag ?? 0, checkedBag: it.baggage.checkedBag ?? 0 }
+          : undefined,
       });
     } catch {
       return null;

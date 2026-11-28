@@ -2,7 +2,8 @@
 
 import { track } from "@/lib/consent";
 import { ArrowRight, Bell, ExternalLink } from "lucide-react";
-import type { Leg, ScoredItinerary } from "@/lib/domain/types";
+import type { Bags, Leg, ScoredItinerary } from "@/lib/domain/types";
+import { bagsLabel } from "./BagsSelect";
 import { getAirport } from "@/lib/data/airports";
 import { localTime, localDate } from "@/lib/domain/time";
 import { useI18n } from "@/lib/i18n";
@@ -49,8 +50,9 @@ export function LegRow({ leg, compact }: { leg: Leg; compact?: boolean }) {
   );
 }
 
-export function FlightCard({ it, onTrack, adults = 1 }: { it: ScoredItinerary; onTrack?: (it: ScoredItinerary) => void; adults?: number }) {
+export function FlightCard({ it, onTrack, adults = 1, bags }: { it: ScoredItinerary; onTrack?: (it: ScoredItinerary) => void; adults?: number; bags?: Bags }) {
   const { t, locale } = useI18n();
+  const bagNote = bagsLabel(t, bags, it.baggage);
   return (
     <article className="rise rounded-[var(--radius)] border border-border bg-surface shadow-card transition hover:border-border-strong">
       <div className="grid gap-4 p-4 sm:grid-cols-[1fr_auto] sm:p-5">
@@ -75,6 +77,11 @@ export function FlightCard({ it, onTrack, adults = 1 }: { it: ScoredItinerary; o
         <div className="flex flex-row items-center justify-between gap-3 border-t border-border pt-4 sm:flex-col sm:items-end sm:border-l sm:border-t-0 sm:pl-5 sm:pt-0 sm:min-w-[160px]">
           <div className="text-right">
             <div className="text-2xl font-extrabold tabular-nums tracking-tight">{fmtMoney(it.price, locale)}</div>
+            {bagNote && (
+              <Badge tone={it.baggage ? "good" : "warn"} className="mb-1">
+                {bagNote}
+              </Badge>
+            )}
             <div className="text-xs text-ink-3">
               {adults > 1 ? `${fmtMoney({ amount: it.price.amount / adults, currency: it.price.currency }, locale)} ${t.common.perPerson} · ` : ""}
               {it.providerName}
@@ -86,10 +93,12 @@ export function FlightCard({ it, onTrack, adults = 1 }: { it: ScoredItinerary; o
                   o.deepLink ? (
                     <a key={o.provider} href={o.deepLink} target="_blank" rel="noreferrer" className="font-semibold text-ink-2 tabular-nums hover:text-accent-text hover:underline">
                       {o.providerName} {fmtMoney(o.price, locale)}
+                      {bags && !o.baggage && bagsLabel(t, bags, undefined) ? ` (${t.bags.noBags})` : ""}
                     </a>
                   ) : (
                     <span key={o.provider} className="tabular-nums">
                       {o.providerName} {fmtMoney(o.price, locale)}
+                      {bags && !o.baggage && bagsLabel(t, bags, undefined) ? ` (${t.bags.noBags})` : ""}
                     </span>
                   ),
                 )}

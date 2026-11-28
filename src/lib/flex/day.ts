@@ -1,4 +1,4 @@
-import type { Itinerary, SearchRequest } from "@/lib/domain/types";
+import { forBags, type Itinerary, type SearchRequest } from "@/lib/domain/types";
 import { fetchRaw, type AggregateOptions } from "@/lib/providers/aggregator";
 import { matchesOneWay, oneWayFilters } from "@/lib/meetup/engine";
 
@@ -48,7 +48,7 @@ export async function flexDay(
     quick: true,
   };
   const { raw, providers } = await fetchRaw(search, opts);
-  const fits = raw.filter((it) => matchesOneWay(it, filters));
+  const fits = forBags(raw.filter((it) => matchesOneWay(it, filters)), filters?.bags);
   const best = fits.reduce<(typeof fits)[number] | null>((b, it) => (!b || it.price.amount < b.price.amount ? it : b), null);
   return {
     options: paretoOptions(fits, req.direction),

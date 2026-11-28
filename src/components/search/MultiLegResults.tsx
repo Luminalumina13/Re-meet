@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import type { Itinerary } from "@/lib/domain/types";
+import type { Bags, Itinerary } from "@/lib/domain/types";
+import { bagsLabel } from "./BagsSelect";
 import { bestChains } from "@/lib/multiLeg";
 import { getAirport } from "@/lib/data/airports";
 import { useI18n } from "@/lib/i18n";
@@ -10,7 +11,7 @@ import { Card } from "@/components/ui/primitives";
 import { LegRow } from "./FlightCard";
 
 /** A trip of several one-way legs (fly in to one airport, home from another, or a chain of cities): the cheapest ways to put them together. */
-export function MultiLegResults({ legs, currency }: { legs: Itinerary[][]; currency: string }) {
+export function MultiLegResults({ legs, currency, bags }: { legs: Itinerary[][]; currency: string; bags?: Bags }) {
   const { t, locale } = useI18n();
   const chains = useMemo(() => bestChains(legs), [legs]);
   const city = (c: string) => getAirport(c)?.city ?? c;
@@ -37,7 +38,10 @@ export function MultiLegResults({ legs, currency }: { legs: Itinerary[][]; curre
               <div key={k} className="rounded-xl border border-border p-3">
                 <LegRow leg={it.legs[0]} compact />
                 <div className="mt-2 flex items-center justify-between text-xs">
-                  <span className="font-bold tabular-nums">{fmtMoney(it.price, locale)}</span>
+                  <span className="font-bold tabular-nums">
+                    {fmtMoney(it.price, locale)}
+                    {bagsLabel(t, bags, it.baggage) && <span className={it.baggage ? "ml-1.5 font-semibold text-good" : "ml-1.5 font-semibold text-warn"}>{bagsLabel(t, bags, it.baggage)}</span>}
+                  </span>
                   {it.deepLink && (
                     <a className="font-semibold text-accent-text hover:underline" href={it.deepLink} target="_blank" rel="noreferrer">
                       {t.common.open} → {it.providerName}

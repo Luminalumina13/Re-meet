@@ -206,6 +206,18 @@ export const en: Dict = {
     noteOne: "Your time filters are applied.",
     empty: "Nothing found for these dates with your filters.",
   },
+  bags: {
+    label: "Bags",
+    none: "Under-seat bag only",
+    cabin: "+ cabin bag",
+    checked: "+ checked bag",
+    both: "Cabin bag + checked bag",
+    hint: "Per traveller. Kiwi.com prices include these bags; other sources show the ticket price only.",
+    noBags: "no bags",
+    withCabin: "with cabin bag",
+    withChecked: "with checked bag",
+    withBoth: "with cabin and checked bag",
+  },
   range: {
     tab: "Date range",
     departFrom: "Leave from",

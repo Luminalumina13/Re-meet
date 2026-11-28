@@ -3,6 +3,7 @@ import { search } from "@/lib/providers/aggregator";
 import { meetup } from "@/lib/meetup/engine";
 import { explore } from "@/lib/explore/engine";
 import type { Alert, PricePoint, Watch, WatchStore } from "./types";
+import { forBags } from "@/lib/domain/types";
 import { notify } from "./notify";
 import { reportError } from "@/lib/errorReport";
 import { watchStore } from "./store";
@@ -23,11 +24,13 @@ const allOk = (providers: { status: string; partial?: boolean }[]) =>
 export async function snapshot(watch: Watch): Promise<Snapshot> {
   if (watch.params.kind === "search") {
     const res = await search(watch.params.request, { fresh: true });
-    const prices = res.itineraries.map((i) => i.price.amount);
+    // With bags requested, follow the fares that include them (a bare fare would look like a drop).
+    const list = forBags(res.itineraries, watch.params.request.filters?.bags);
+    const prices = list.map((i) => i.price.amount);
     return {
       bestPrice: prices.length ? Math.min(...prices) : null,
-      count: res.itineraries.length,
-      signatures: res.itineraries.map((i) => i.signature),
+      count: list.length,
+      signatures: list.map((i) => i.signature),
       complete: allOk(res.providers),
     };
   }

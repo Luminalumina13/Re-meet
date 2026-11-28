@@ -1,5 +1,5 @@
 import { partialFields } from "@/lib/providers/partial";
-import type { Itinerary, ProviderStatus, SearchRequest, SearchResponse } from "@/lib/domain/types";
+import { wantsBags, type Bags, type Itinerary, type ProviderStatus, type SearchRequest, type SearchResponse } from "@/lib/domain/types";
 import { applyFilters, scoreAll } from "@/lib/domain/filters";
 import type { FlightProvider } from "./types";
 import { TtlCache } from "./cache";
@@ -10,9 +10,9 @@ const cache = new TtlCache<{ raw: Itinerary[]; providers: ProviderStatus[] }>(5 
 
 /** Cache key ignores soft filters so one upstream fetch serves many filter tweaks. */
 function cacheKey(req: SearchRequest): string {
-  const { filters: _f, ...rest } = req;
-  void _f;
-  return JSON.stringify(rest);
+  // Filters are applied after fetching, except bags: they change the fares the sources quote.
+  const { filters, ...rest } = req;
+  return JSON.stringify(wantsBags(filters?.bags) ? { ...rest, bags: filters?.bags } : rest);
 }
 
 export interface AggregateOptions {
@@ -92,7 +92,7 @@ async function fetchRawNow(
       }
     }),
   );
-  const raw = dedupe(results.flat());
+  const raw = dedupe(results.flat(), req.filters?.bags);
   const value = { raw, providers: statuses.sort((a, b) => a.id.localeCompare(b.id)) };
   // Never cache failures: an aborted request (user navigated away) or a source outage would
   // otherwise be served to everyone for the cache lifetime.
@@ -104,7 +104,7 @@ async function fetchRawNow(
  * Same flights sold by several sources: one entry with the cheapest price and booking link,
  * the most detailed flight description, and the other sources' prices for comparison.
  */
-export function dedupe(list: Itinerary[]): Itinerary[] {
+export function dedupe(list: Itinerary[], bags?: Bags): Itinerary[] {
   const groups = new Map<string, Itinerary[]>();
   for (const it of list) {
     const k = tripKey(it.legs);
@@ -118,7 +118,9 @@ export function dedupe(list: Itinerary[]): Itinerary[] {
       out.push(g[0]);
       continue;
     }
-    const byPrice = [...g].sort((a, b) => a.price.amount - b.price.amount);
+    // With bags requested, the offer that includes them leads; bare fares follow as "also on".
+    const lead = (it: Itinerary) => (wantsBags(bags) && !it.baggage ? 1 : 0);
+    const byPrice = [...g].sort((a, b) => lead(a) - lead(b) || a.price.amount - b.price.amount);
     const cheapest = byPrice[0];
     const richest = [...g].sort((a, b) => detailScore(b) - detailScore(a))[0];
     const seen = new Set([cheapest.provider]);
@@ -127,6 +129,7 @@ export function dedupe(list: Itinerary[]): Itinerary[] {
       providerName: o.providerName,
       price: o.price,
       deepLink: o.deepLink,
+      baggage: o.baggage,
     }));
     out.push({ ...cheapest, legs: richest.legs, signature: richest.signature, otherOffers });
   }
